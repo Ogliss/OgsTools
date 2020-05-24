@@ -1,0 +1,45 @@
+
+		<comps>
+			<li Class="CompToggleFireMode.CompProperties_ToggleFireMode">
+		</comps>
+		<verbs>
+			<li>
+				<label>5 round burst</label>
+				<verbClass>Verb_Shoot</verbClass>
+				<hasStandardCommand>true</hasStandardCommand>
+				<defaultProjectile>AvP_USCM_Bullet_10x28mm_SG</defaultProjectile>
+				<warmupTime>2.5</warmupTime>
+				<range>31</range>
+				<burstShotCount>5</burstShotCount>
+				<ticksBetweenBurstShots>4</ticksBetweenBurstShots>
+				<soundCast>AvP_M56_Shot</soundCast>
+				<soundCastTail>GunTail_Medium</soundCastTail>
+				<muzzleFlashScale>9</muzzleFlashScale>
+			</li>
+			<li>
+				<label>25 round burst</label>
+				<verbClass>Verb_Shoot</verbClass>
+				<hasStandardCommand>true</hasStandardCommand>
+				<defaultProjectile>AvP_USCM_Bullet_10x28mm_SG</defaultProjectile>
+				<warmupTime>2.5</warmupTime>
+				<range>31</range>
+				<burstShotCount>25</burstShotCount>
+				<ticksBetweenBurstShots>4</ticksBetweenBurstShots>
+				<soundCast>AvP_M56_Shot</soundCast>
+				<soundCastTail>GunTail_Medium</soundCastTail>
+				<muzzleFlashScale>9</muzzleFlashScale>
+			</li>
+			<li>
+				<label>50 round burst</label>
+				<verbClass>Verb_Shoot</verbClass>
+				<hasStandardCommand>true</hasStandardCommand>
+				<defaultProjectile>AvP_USCM_Bullet_10x28mm_SG</defaultProjectile>
+				<warmupTime>2.5</warmupTime>
+				<range>31</range>
+				<burstShotCount>50</burstShotCount>
+				<ticksBetweenBurstShots>4</ticksBetweenBurstShots>
+				<soundCast>AvP_M56_Shot</soundCast>
+				<soundCastTail>GunTail_Medium</soundCastTail>
+				<muzzleFlashScale>9</muzzleFlashScale>
+			</li>
+		</verbs>

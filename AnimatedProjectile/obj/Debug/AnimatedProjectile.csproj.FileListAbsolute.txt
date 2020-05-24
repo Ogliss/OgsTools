@@ -1,0 +1,19 @@
+C:\Program Files (x86)\Steam\steamapps\common\RimWorld\Mods\AdMechArmoury\Source\AdeptusMechanicusMain\AnimatedProjectile\bin\Debug\AnimatedProjectile.dll
+C:\Program Files (x86)\Steam\steamapps\common\RimWorld\Mods\AdMechArmoury\Source\AdeptusMechanicusMain\AnimatedProjectile\bin\Debug\AnimatedProjectile.pdb
+C:\Program Files (x86)\Steam\steamapps\common\RimWorld\Mods\AdMechArmoury\Source\AdeptusMechanicusMain\AnimatedProjectile\bin\Debug\0Harmony.dll
+C:\Program Files (x86)\Steam\steamapps\common\RimWorld\Mods\AdMechArmoury\Source\AdeptusMechanicusMain\AnimatedProjectile\bin\Debug\0Harmony.xml
+C:\Program Files (x86)\Steam\steamapps\common\RimWorld\Mods\AdMechArmoury\Source\AdeptusMechanicusMain\AnimatedProjectile\obj\Debug\AnimatedProjectile.csprojResolveAssemblyReference.cache
+C:\Program Files (x86)\Steam\steamapps\common\RimWorld\Mods\AdMechArmoury\Source\AdeptusMechanicusMain\AnimatedProjectile\obj\Debug\AnimatedProjectile.csproj.CoreCompileInputs.cache
+C:\Program Files (x86)\Steam\steamapps\common\RimWorld\Mods\AdMechArmoury\Source\AdeptusMechanicusMain\_DLLs\1AnimatedProjectile.dll
+C:\Program Files (x86)\Steam\steamapps\common\RimWorld\Mods\AdMechArmoury\Source\AdeptusMechanicusMain\_DLLs\1AnimatedProjectile.pdb
+C:\Program Files (x86)\Steam\steamapps\common\RimWorld\Mods\AdMechArmoury\Source\AdeptusMechanicusMain\AnimatedProjectile\obj\Debug\1AnimatedProjectile.dll
+C:\Program Files (x86)\Steam\steamapps\common\RimWorld\Mods\AdMechArmoury\Source\AdeptusMechanicusMain\AnimatedProjectile\obj\Debug\1AnimatedProjectile.pdb
+C:\Users\User\Desktop\OgsTools\_DLLs\1AnimatedProjectile.dll
+C:\Users\User\Desktop\OgsTools\_DLLs\1AnimatedProjectile.pdb
+C:\Users\User\Desktop\OgsTools\AnimatedProjectile\obj\Debug\AnimatedProjectile.csprojAssemblyReference.cache
+C:\Users\User\Desktop\OgsTools\AnimatedProjectile\obj\Debug\AnimatedProjectile.csproj.CopyComplete
+C:\Users\User\Desktop\OgsTools\AnimatedProjectile\obj\Debug\1AnimatedProjectile.dll
+C:\Users\User\Desktop\OgsTools\AnimatedProjectile\obj\Debug\1AnimatedProjectile.pdb
+C:\Users\User\Desktop\OgsTools\AnimatedProjectile\bin\Debug\1AnimatedProjectile.dll
+C:\Users\User\Desktop\OgsTools\AnimatedProjectile\bin\Debug\1AnimatedProjectile.pdb
+C:\Users\User\Desktop\OgsTools\AnimatedProjectile\bin\Debug\0Harmony.dll
