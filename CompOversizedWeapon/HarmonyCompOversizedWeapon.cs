@@ -83,17 +83,13 @@ namespace AdeptusMechanicus
             bool flag = thingWithComps != null;
             if (flag)
             {
-                ThingComp thingComp = thingWithComps.AllComps.FirstOrDefault((ThingComp y) => y.GetType().ToString() == "CompDeflector.CompDeflector" || y.GetType().BaseType.ToString() == "CompDeflector.CompDeflector");
-                bool flag2 = thingComp != null && Traverse.Create(thingComp).Property("IsAnimatingNow", null).GetValue<bool>();
-                if (flag2)
-                {
-                    return false;
-                }
+
                 AdeptusMechanicus.CompOversizedWeapon compOversizedWeapon = ThingCompUtility.TryGetComp<AdeptusMechanicus.CompOversizedWeapon>(thingWithComps);
                 AdeptusMechanicus.CompActivatableEffect compActivatableEffect = ThingCompUtility.TryGetComp<AdeptusMechanicus.CompActivatableEffect>(thingWithComps);
                 bool flag3 = compOversizedWeapon != null;
                 if (flag3)
                 {
+                    if (compOversizedWeapon.CompDeflectorIsAnimatingNow) return false;
                     bool flag4 = false;
                     float num = aimAngle - 90f;
                     if (___pawn == null)
@@ -200,17 +196,12 @@ namespace AdeptusMechanicus
             bool flag = thingWithComps != null;
             if (flag)
             {
-                ThingComp thingComp = thingWithComps.AllComps.FirstOrDefault((ThingComp y) => y.GetType().ToString() == "CompDeflector.CompDeflector" || y.GetType().BaseType.ToString() == "CompDeflector.CompDeflector");
-                bool flag2 = thingComp != null && Traverse.Create(thingComp).Property("IsAnimatingNow", null).GetValue<bool>();
-                if (flag2)
-                {
-                    return false;
-                }
                 AdeptusMechanicus.CompOversizedWeapon compOversizedWeapon = ThingCompUtility.TryGetComp<AdeptusMechanicus.CompOversizedWeapon>(thingWithComps);
                 AdeptusMechanicus.CompActivatableEffect compActivatableEffect = ThingCompUtility.TryGetComp<AdeptusMechanicus.CompActivatableEffect>(thingWithComps);
                 bool flag3 = compOversizedWeapon != null;
                 if (flag3)
                 {
+                    if (compOversizedWeapon.CompDeflectorIsAnimatingNow) return false;
                     bool flag4 = false;
                     float num = aimAngle - 90f;
                     Mesh mesh;
