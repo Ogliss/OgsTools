@@ -59,8 +59,13 @@ namespace AdeptusMechanicus
                     new HarmonyMethod(typeof(HarmonyCompOversizedWeapon).GetMethod("DrawEquipmentAimingPreFix")), null);
 
             }
+
+            harmony.Patch(AccessTools.Method(typeof(Thing), "get_DefaultGraphic"), null,
+                new HarmonyMethod(typeof(HarmonyCompOversizedWeapon), nameof(get_DefaultGraphic_PostFix)));
+            /*
             harmony.Patch(AccessTools.Method(typeof(Thing), "get_DefaultGraphic"), null,
                 new HarmonyMethod(typeof(HarmonyCompOversizedWeapon), nameof(get_Graphic_PostFix)));
+            */
         }
 
 
@@ -72,7 +77,7 @@ namespace AdeptusMechanicus
         /// <param name="eq"></param>
         /// <param name="drawLoc"></param>
         /// <param name="aimAngle"></param>
-        public static bool DrawEquipmentAimingPreFix(PawnRenderer __instance, Thing eq, Vector3 drawLoc, float aimAngle)
+        public static bool DrawEquipmentAimingPreFix(Pawn ___pawn, Thing eq, Vector3 drawLoc, float aimAngle)
         {
             ThingWithComps thingWithComps = eq as ThingWithComps;
             bool flag = thingWithComps != null;
@@ -91,8 +96,7 @@ namespace AdeptusMechanicus
                 {
                     bool flag4 = false;
                     float num = aimAngle - 90f;
-                    Pawn value = Traverse.Create(__instance).Field("pawn").GetValue<Pawn>();
-                    if (value == null)
+                    if (___pawn == null)
                     {
                         return true;
                     }
@@ -110,15 +114,15 @@ namespace AdeptusMechanicus
                     }
                     else
                     {
-                        num = AdjustOffsetAtPeace(eq, value, compOversizedWeapon, num);
+                        num = AdjustOffsetAtPeace(eq, ___pawn, compOversizedWeapon, num);
                     }
-                    if (compOversizedWeapon.Props != null && !PawnUtility.IsFighting(value) && compOversizedWeapon.Props.verticalFlipNorth && value.Rotation == Rot4.North)
+                    if (compOversizedWeapon.Props != null && !PawnUtility.IsFighting(___pawn) && compOversizedWeapon.Props.verticalFlipNorth && ___pawn.Rotation == Rot4.North)
                     {
                         num += 180f;
                     }
-                    if (!PawnUtility.IsFighting(value) || value.TargetCurrentlyAimingAt == null)
+                    if (!PawnUtility.IsFighting(___pawn) || ___pawn.TargetCurrentlyAimingAt == null)
                     {
-                        num = AdjustNonCombatRotation(value, num, compOversizedWeapon);
+                        num = AdjustNonCombatRotation(___pawn, num, compOversizedWeapon);
                     }
                     num %= 360f;
                     Graphic_StackCount graphic_StackCount = eq.Graphic as Graphic_StackCount;
@@ -135,7 +139,7 @@ namespace AdeptusMechanicus
                     Vector3 s;
                     if (enabled_AlienRaces)
                     {
-                        Vector2 v = AlienRacesPatch(value);
+                        Vector2 v = AlienRacesPatch(___pawn);
                         s = new Vector3(eq.def.graphicData.drawSize.x * v.x, 1f, eq.def.graphicData.drawSize.y * v.y);
                     }
                     else
@@ -143,14 +147,14 @@ namespace AdeptusMechanicus
                         s = new Vector3(eq.def.graphicData.drawSize.x, 1f, eq.def.graphicData.drawSize.y);
                     }
                     Matrix4x4 matrix = default(Matrix4x4);
-                    Vector3 vector = HarmonyCompOversizedWeapon.AdjustRenderOffsetFromDir(value, compOversizedWeapon);
+                    Vector3 vector = HarmonyCompOversizedWeapon.AdjustRenderOffsetFromDir(___pawn, compOversizedWeapon);
                     matrix.SetTRS(drawLoc + vector, Quaternion.AngleAxis(num, Vector3.up), s);
                     Graphics.DrawMesh((!flag4) ? MeshPool.plane10 : MeshPool.plane10Flip, matrix, matSingle, 0);
                     bool flag11 = compOversizedWeapon.Props != null && compOversizedWeapon.Props.isDualWeapon;
                     if (flag11)
                     {
                         vector = new Vector3(-1f * vector.x, vector.y, vector.z);
-                        bool flag12 = value.Rotation == Rot4.North || value.Rotation == Rot4.South;
+                        bool flag12 = ___pawn.Rotation == Rot4.North || ___pawn.Rotation == Rot4.South;
                         Mesh mesh;
                         if (flag12)
                         {
@@ -168,22 +172,23 @@ namespace AdeptusMechanicus
                     }
                     if (compActivatableEffect!=null)
                     {
-                        HarmonyCompActivatableEffect.DrawEquipmentAimingPostFix(__instance, eq, drawLoc, aimAngle);
+                        HarmonyCompActivatableEffect.DrawEquipmentAimingPostFix(___pawn, eq, drawLoc, aimAngle);
                     }
                     return false;
                 }
             }
             return true;
         }
-        public static bool DrawEquipmentAimingDualWieldPreFix(PawnRenderer __instance, Thing eq, Vector3 drawLoc, float aimAngle)
+        public static bool DrawEquipmentAimingDualWieldPreFix(Thing eq, Vector3 drawLoc, float aimAngle)
         {
+            Pawn ___pawn = eq.TryGetComp<CompEquippable>().PrimaryVerb.CasterPawn;
+
             ThingWithComps offHandEquip = null;
-            Pawn value = Traverse.Create(__instance).Field("pawn").GetValue<Pawn>();
-            if (value.equipment == null)
+            if (___pawn.equipment == null)
             {
                 return true;
             }
-            if (value.equipment.TryGetOffHandEquipment(out ThingWithComps result))
+            if (___pawn.equipment.TryGetOffHandEquipment(out ThingWithComps result))
             {
                 offHandEquip = result;
             }
@@ -209,7 +214,7 @@ namespace AdeptusMechanicus
                     bool flag4 = false;
                     float num = aimAngle - 90f;
                     Mesh mesh;
-                    if (value == null)
+                    if (___pawn == null)
                     {
                         return true;
                     }
@@ -228,15 +233,15 @@ namespace AdeptusMechanicus
                     else
                     {
                         mesh = MeshPool.plane10;
-                        num = AdjustOffsetAtPeace(eq, value, compOversizedWeapon, num);
+                        num = AdjustOffsetAtPeace(eq, ___pawn, compOversizedWeapon, num);
                     }
-                    if (compOversizedWeapon.Props != null && !PawnUtility.IsFighting(value) && compOversizedWeapon.Props.verticalFlipNorth && value.Rotation == Rot4.North)
+                    if (compOversizedWeapon.Props != null && !PawnUtility.IsFighting(___pawn) && compOversizedWeapon.Props.verticalFlipNorth && ___pawn.Rotation == Rot4.North)
                     {
                         num += 180f;
                     }
-                    if (!PawnUtility.IsFighting(value) || value.TargetCurrentlyAimingAt == null)
+                    if (!PawnUtility.IsFighting(___pawn) || ___pawn.TargetCurrentlyAimingAt == null)
                     {
-                        num = AdjustNonCombatRotation(value, num, compOversizedWeapon);
+                        num = AdjustNonCombatRotation(___pawn, num, compOversizedWeapon);
                     }
                     num %= 360f;
                     Graphic_StackCount graphic_StackCount = eq.Graphic as Graphic_StackCount;
@@ -253,7 +258,7 @@ namespace AdeptusMechanicus
                     Vector3 s;
                     if (enabled_AlienRaces)
                     {
-                        Vector2 v = AlienRacesPatch(value);
+                        Vector2 v = AlienRacesPatch(___pawn);
                         s = new Vector3(eq.def.graphicData.drawSize.x * v.x, 1f, eq.def.graphicData.drawSize.y * v.y);
                     }
                     else
@@ -261,14 +266,14 @@ namespace AdeptusMechanicus
                         s = new Vector3(eq.def.graphicData.drawSize.x, 1f, eq.def.graphicData.drawSize.y);
                     }
                     Matrix4x4 matrix = default(Matrix4x4);
-                    Vector3 vector = HarmonyCompOversizedWeapon.AdjustRenderOffsetFromDir(value, compOversizedWeapon);
+                    Vector3 vector = HarmonyCompOversizedWeapon.AdjustRenderOffsetFromDir(___pawn, compOversizedWeapon);
                     matrix.SetTRS(drawLoc + vector, Quaternion.AngleAxis(num, Vector3.up), s);
                     Graphics.DrawMesh((!flag4) ? MeshPool.plane10 : MeshPool.plane10Flip, matrix, matSingle, 0);
                     bool flag11 = compOversizedWeapon.Props != null && compOversizedWeapon.Props.isDualWeapon;
                     if (flag11)
                     {
                         vector = new Vector3(-1f * vector.x, vector.y, vector.z);
-                        bool flag12 = value.Rotation == Rot4.North || value.Rotation == Rot4.South;
+                        bool flag12 = ___pawn.Rotation == Rot4.North || ___pawn.Rotation == Rot4.South;
                         if (flag12)
                         {
                             num += 135f;
@@ -285,15 +290,16 @@ namespace AdeptusMechanicus
                     }
                     if (compActivatableEffect != null)
                     {
-                        HarmonyCompActivatableEffect.DrawEquipmentAimingPostFix(__instance, eq, drawLoc, aimAngle);
+                        HarmonyCompActivatableEffect.DrawEquipmentAimingPostFix(___pawn, eq, drawLoc, aimAngle);
                     }
                     return false;
                 }
             }
             return true;
         }
-        public static bool DrawEquipmentAimingOverride(PawnRenderer __instance, Thing eq, Vector3 drawLoc, float aimAngle)
+        public static bool DrawEquipmentAimingOverride(Thing eq, Vector3 drawLoc, float aimAngle)
         {
+            Pawn ___pawn = eq.TryGetComp<CompEquippable>().PrimaryVerb.CasterPawn;
             ThingWithComps thingWithComps = eq as ThingWithComps;
             AdeptusMechanicus.CompOversizedWeapon compOversizedWeapon = ThingCompUtility.TryGetComp<AdeptusMechanicus.CompOversizedWeapon>(thingWithComps);
             if (compOversizedWeapon == null)
@@ -304,7 +310,6 @@ namespace AdeptusMechanicus
             float num = aimAngle - 90f;
             bool flag = false;
             Mesh mesh;
-            Pawn value = Traverse.Create(__instance).Field("pawn").GetValue<Pawn>();
             if (aimAngle > 20f && aimAngle < 160f)
             {
                 mesh = MeshPool.plane10;
@@ -318,6 +323,7 @@ namespace AdeptusMechanicus
             }
             else
             {
+                
                 mesh = MeshPool.plane10;
                 num += eq.def.equippedAngleOffset;
             }
@@ -325,7 +331,7 @@ namespace AdeptusMechanicus
             Vector3 s;
             if (enabled_AlienRaces)
             {
-                Vector2 v = AlienRacesPatch(value);
+                Vector2 v = AlienRacesPatch(___pawn);
                 s = new Vector3(eq.def.graphicData.drawSize.x * v.x, 1f, eq.def.graphicData.drawSize.y * v.y);
             }
             else
@@ -334,7 +340,7 @@ namespace AdeptusMechanicus
             }
             Material matSingle;
             Matrix4x4 matrix = default(Matrix4x4);
-            Vector3 vector = HarmonyCompOversizedWeapon.AdjustRenderOffsetFromDir(value, compOversizedWeapon);
+            Vector3 vector = HarmonyCompOversizedWeapon.AdjustRenderOffsetFromDir(___pawn, compOversizedWeapon);
             matrix.SetTRS(drawLoc + vector, Quaternion.AngleAxis(num, Vector3.up), s);
             Graphic_StackCount graphic_StackCount = eq.Graphic as Graphic_StackCount;
             if (graphic_StackCount != null)
@@ -421,61 +427,51 @@ namespace AdeptusMechanicus
             return curOffset;
         }
 
-        public static void get_Graphic_PostFix(Thing __instance, ref Graphic __result)
+        public static void get_DefaultGraphic_PostFix(Thing __instance, Graphic ___graphicInt, ref Graphic __result)
         {
-            ThingWithComps val = __instance as ThingWithComps;
-            if (val == null)
+            if (___graphicInt == null) return;
+            if (__instance.ParentHolder is Pawn) return;
+
+            var compOversizedWeapon = __instance.TryGetComp<CompOversizedWeapon>();
+            if (compOversizedWeapon != null)
             {
-                return;
-            }
-            AdeptusMechanicus.CompOversizedWeapon compOversizedWeapon = ThingCompUtility.TryGetComp<AdeptusMechanicus.CompOversizedWeapon>((Thing)(object)val);
-            if (compOversizedWeapon == null)
-            {
-                return;
-            }
-            Graphic value = Traverse.Create((object)__instance).Field("graphicInt").GetValue<Graphic>();
-            if (value == null || ((Thing)val).ParentHolder is Pawn)
-            {
-                return;
-            }
-            ThingComp val2 = val.AllComps.FirstOrDefault((ThingComp y) => ((object)y).GetType().ToString().Contains("ActivatableEffect"));
-            if (val2 != null && Traverse.Create((object)val2).Property("GetPawn", (object[])null).GetValue<Pawn>() != null)
-            {
-                return;
-            }
-            if (compOversizedWeapon.Props?.groundGraphic == null)
-            {
-                value.drawSize = __instance.def.graphicData.drawSize;
-                __result = value;
-                return;
-            }
-            if (compOversizedWeapon.IsEquipped)
-            {
-                value.drawSize = __instance.def.graphicData.drawSize;
-                __result = value;
-                return;
-            }
-            CompProperties_OversizedWeapon props = compOversizedWeapon.Props;
-            Graphic val3;
-            if (props == null)
-            {
-                val3 = null;
-            }
-            else
-            {
-                GraphicData groundGraphic = props.groundGraphic;
-                val3 = ((groundGraphic != null) ? groundGraphic.GraphicColoredFor(__instance) : null);
-            }
-            Graphic val4 = val3;
-            if (val4 != null)
-            {
-                val4.drawSize = compOversizedWeapon.Props.groundGraphic.drawSize;
-                __result = val4;
-            }
-            else
-            {
-                value.drawSize = __instance.def.graphicData.drawSize;
-                __result = value;
+                //Following commented-out section is an unnecessary "optimization" that actually hurts performance due to the reflection involved.
+                //var activatableEffect =
+                //    thingWithComps.AllComps.FirstOrDefault(
+                //        y => y.GetType().ToString().Contains("ActivatableEffect"));
+                //if (activatableEffect != null)
+                //{
+                //    var getPawn = Traverse.Create(activatableEffect).Property("GetPawn").GetValue<Pawn>();
+                //    if (getPawn != null)
+                //        return;
+                //}
+                if (compOversizedWeapon.Props?.groundGraphic == null)
+                {
+                    ___graphicInt.drawSize = __instance.def.graphicData.drawSize;
+                    __result = ___graphicInt;
+                }
+                else // compOversizedWeapon.Props.groundGraphic != null
+                {
+                    if (compOversizedWeapon.IsEquipped)
+                    {
+                        ___graphicInt.drawSize = __instance.def.graphicData.drawSize;
+                        __result = ___graphicInt;
+                    }
+                    else
+                    {
+                        if (compOversizedWeapon.Props.groundGraphic.GraphicColoredFor(__instance) is Graphic
+                            newResult)
+                        {
+                            newResult.drawSize = compOversizedWeapon.Props.groundGraphic.drawSize;
+                            __result = newResult;
+                        }
+                        else
+                        {
+                            ___graphicInt.drawSize = __instance.def.graphicData.drawSize;
+                            __result = ___graphicInt;
+                        }
+                    }
+                }
             }
         }
     }

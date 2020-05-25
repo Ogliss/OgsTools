@@ -168,9 +168,9 @@ namespace AdeptusMechanicus
         /// <param name="eq"></param>
         /// <param name="drawLoc"></param>
         /// <param name="aimAngle"></param>
-        public static void DrawEquipmentAimingPostFix(PawnRenderer __instance, Thing eq, Vector3 drawLoc,float aimAngle)
+        public static void DrawEquipmentAimingPostFix(Pawn ___pawn, Thing eq, Vector3 drawLoc,float aimAngle)
         {
-            var pawn = (Pawn) AccessTools.Field(typeof(PawnRenderer), "pawn").GetValue(__instance);
+            var pawn = (Pawn)___pawn;
 
             var pawn_EquipmentTracker = pawn.equipment;
             var thingWithComps =
