@@ -99,7 +99,7 @@ namespace CompPawnGrower
                     }
                     faction = spawnwild ? null : Faction.OfPlayer;
                     generationContext = spawnwild ? PawnGenerationContext.NonPlayer : PawnGenerationContext.NonPlayer;
-                    PawnGenerationRequest pawnGenerationRequest = new PawnGenerationRequest(pawnKindDef, faction, generationContext, -1, true, true, false, false, true, true, 0f, fixedGender: Gender.None, fixedBiologicalAge: Age, fixedChronologicalAge: Age);
+                    PawnGenerationRequest pawnGenerationRequest = new PawnGenerationRequest(pawnKindDef, faction, generationContext, -1, true, true, false, false, true, true, 0f, fixedBiologicalAge: Age, fixedChronologicalAge: Age);
 
                     Pawn pawn = PawnGenerator.GeneratePawn(pawnGenerationRequest);
 
@@ -113,7 +113,7 @@ namespace CompPawnGrower
                         {
                             pawn.ChangeKind(PawnKindDefOf.WildMan);
                         }
-                        pawn.story.bodyType = pawn.story.childhood.BodyTypeFor(pawn.gender);
+                    //    pawn.story.bodyType = pawn.story.childhood.BodyTypeFor(pawn.gender);
                     }
                     if (Fertility < 1f)
                     {
