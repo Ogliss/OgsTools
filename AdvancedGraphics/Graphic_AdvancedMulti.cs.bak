@@ -1,0 +1,328 @@
+﻿using System;
+using System.Collections.Generic;
+using System.Linq;
+using UnityEngine;
+using Verse;
+
+namespace AdvancedGraphics
+{
+	// Token: 0x020002F0 RID: 752
+	public class Graphic_AdvancedMulti : Graphic
+	{
+		// Token: 0x1700044F RID: 1103
+		// (get) Token: 0x0600153B RID: 5435 RVA: 0x0007CAAC File Offset: 0x0007ACAC
+		public string GraphicPath
+		{
+			get
+			{
+				return this.path;
+			}
+		}
+
+		// Token: 0x17000450 RID: 1104
+		// (get) Token: 0x0600153C RID: 5436 RVA: 0x0007CAB4 File Offset: 0x0007ACB4
+		public override Material MatSingle
+		{
+			get
+			{
+				return this.MatSouth;
+			}
+		}
+
+		// Token: 0x17000451 RID: 1105
+		// (get) Token: 0x0600153D RID: 5437 RVA: 0x0007CABC File Offset: 0x0007ACBC
+		public override Material MatWest
+		{
+			get
+			{
+				return this.mats[3];
+			}
+		}
+
+		// Token: 0x17000452 RID: 1106
+		// (get) Token: 0x0600153E RID: 5438 RVA: 0x0007CAC6 File Offset: 0x0007ACC6
+		public override Material MatSouth
+		{
+			get
+			{
+				return this.mats[2];
+			}
+		}
+
+		// Token: 0x17000453 RID: 1107
+		// (get) Token: 0x0600153F RID: 5439 RVA: 0x0007CAD0 File Offset: 0x0007ACD0
+		public override Material MatEast
+		{
+			get
+			{
+				return this.mats[1];
+			}
+		}
+
+		// Token: 0x17000454 RID: 1108
+		// (get) Token: 0x06001540 RID: 5440 RVA: 0x0007CADA File Offset: 0x0007ACDA
+		public override Material MatNorth
+		{
+			get
+			{
+				return this.mats[0];
+			}
+		}
+
+		// Token: 0x17000455 RID: 1109
+		// (get) Token: 0x06001541 RID: 5441 RVA: 0x0007CAE4 File Offset: 0x0007ACE4
+		public override bool WestFlipped
+		{
+			get
+			{
+				return this.westFlipped;
+			}
+		}
+
+		// Token: 0x17000456 RID: 1110
+		// (get) Token: 0x06001542 RID: 5442 RVA: 0x0007CAEC File Offset: 0x0007ACEC
+		public override bool EastFlipped
+		{
+			get
+			{
+				return this.eastFlipped;
+			}
+		}
+
+		// Token: 0x17000457 RID: 1111
+		// (get) Token: 0x06001543 RID: 5443 RVA: 0x0007CAF4 File Offset: 0x0007ACF4
+		public override bool ShouldDrawRotated
+		{
+			get
+			{
+				return (this.data == null || this.data.drawRotated) && (this.MatEast == this.MatNorth || this.MatWest == this.MatNorth);
+			}
+		}
+
+		// Token: 0x17000458 RID: 1112
+		// (get) Token: 0x06001544 RID: 5444 RVA: 0x0007CB33 File Offset: 0x0007AD33
+		public override float DrawRotatedExtraAngleOffset
+		{
+			get
+			{
+				return this.drawRotatedExtraAngleOffset;
+			}
+		}
+
+		// Token: 0x06001545 RID: 5445 RVA: 0x0007CB3C File Offset: 0x0007AD3C
+		public override void Init(GraphicRequest req)
+		{
+			this.data = req.graphicData;
+			this.path = req.path;
+			this.color = req.color;
+			this.colorTwo = req.colorTwo;
+			this.drawSize = req.drawSize;
+
+			List<Texture2D> list = (from x in ContentFinder<Texture2D>.GetAllInFolder(req.path)
+									where !(x.name.EndsWith(Graphic_AdvancedMulti.MaskSuffix) && (x.name.Contains(Graphic_AdvancedMulti.NSuffix) || x.name.Contains(Graphic_AdvancedMulti.SSuffix) || x.name.Contains(Graphic_AdvancedMulti.ESuffix) || x.name.Contains(Graphic_AdvancedMulti.WSuffix))) && !x.name.EndsWith(Graphic_AdvancedMulti.MaskIconSuffix)
+									orderby x.name
+									select x).ToList<Texture2D>();
+			if (list.NullOrEmpty<Texture2D>())
+			{
+				Log.Error("Collection cannot init: No textures found at path " + req.path, false);
+				this.subGraphics = new Graphic_Multi[]
+				{
+				//	BaseContent.BadGraphic
+				};
+				return;
+			}
+			List<Texture2D> listN = list.FindAll(x => x.name.Contains(Graphic_AdvancedMulti.NSuffix));
+			list.RemoveAll(x => listN.Contains(x));
+			List<Texture2D> listS = list.FindAll(x => x.name.Contains(Graphic_AdvancedMulti.SSuffix));
+			list.RemoveAll(x => listS.Contains(x));
+			List<Texture2D> listE = list.FindAll(x => x.name.Contains(Graphic_AdvancedMulti.ESuffix));
+			list.RemoveAll(x => listE.Contains(x));
+			List<Texture2D> listW = list.FindAll(x => x.name.Contains(Graphic_AdvancedMulti.WSuffix));
+			list.RemoveAll(x => listW.Contains(x));
+
+			Texture2D[] array = new Texture2D[this.mats.Length];
+			array[0] = ContentFinder<Texture2D>.Get(req.path + "_north", false);
+			array[1] = ContentFinder<Texture2D>.Get(req.path + "_east", false);
+			array[2] = ContentFinder<Texture2D>.Get(req.path + "_south", false);
+			array[3] = ContentFinder<Texture2D>.Get(req.path + "_west", false);
+			if (array[0] == null)
+			{
+				if (array[2] != null)
+				{
+					array[0] = array[2];
+					this.drawRotatedExtraAngleOffset = 180f;
+				}
+				else if (array[1] != null)
+				{
+					array[0] = array[1];
+					this.drawRotatedExtraAngleOffset = -90f;
+				}
+				else if (array[3] != null)
+				{
+					array[0] = array[3];
+					this.drawRotatedExtraAngleOffset = 90f;
+				}
+				else
+				{
+					array[0] = ContentFinder<Texture2D>.Get(req.path, false);
+				}
+			}
+			if (array[0] == null)
+			{
+				Log.Error("Failed to find any textures at " + req.path + " while constructing " + this.ToStringSafe<Graphic_AdvancedMulti>(), false);
+				return;
+			}
+			if (array[2] == null)
+			{
+				array[2] = array[0];
+			}
+			if (array[1] == null)
+			{
+				if (array[3] != null)
+				{
+					array[1] = array[3];
+					this.eastFlipped = base.DataAllowsFlip;
+				}
+				else
+				{
+					array[1] = array[0];
+				}
+			}
+			if (array[3] == null)
+			{
+				if (array[1] != null)
+				{
+					array[3] = array[1];
+					this.westFlipped = base.DataAllowsFlip;
+				}
+				else
+				{
+					array[3] = array[0];
+				}
+			}
+			Texture2D[] array2 = new Texture2D[this.mats.Length];
+			if (req.shader.SupportsMaskTex())
+			{
+				array2[0] = ContentFinder<Texture2D>.Get(req.path + "_northm", false);
+				array2[1] = ContentFinder<Texture2D>.Get(req.path + "_eastm", false);
+				array2[2] = ContentFinder<Texture2D>.Get(req.path + "_southm", false);
+				array2[3] = ContentFinder<Texture2D>.Get(req.path + "_westm", false);
+				if (array2[0] == null)
+				{
+					if (array2[2] != null)
+					{
+						array2[0] = array2[2];
+					}
+					else if (array2[1] != null)
+					{
+						array2[0] = array2[1];
+					}
+					else if (array2[3] != null)
+					{
+						array2[0] = array2[3];
+					}
+				}
+				if (array2[2] == null)
+				{
+					array2[2] = array2[0];
+				}
+				if (array2[1] == null)
+				{
+					if (array2[3] != null)
+					{
+						array2[1] = array2[3];
+					}
+					else
+					{
+						array2[1] = array2[0];
+					}
+				}
+				if (array2[3] == null)
+				{
+					if (array2[1] != null)
+					{
+						array2[3] = array2[1];
+					}
+					else
+					{
+						array2[3] = array2[0];
+					}
+				}
+			}
+			for (int i = 0; i < this.mats.Length; i++)
+			{
+				MaterialRequest req2 = default(MaterialRequest);
+				req2.mainTex = array[i];
+				req2.shader = req.shader;
+				req2.color = this.color;
+				req2.colorTwo = this.colorTwo;
+				req2.maskTex = array2[i];
+				req2.shaderParameters = req.shaderParameters;
+				this.mats[i] = MaterialPool.MatFrom(req2);
+			}
+		}
+
+		// Token: 0x06001546 RID: 5446 RVA: 0x0007CE97 File Offset: 0x0007B097
+		public override Graphic GetColoredVersion(Shader newShader, Color newColor, Color newColorTwo)
+		{
+			return GraphicDatabase.Get<Graphic_Multi>(this.path, newShader, this.drawSize, newColor, newColorTwo, this.data);
+		}
+
+		// Token: 0x06001547 RID: 5447 RVA: 0x0007CEB4 File Offset: 0x0007B0B4
+		public override string ToString()
+		{
+			return string.Concat(new object[]
+			{
+				"Multi(initPath=",
+				this.path,
+				", color=",
+				this.color,
+				", colorTwo=",
+				this.colorTwo,
+				")"
+			});
+		}
+
+		// Token: 0x06001548 RID: 5448 RVA: 0x0007CF11 File Offset: 0x0007B111
+		public override int GetHashCode()
+		{
+			return Gen.HashCombineStruct<Color>(Gen.HashCombineStruct<Color>(Gen.HashCombine<string>(0, this.path), this.color), this.colorTwo);
+		}
+
+		// Token: 0x04000DFE RID: 3582
+		private Material[] mats = new Material[4];
+
+		// Token: 0x04000DFF RID: 3583
+		private bool westFlipped;
+
+		// Token: 0x04000E00 RID: 3584
+		private bool eastFlipped;
+
+		// Token: 0x04000E01 RID: 3585
+		private float drawRotatedExtraAngleOffset;
+		protected Graphic_Multi[] subGraphics;
+		public int Count
+		{
+			get
+			{
+				return this.subGraphics.Length;
+			}
+		}
+
+		// Token: 0x170000F1 RID: 241
+		// (get) Token: 0x06000452 RID: 1106 RVA: 0x000118B0 File Offset: 0x0000FAB0
+		public Graphic[] Graphics
+		{
+			get
+			{
+				return this.subGraphics;
+			}
+		}
+		public static readonly string NSuffix = "_north";
+		public static readonly string SSuffix = "_south";
+		public static readonly string ESuffix = "_east";
+		public static readonly string WSuffix = "_west";
+		public static readonly string MaskSuffix = "m";
+		public static readonly string MaskIconSuffix = "_m";
+	}
+}

@@ -4,7 +4,7 @@ using UnityEngine;
 using Verse;
 using Verse.Sound;
 
-namespace AdeptusMechanicus
+namespace OgsCompActivatableEffect
 {
     public class CompActivatableEffect : CompUseEffect
     {
@@ -16,6 +16,7 @@ namespace AdeptusMechanicus
 
         private State currentState = State.Deactivated;
 
+        public bool IsActiveNow => currentState == State.Activated;
         public bool IsInitialized;
 
         private Sustainer sustainer;

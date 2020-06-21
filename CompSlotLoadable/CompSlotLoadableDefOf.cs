@@ -1,7 +1,7 @@
 ﻿using RimWorld;
 using Verse;
 
-namespace AdeptusMechanicus
+namespace OgsCompSlotLoadable
 {
     [DefOf]
     public static class CompSlotLoadableDefOf

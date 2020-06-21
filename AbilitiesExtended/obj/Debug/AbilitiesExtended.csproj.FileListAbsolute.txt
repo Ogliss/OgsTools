@@ -1,0 +1,7 @@
+C:\Users\User\Desktop\OgsTools\AbilitiesExtended\bin\Debug\AbilitiesExtended.dll
+C:\Users\User\Desktop\OgsTools\AbilitiesExtended\bin\Debug\AbilitiesExtended.pdb
+C:\Users\User\Desktop\OgsTools\AbilitiesExtended\bin\Debug\0Harmony.dll
+C:\Users\User\Desktop\OgsTools\AbilitiesExtended\obj\Debug\AbilitiesExtended.csprojAssemblyReference.cache
+C:\Users\User\Desktop\OgsTools\AbilitiesExtended\obj\Debug\AbilitiesExtended.csproj.CopyComplete
+C:\Users\User\Desktop\OgsTools\AbilitiesExtended\obj\Debug\AbilitiesExtended.dll
+C:\Users\User\Desktop\OgsTools\AbilitiesExtended\obj\Debug\AbilitiesExtended.pdb

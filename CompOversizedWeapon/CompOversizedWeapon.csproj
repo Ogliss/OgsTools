@@ -36,6 +36,7 @@
     <Compile Include="ExtentionMethodsCompOversizedWeapon.cs" />
     <Compile Include="CompOversizedWeapon.cs" />
     <Compile Include="CompProperties_OversizedWeapon.cs" />
+    <None Include="HarmonyCompOversizedWeapon.cs.bak" />
     <Compile Include="HarmonyCompOversizedWeapon.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
@@ -52,11 +53,6 @@
     </PackageReference>
   </ItemGroup>
   <ItemGroup>
-    <Reference Include="1CompActivatableEffect, Version=1.18.0.0, Culture=neutral, processorArchitecture=MSIL">
-      <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\..\..\..\..\Program Files (x86)\Steam\steamapps\common\RimWorld\Mods\AdMechArmoury\1.1\Assemblies\1CompActivatableEffect.dll</HintPath>
-      <Private>False</Private>
-    </Reference>
     <Reference Include="AlienRace">
       <HintPath>..\..\..\..\..\Program Files (x86)\Steam\steamapps\workshop\content\294100\839005762\1.1\Assemblies\AlienRace.dll</HintPath>
       <Private>False</Private>

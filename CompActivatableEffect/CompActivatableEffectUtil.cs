@@ -9,7 +9,7 @@ using System.Text;
 using System.Threading.Tasks;
 using Verse;
 
-namespace AdeptusMechanicus
+namespace OgsCompActivatableEffect
 {
     [StaticConstructorOnStartup]
     public static class CompActivatableEffectUtil

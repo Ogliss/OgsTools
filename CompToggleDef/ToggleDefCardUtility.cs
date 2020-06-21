@@ -1,7 +1,9 @@
+using HarmonyLib;
+using System.Reflection;
 using UnityEngine;
 using Verse;
 
-namespace AdeptusMechanicus
+namespace OgsCompToggleDef
 {
     public class ToggleDefCardUtility
     {
@@ -76,7 +78,17 @@ namespace AdeptusMechanicus
                         selectedThing.def = td;
                         selectedThing.thingIDNumber = -1;
                         ThingIDMaker.GiveIDTo(selectedThing); // necessary
+                        CompColorable colorable = selectedThing.TryGetComp<CompColorable>();
+                        if (colorable != null)
+                        {
+                            colorable.Color = selectedThing.def.colorGenerator.NewRandomizedColor();
+                        }
+                        //    selectedThing.DrawColor = selectedThing.def.colorGenerator.NewRandomizedColor();
+                        Graphic graphic = selectedThing.def.graphicData.GraphicColoredFor(selectedThing);
                         GenSpawn.Spawn(selectedThing, loc, map, rot);
+                        FieldInfo subgraphic = typeof(Thing).GetField("graphicInt", BindingFlags.Instance | BindingFlags.NonPublic | BindingFlags.GetField);
+                        Traverse traverse = Traverse.Create(selectedThing);
+                        subgraphic.SetValue(selectedThing, graphic);
                         Find.Selector.Select(selectedThing);
                         break;
                     }

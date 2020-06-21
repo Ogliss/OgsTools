@@ -21,6 +21,18 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CompActivatableEffect", "Co
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AnimatedProjectile", "AnimatedProjectile\AnimatedProjectile.csproj", "{EB1E8DCF-27C4-4CE3-84D2-C2C42FECE84D}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "RecruitShips", "RecruitShips\RecruitShips.csproj", "{73FB35FC-7C81-4BEC-8EE0-E3DFCF826003}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "HiveExtension", "FactionHives\HiveExtension.csproj", "{FC10BCFE-3722-4A62-A9FE-FC56AA3C5162}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CrashedShipsExtension", "ExpandedCrashedShips\CrashedShipsExtension.csproj", "{94396E79-3450-4842-A51C-2B52EF217C72}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AdvancedGraphics", "AdvancedGraphics\AdvancedGraphics.csproj", "{6F66FD2A-833A-426B-8389-4B3548A9C47A}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AbilitiesExtended", "AbilitiesExtended\AbilitiesExtended.csproj", "{79BE6C49-4BA3-4562-8447-7EA3BBB53F2D}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CompPawnGrower", "CompPawnGrower\CompPawnGrower.csproj", "{0CE409BA-0F42-4B8E-8627-8F807DEA0A15}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -63,6 +75,30 @@ Global
 		{EB1E8DCF-27C4-4CE3-84D2-C2C42FECE84D}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{EB1E8DCF-27C4-4CE3-84D2-C2C42FECE84D}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{EB1E8DCF-27C4-4CE3-84D2-C2C42FECE84D}.Release|Any CPU.Build.0 = Release|Any CPU
+		{73FB35FC-7C81-4BEC-8EE0-E3DFCF826003}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{73FB35FC-7C81-4BEC-8EE0-E3DFCF826003}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{73FB35FC-7C81-4BEC-8EE0-E3DFCF826003}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{73FB35FC-7C81-4BEC-8EE0-E3DFCF826003}.Release|Any CPU.Build.0 = Release|Any CPU
+		{FC10BCFE-3722-4A62-A9FE-FC56AA3C5162}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{FC10BCFE-3722-4A62-A9FE-FC56AA3C5162}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{FC10BCFE-3722-4A62-A9FE-FC56AA3C5162}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{FC10BCFE-3722-4A62-A9FE-FC56AA3C5162}.Release|Any CPU.Build.0 = Release|Any CPU
+		{94396E79-3450-4842-A51C-2B52EF217C72}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{94396E79-3450-4842-A51C-2B52EF217C72}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{94396E79-3450-4842-A51C-2B52EF217C72}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{94396E79-3450-4842-A51C-2B52EF217C72}.Release|Any CPU.Build.0 = Release|Any CPU
+		{6F66FD2A-833A-426B-8389-4B3548A9C47A}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{6F66FD2A-833A-426B-8389-4B3548A9C47A}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{6F66FD2A-833A-426B-8389-4B3548A9C47A}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{6F66FD2A-833A-426B-8389-4B3548A9C47A}.Release|Any CPU.Build.0 = Release|Any CPU
+		{79BE6C49-4BA3-4562-8447-7EA3BBB53F2D}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{79BE6C49-4BA3-4562-8447-7EA3BBB53F2D}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{79BE6C49-4BA3-4562-8447-7EA3BBB53F2D}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{79BE6C49-4BA3-4562-8447-7EA3BBB53F2D}.Release|Any CPU.Build.0 = Release|Any CPU
+		{0CE409BA-0F42-4B8E-8627-8F807DEA0A15}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{0CE409BA-0F42-4B8E-8627-8F807DEA0A15}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{0CE409BA-0F42-4B8E-8627-8F807DEA0A15}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{0CE409BA-0F42-4B8E-8627-8F807DEA0A15}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

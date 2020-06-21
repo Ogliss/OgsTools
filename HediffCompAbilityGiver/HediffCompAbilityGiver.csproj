@@ -30,9 +30,9 @@
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
   <ItemGroup>
-    <Compile Include="HCAG_ThingRequiringRoyalPermissionUtility_IsViolatingRulesOfAnyFaction_ExtraSilencer_Patch.cs" />
+    <Compile Include="Harmony\HCAG_ThingRequiringRoyalPermissionUtility_IsViolatingRulesOfAnyFaction_ExtraSilencer_Patch.cs" />
     <Compile Include="HediffComp_Ability.cs" />
-    <Compile Include="Patches.cs" />
+    <Compile Include="Harmony\Patches.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>
@@ -43,5 +43,6 @@
       <Version>2.0.1</Version>
     </PackageReference>
   </ItemGroup>
+  <ItemGroup />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>

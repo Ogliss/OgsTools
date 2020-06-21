@@ -6,7 +6,7 @@ using RimWorld;
 using UnityEngine;
 using Verse;
 
-namespace AdeptusMechanicus
+namespace OgsCompActivatableEffect
 {
     [StaticConstructorOnStartup]
     public static class HarmonyCompActivatableEffect
@@ -25,16 +25,7 @@ namespace AdeptusMechanicus
 
             if (enabled_rooloDualWield)
             {
-                /*
-                harmony.Patch(AccessTools.Method(GenTypes.GetTypeInAnyAssembly("CompOversizedWeapon.HarmonyCompOversizedWeapon", "CompOversizedWeapon"), "DrawEquipmentAimingPreFix", null, null), new HarmonyMethod(Main.patchType, "`", null), new HarmonyMethod(Main.patchType, "DrawEquipmentAiming_DualWield_OverSized_PostFix", null));
-                harmony.Patch(AccessTools.Method(GenTypes.GetTypeInAnyAssembly("CompActivatableEffect.HarmonyCompActivatableEffect", "CompActivatableEffect"), "DrawEquipmentAimingPostFix", null, null), new HarmonyMethod(Main.patchType, "DrawEquipmentAiming_DualWield_Activatable_PreFix", null));
-                harmony.Patch(AccessTools.Method(GenTypes.GetTypeInAnyAssembly("DualWield.Harmony.PawnRenderer_DrawEquipmentAiming", "DualWield.Harmony"), "DrawEquipmentAimingOverride", null, null), new HarmonyMethod(Main.patchType, "DrawEquipmentAimingOverride_DualWield_compActivatableEffect_PreFix", null));
-                harmony.Patch(AccessTools.Method(GenTypes.GetTypeInAnyAssembly("DualWield.Ext_Pawn_EquipmentTracker", "DualWield"), "AddOffHandEquipment", null, null),null , new HarmonyMethod(Main.patchType, "AddOffHandEquipment_PostFix", null));
-                harmony.Patch(AccessTools.Method(GenTypes.GetTypeInAnyAssembly("DualWield.Harmony.PawnWeaponGenerator_TryGenerateWeaponFor", "DualWield.Harmony"), "Postfix", null, null), new HarmonyMethod(Main.patchType, "PawnWeaponGenerator_TryGenerateWeaponFor_PostFix", null));
-                */
-
-                harmony.Patch(AccessTools.Method(GenTypes.GetTypeInAnyAssembly("DualWield.Harmony.PawnRenderer_DrawEquipmentAiming", "DualWield.Harmony"), "DrawEquipmentAimingOverride", null, null),
-                    new HarmonyMethod(typeof(HarmonyCompActivatableEffect).GetMethod("DrawEquipmentAimingPreFix_DualWield")), null);
+                DualWieldPatch(harmony);
             }
             harmony.Patch(typeof(PawnRenderer).GetMethod("DrawEquipmentAiming"), null,
                 new HarmonyMethod(typeof(HarmonyCompActivatableEffect), nameof(DrawEquipmentAimingPostFix)));
@@ -52,6 +43,21 @@ namespace AdeptusMechanicus
                 new HarmonyMethod(typeof(HarmonyCompActivatableEffect).GetMethod("set_DraftedPostFix")));
         }
 
+
+        public static void DualWieldPatch(Harmony harmony)
+        {
+            /*
+            harmony.Patch(AccessTools.Method(GenTypes.GetTypeInAnyAssembly("CompOversizedWeapon.HarmonyCompOversizedWeapon", "CompOversizedWeapon"), "DrawEquipmentAimingPreFix", null, null), new HarmonyMethod(Main.patchType, "`", null), new HarmonyMethod(Main.patchType, "DrawEquipmentAiming_DualWield_OverSized_PostFix", null));
+            harmony.Patch(AccessTools.Method(GenTypes.GetTypeInAnyAssembly("CompActivatableEffect.HarmonyCompActivatableEffect", "CompActivatableEffect"), "DrawEquipmentAimingPostFix", null, null), new HarmonyMethod(Main.patchType, "DrawEquipmentAiming_DualWield_Activatable_PreFix", null));
+            harmony.Patch(AccessTools.Method(GenTypes.GetTypeInAnyAssembly("DualWield.Harmony.PawnRenderer_DrawEquipmentAiming", "DualWield.Harmony"), "DrawEquipmentAimingOverride", null, null), new HarmonyMethod(Main.patchType, "DrawEquipmentAimingOverride_DualWield_compActivatableEffect_PreFix", null));
+            harmony.Patch(AccessTools.Method(GenTypes.GetTypeInAnyAssembly("DualWield.Ext_Pawn_EquipmentTracker", "DualWield"), "AddOffHandEquipment", null, null),null , new HarmonyMethod(Main.patchType, "AddOffHandEquipment_PostFix", null));
+            harmony.Patch(AccessTools.Method(GenTypes.GetTypeInAnyAssembly("DualWield.Harmony.PawnWeaponGenerator_TryGenerateWeaponFor", "DualWield.Harmony"), "Postfix", null, null), new HarmonyMethod(Main.patchType, "PawnWeaponGenerator_TryGenerateWeaponFor_PostFix", null));
+            */
+
+            harmony.Patch(AccessTools.Method(GenTypes.GetTypeInAnyAssembly("DualWield.Harmony.PawnRenderer_DrawEquipmentAiming", "DualWield.Harmony"), "DrawEquipmentAimingOverride", null, null),
+                new HarmonyMethod(typeof(HarmonyCompActivatableEffect).GetMethod("DrawEquipmentAimingPreFix_DualWield")), null);
+        }
+
         //=================================== COMPACTIVATABLE
 
         // Verse.Pawn_EquipmentTracker
@@ -59,8 +65,8 @@ namespace AdeptusMechanicus
         {
             if (__instance is Pawn_EquipmentTracker eqq &&
                 eqq.Primary is ThingWithComps t &&
-                t.GetComp<AdeptusMechanicus.CompActivatableEffect>() is AdeptusMechanicus.CompActivatableEffect compActivatableEffect &&
-                compActivatableEffect.CurrentState == AdeptusMechanicus.CompActivatableEffect.State.Activated)
+                t.GetComp<OgsCompActivatableEffect.CompActivatableEffect>() is OgsCompActivatableEffect.CompActivatableEffect compActivatableEffect &&
+                compActivatableEffect.CurrentState == OgsCompActivatableEffect.CompActivatableEffect.State.Activated)
                 compActivatableEffect.TryDeactivate();
         }
 
@@ -68,8 +74,8 @@ namespace AdeptusMechanicus
         {
             if (__instance is Pawn p && p.equipment is Pawn_EquipmentTracker eq &&
                 eq.Primary is ThingWithComps t &&
-                t.GetComp<AdeptusMechanicus.CompActivatableEffect>() is AdeptusMechanicus.CompActivatableEffect compActivatableEffect &&
-                compActivatableEffect.CurrentState == AdeptusMechanicus.CompActivatableEffect.State.Activated)
+                t.GetComp<OgsCompActivatableEffect.CompActivatableEffect>() is OgsCompActivatableEffect.CompActivatableEffect compActivatableEffect &&
+                compActivatableEffect.CurrentState == OgsCompActivatableEffect.CompActivatableEffect.State.Activated)
                 compActivatableEffect.TryDeactivate();
         }
         
@@ -81,15 +87,15 @@ namespace AdeptusMechanicus
             }
             if (__instance.pawn is Pawn p && p.equipment is Pawn_EquipmentTracker eq &&
                 eq.Primary is ThingWithComps t &&
-                t.GetComp<AdeptusMechanicus.CompActivatableEffect>() is AdeptusMechanicus.CompActivatableEffect compActivatableEffect)
+                t.GetComp<OgsCompActivatableEffect.CompActivatableEffect>() is OgsCompActivatableEffect.CompActivatableEffect compActivatableEffect)
                 if (value == false)
                 {
-                    if (compActivatableEffect.CurrentState == AdeptusMechanicus.CompActivatableEffect.State.Activated)
+                    if (compActivatableEffect.CurrentState == OgsCompActivatableEffect.CompActivatableEffect.State.Activated)
                         compActivatableEffect.TryDeactivate();
                 }
                 else
                 {
-                    if (compActivatableEffect.CurrentState == AdeptusMechanicus.CompActivatableEffect.State.Deactivated)
+                    if (compActivatableEffect.CurrentState == OgsCompActivatableEffect.CompActivatableEffect.State.Deactivated)
                         compActivatableEffect.TryActivate();
                 }
         }
@@ -104,7 +110,7 @@ namespace AdeptusMechanicus
                 var thingWithComps =
                     pawn_EquipmentTracker?.Primary; //(ThingWithComps)AccessTools.Field(typeof(Pawn_EquipmentTracker), "primaryInt").GetValue(pawn_EquipmentTracker);
 
-                var compActivatableEffect = thingWithComps?.GetComp<AdeptusMechanicus.CompActivatableEffect>();
+                var compActivatableEffect = thingWithComps?.GetComp<OgsCompActivatableEffect.CompActivatableEffect>();
                 if (compActivatableEffect == null) return true;
 
                 //Equipment source throws errors when checked while casting abilities with a weapon equipped.
@@ -118,7 +124,7 @@ namespace AdeptusMechanicus
                 {
                 }
 
-                if (compActivatableEffect.CurrentState == AdeptusMechanicus.CompActivatableEffect.State.Activated) return true;
+                if (compActivatableEffect.CurrentState == OgsCompActivatableEffect.CompActivatableEffect.State.Activated) return true;
                 
                 if (Find.TickManager.TicksGame % 250 == 0)
                     Messages.Message("DeactivatedWarning".Translate(pawn.Label),
@@ -179,14 +185,14 @@ namespace AdeptusMechanicus
             {
                 if (pawn.equipment.CAETryGetOffHandEquipment(out ThingWithComps thingy))
                 {
-                    return;
+                    return; 
                 }
-
+                 
             }
-            AdeptusMechanicus.CompOversizedWeapon compOversized = thingWithComps.TryGetComp<AdeptusMechanicus.CompOversizedWeapon>();
-            var compActivatableEffect = thingWithComps?.GetComp<AdeptusMechanicus.CompActivatableEffect>();
+            OgsCompOversizedWeapon.CompOversizedWeapon compOversized = thingWithComps.TryGetComp<OgsCompOversizedWeapon.CompOversizedWeapon>();
+            var compActivatableEffect = thingWithComps?.GetComp<OgsCompActivatableEffect.CompActivatableEffect>();
             if (compActivatableEffect?.Graphic == null) return;
-            if (compActivatableEffect.CurrentState != AdeptusMechanicus.CompActivatableEffect.State.Activated) return;
+            if (compActivatableEffect.CurrentState != OgsCompActivatableEffect.CompActivatableEffect.State.Activated) return;
             var num = aimAngle - 90f;
             var flip = false;
 
@@ -276,8 +282,23 @@ namespace AdeptusMechanicus
 
             var matSingle = compActivatableEffect.Graphic.MatSingle;
             //if (mesh == null) mesh = MeshPool.GridPlane(thingWithComps.def.graphicData.drawSize);
-
-            var s = new Vector3(eq.def.graphicData.drawSize.x, 1f, eq.def.graphicData.drawSize.y);
+            Vector3 s;
+            if (compOversized!=null)
+            {
+                if (enabled_AlienRaces)
+                {
+                    Vector2 v = OgsCompOversizedWeapon.HarmonyCompOversizedWeapon.AlienRacesPatch(___pawn);
+                    s = new Vector3(eq.def.graphicData.drawSize.x * v.x, 1f, eq.def.graphicData.drawSize.y * v.y);
+                }
+                else
+                {
+                    s = new Vector3(eq.def.graphicData.drawSize.x, 1f, eq.def.graphicData.drawSize.y);
+                }
+            }
+            else
+            {
+                s = new Vector3(eq.def.graphicData.drawSize.x, 1f, eq.def.graphicData.drawSize.y);
+            }
             var matrix = default(Matrix4x4);
             drawLoc.y = compActivatableEffect.Altitude(drawLoc);
             matrix.SetTRS(drawLoc + offset , Quaternion.AngleAxis(num, Vector3.up), s);
@@ -312,6 +333,7 @@ namespace AdeptusMechanicus
         public static bool DrawEquipmentAimingPreFix_DualWield(Thing eq, Vector3 drawLoc, float aimAngle)
         {
             Pawn pawn = eq.TryGetComp<CompEquippable>().PrimaryVerb.CasterPawn;
+            bool flag7 = false;
             if (pawn != null)
             {
                 if (pawn.equipment.CAETryGetOffHandEquipment(out ThingWithComps thingy))
@@ -319,11 +341,11 @@ namespace AdeptusMechanicus
                     Pawn_EquipmentTracker equipment = pawn.equipment;
                     //    ThingWithComps thingWithComps = (equipment != null) ? equipment.Primary : null;
                     ThingWithComps thingWithComps = (eq != null) ? (ThingWithComps)eq : null;
-                    AdeptusMechanicus.CompActivatableEffect compActivatableEffect = (thingWithComps != null) ? thingWithComps.GetComp<AdeptusMechanicus.CompActivatableEffect>() : null;
+                    OgsCompActivatableEffect.CompActivatableEffect compActivatableEffect = (thingWithComps != null) ? thingWithComps.GetComp<OgsCompActivatableEffect.CompActivatableEffect>() : null;
                     bool flag = ((compActivatableEffect != null) ? compActivatableEffect.Graphic : null) == null;
                     if (!flag)
                     {
-                        bool flag2 = compActivatableEffect.CurrentState != AdeptusMechanicus.CompActivatableEffect.State.Activated;
+                        bool flag2 = compActivatableEffect.CurrentState != OgsCompActivatableEffect.CompActivatableEffect.State.Activated;
                         if (!flag2)
                         {
                             float num = aimAngle - 90f;
@@ -352,8 +374,8 @@ namespace AdeptusMechanicus
                             bool flag6 = (thingWithComps2 = (eq as ThingWithComps)) != null;
                             if (flag6)
                             {
-                                AdeptusMechanicus.CompOversizedWeapon compOversizedWeapon;
-                                bool flag7 = (compOversizedWeapon = (thingWithComps2.AllComps.FirstOrDefault((ThingComp z) => z is AdeptusMechanicus.CompOversizedWeapon) as AdeptusMechanicus.CompOversizedWeapon)) != null;
+                                OgsCompOversizedWeapon.CompOversizedWeapon compOversizedWeapon;
+                                flag7 = (compOversizedWeapon = (thingWithComps2.AllComps.FirstOrDefault((ThingComp z) => z is OgsCompOversizedWeapon.CompOversizedWeapon) as OgsCompOversizedWeapon.CompOversizedWeapon)) != null;
                                 if (flag7)
                                 {
                                     bool flag8 = pawn.Rotation == Rot4.East;
@@ -415,7 +437,16 @@ namespace AdeptusMechanicus
                             num %= 360f;
                             drawLoc.y = compActivatableEffect.Altitude(drawLoc);
                             Material matSingle = compActivatableEffect.Graphic.MatSingle;
-                            Vector3 s = new Vector3(eq.def.graphicData.drawSize.x, 1f, eq.def.graphicData.drawSize.y);
+                            Vector3 s;
+                            if (flag7 && enabled_AlienRaces)
+                            {
+                                Vector2 v = OgsCompOversizedWeapon.HarmonyCompOversizedWeapon.AlienRacesPatch(pawn);
+                                s = new Vector3(eq.def.graphicData.drawSize.x * v.x, 1f, eq.def.graphicData.drawSize.y * v.y);
+                            }
+                            else
+                            {
+                                s = new Vector3(eq.def.graphicData.drawSize.x, 1f, eq.def.graphicData.drawSize.y);
+                            }
                             Matrix4x4 matrix = default(Matrix4x4);
                             matrix.SetTRS(drawLoc + vector, Quaternion.AngleAxis(num, Vector3.up), s);
                             //    Log.Message(string.Format("thingy: {0}, thingWithComps: {1}, eq: {2}", thingy, thingWithComps, eq));
@@ -475,7 +506,7 @@ namespace AdeptusMechanicus
             return true;
         }
 
-        public static float AdjustOffsetAtPeace(Thing eq, Pawn pawn, CompOversizedWeapon compOversizedWeapon, float num)
+        public static float AdjustOffsetAtPeace(Thing eq, Pawn pawn, OgsCompOversizedWeapon.CompOversizedWeapon compOversizedWeapon, float num)
         {
             if (compOversizedWeapon == null)
             {
@@ -492,7 +523,7 @@ namespace AdeptusMechanicus
             return num;
         }
 
-        private static float AdjustNonCombatRotation(Pawn pawn, float num, AdeptusMechanicus.CompOversizedWeapon compOversizedWeapon)
+        private static float AdjustNonCombatRotation(Pawn pawn, float num, OgsCompOversizedWeapon.CompOversizedWeapon compOversizedWeapon)
         {
             if (compOversizedWeapon==null)
             {
@@ -520,7 +551,7 @@ namespace AdeptusMechanicus
             return num;
         }
 
-        private static Vector3 AdjustRenderOffsetFromDir(Pawn pawn, CompOversizedWeapon compOversizedWeapon)
+        private static Vector3 AdjustRenderOffsetFromDir(Pawn pawn, OgsCompOversizedWeapon.CompOversizedWeapon compOversizedWeapon)
         {
             var curDir = pawn.Rotation;
 
@@ -547,7 +578,7 @@ namespace AdeptusMechanicus
             return curOffset;
         }
 
-        public static IEnumerable<Gizmo> GizmoGetter(AdeptusMechanicus.CompActivatableEffect compActivatableEffect)
+        public static IEnumerable<Gizmo> GizmoGetter(OgsCompActivatableEffect.CompActivatableEffect compActivatableEffect)
         {
             //Log.Message("5");
             if (compActivatableEffect.GizmosOnEquip)
@@ -577,7 +608,7 @@ namespace AdeptusMechanicus
                 if (thingWithComps != null)
                 {
                     //Log.Message("3");
-                    var compActivatableEffect = thingWithComps.GetComp<AdeptusMechanicus.CompActivatableEffect>();
+                    var compActivatableEffect = thingWithComps.GetComp<OgsCompActivatableEffect.CompActivatableEffect>();
                     if (compActivatableEffect != null)
                         if (__instance != null)
                             if (__instance.Faction == Faction.OfPlayer)
@@ -586,7 +617,7 @@ namespace AdeptusMechanicus
                             }
                             else
                             {
-                                if (compActivatableEffect.CurrentState == AdeptusMechanicus.CompActivatableEffect.State.Deactivated)
+                                if (compActivatableEffect.CurrentState == OgsCompActivatableEffect.CompActivatableEffect.State.Deactivated)
                                     compActivatableEffect.Activate();
                             }
                 }

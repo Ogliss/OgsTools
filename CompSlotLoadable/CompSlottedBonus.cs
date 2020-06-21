@@ -1,6 +1,6 @@
 ﻿using Verse;
 
-namespace AdeptusMechanicus
+namespace OgsCompSlotLoadable
 {
     public class CompSlottedBonus : ThingComp
     {

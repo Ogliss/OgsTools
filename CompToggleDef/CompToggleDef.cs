@@ -2,7 +2,7 @@ using System;
 using System.Collections.Generic;
 using Verse;
 
-namespace AdeptusMechanicus
+namespace OgsCompToggleDef
 {
     public class CompToggleDef : ThingComp
     {

@@ -1,0 +1,5 @@
+C:\Users\User\Desktop\OgsTools\CompPawnGrower\bin\Debug\CompPawnGrower.dll
+C:\Users\User\Desktop\OgsTools\CompPawnGrower\bin\Debug\CompPawnGrower.pdb
+C:\Users\User\Desktop\OgsTools\CompPawnGrower\obj\Debug\CompPawnGrower.csprojAssemblyReference.cache
+C:\Users\User\Desktop\OgsTools\CompPawnGrower\obj\Debug\CompPawnGrower.dll
+C:\Users\User\Desktop\OgsTools\CompPawnGrower\obj\Debug\CompPawnGrower.pdb

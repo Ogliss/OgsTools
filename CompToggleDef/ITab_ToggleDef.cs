@@ -2,7 +2,7 @@ using RimWorld;
 using UnityEngine;
 using Verse;
 
-namespace AdeptusMechanicus
+namespace OgsCompToggleDef
 {
     public class ITab_ToggleDef : ITab
     {

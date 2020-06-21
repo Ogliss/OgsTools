@@ -8,7 +8,6 @@ C:\Program Files (x86)\Steam\steamapps\common\RimWorld\Mods\AdMechArmoury\1.1\So
 C:\Users\User\Desktop\OgsTools\HediffCompAbilityGiver\bin\Debug\HediffCompAbilityGiver.dll
 C:\Users\User\Desktop\OgsTools\HediffCompAbilityGiver\bin\Debug\HediffCompAbilityGiver.pdb
 C:\Users\User\Desktop\OgsTools\HediffCompAbilityGiver\bin\Debug\0Harmony.dll
-C:\Users\User\Desktop\OgsTools\HediffCompAbilityGiver\obj\Debug\HediffCompAbilityGiver.csprojAssemblyReference.cache
 C:\Users\User\Desktop\OgsTools\HediffCompAbilityGiver\obj\Debug\HediffCompAbilityGiver.csproj.CopyComplete
 C:\Users\User\Desktop\OgsTools\HediffCompAbilityGiver\obj\Debug\HediffCompAbilityGiver.dll
 C:\Users\User\Desktop\OgsTools\HediffCompAbilityGiver\obj\Debug\HediffCompAbilityGiver.pdb

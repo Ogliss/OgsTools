@@ -37,7 +37,7 @@
     <LangVersion>latest</LangVersion>
   </PropertyGroup>
   <ItemGroup>
-    <Compile Include="HarmonyPatches.cs" />
+    <Compile Include="_HarmonyCompToggleFireMode.cs" />
     <Compile Include="CompToggleFireMode.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>

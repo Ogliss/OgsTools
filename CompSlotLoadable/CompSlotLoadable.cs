@@ -6,7 +6,7 @@ using UnityEngine;
 using Verse;
 using Verse.AI;
 
-namespace AdeptusMechanicus
+namespace OgsCompSlotLoadable
 {
     public class CompSlotLoadable : ThingComp
     {
@@ -76,6 +76,18 @@ namespace AdeptusMechanicus
 
         public Pawn GetPawn => GetEquippable.verbTracker.PrimaryVerb.CasterPawn;
 
+        public bool QualityReqMet
+        {
+            get
+            {
+                bool result = true;
+                if (parent.TryGetQuality(out QualityCategory quality))
+                {
+                    result = quality >= Props.qualityRestriction;
+                }
+                return result;
+            }
+        }
 
         public CompProperties_SlotLoadable Props => (CompProperties_SlotLoadable) props;
 
@@ -87,7 +99,7 @@ namespace AdeptusMechanicus
                 //Log.Message("2");
                 isInitialized = true;
                 if (Props != null)
-                    if (Props.slots != null)
+                    if (Props.slots != null && QualityReqMet)
                         if (Props.slots.Count > 0)
                             foreach (var slot in Props.slots)
                             {

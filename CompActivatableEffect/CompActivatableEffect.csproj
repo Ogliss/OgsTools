@@ -33,9 +33,8 @@
     <Prefer32Bit>false</Prefer32Bit>
   </PropertyGroup>
   <ItemGroup>
-    <Reference Include="1CompOversizedWeapon, Version=1.18.0.0, Culture=neutral, processorArchitecture=MSIL">
-      <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\..\..\..\..\Program Files (x86)\Steam\steamapps\common\RimWorld\Mods\AdMechArmoury\1.1\Assemblies\1CompOversizedWeapon.dll</HintPath>
+    <Reference Include="1CompOversizedWeapon">
+      <HintPath>..\CompOversizedWeapon\bin\Debug\1CompOversizedWeapon.dll</HintPath>
       <Private>False</Private>
     </Reference>
     <Reference Include="AlienRace">

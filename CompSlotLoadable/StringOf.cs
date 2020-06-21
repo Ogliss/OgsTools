@@ -1,4 +1,4 @@
-﻿namespace AdeptusMechanicus
+﻿namespace OgsCompSlotLoadable
 {
     public static class StringOf
     {

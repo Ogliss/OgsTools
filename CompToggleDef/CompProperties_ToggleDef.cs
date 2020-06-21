@@ -1,6 +1,6 @@
 using Verse;
 
-namespace AdeptusMechanicus
+namespace OgsCompToggleDef
 {
     public class CompProperties_ToggleDef : CompProperties
     {

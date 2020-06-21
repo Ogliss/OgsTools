@@ -7,7 +7,7 @@ using UnityEngine;
 using Verse;
 using Verse.AI;
 
-namespace AdeptusMechanicus
+namespace OgsCompSlotLoadable
 {
     [StaticConstructorOnStartup]
     internal static class HarmonyCompSlotLoadable
@@ -27,12 +27,18 @@ namespace AdeptusMechanicus
                 new HarmonyMethod(type, nameof(GetStatValue_PostFix)));
             harmony.Patch(AccessTools.Method(typeof(Verb_MeleeAttackDamage), "DamageInfosToApply"), null,
                 new HarmonyMethod(type, nameof(DamageInfosToApply_PostFix)), null);
+            harmony.Patch(AccessTools.Method(typeof(Verb_LaunchProjectile), "get_Projectile"), null,
+                new HarmonyMethod(type, nameof(get_Projectile_PostFix)), null);
             harmony.Patch(AccessTools.Method(typeof(ITab_Pawn_Gear), "DrawThingRow"), null,
                 new HarmonyMethod(type, nameof(DrawThingRow_PostFix)), null);
             harmony.Patch(AccessTools.Method(typeof(Pawn), nameof(Pawn.PostApplyDamage)), null,
                 new HarmonyMethod(type, nameof(PostApplyDamage_PostFix)), null);
             harmony.Patch(AccessTools.Method(typeof(StatWorker), "StatOffsetFromGear"), null,
                 new HarmonyMethod(type, nameof(StatOffsetFromGear_PostFix)));
+            harmony.Patch(AccessTools.Method(typeof(FloatMenuMakerMap), "AddHumanlikeOrders"), null,
+                new HarmonyMethod(type, nameof(AddHumanlikeOrders_PostFix)));
+            harmony.Patch(AccessTools.Method(typeof(CompEquippable), "get_PrimaryVerb"), null,
+                new HarmonyMethod(type, nameof(PrimaryVerb_PostFix)));
         }
 
         // debugging
@@ -44,13 +50,37 @@ namespace AdeptusMechanicus
             }
         } */
 
+        public static void PrimaryVerb_PostFix(CompEquippable __instance, ref Verb __result)
+        {
+            if (__instance.parent.TryGetComp<OgsCompSlotLoadable.CompSlotLoadable>() != null)
+            {
+
+                foreach (SlotLoadable slot in __instance.parent.TryGetComp<OgsCompSlotLoadable.CompSlotLoadable>().Slots)
+                {
+                    if (slot.SlotOccupant!=null)
+                    {
+                        CompSlottedBonus bonus = slot.SlotOccupant.TryGetComp<CompSlottedBonus>();
+                        if (bonus.Props.verbReplacer!=null)
+                        {
+                            __result.verbProps = bonus.Props.verbReplacer;
+                            return;
+                        }
+                    }
+                }
+                if (__result.verbProps.LaunchesProjectile && __result.verbProps != __instance.parent.def.Verbs[0])
+                {
+                    __result.verbProps = __instance.parent.def.Verbs[0];
+                }
+            }
+        }
+
         //try to extend this
         public static void StatOffsetFromGear_PostFix(ref float __result, Thing gear, StatDef stat)
         {
             var retValue = 0.0f;
             try
             {
-                retValue = AdeptusMechanicus.SlotLoadableUtility.CheckThingSlotsForStatAugment(gear, stat);
+                retValue = OgsCompSlotLoadable.SlotLoadableUtility.CheckThingSlotsForStatAugment(gear, stat);
             }
             catch (Exception e)
             {
@@ -73,7 +103,7 @@ namespace AdeptusMechanicus
             var thingWithComps = __instance.equipment.Primary;
             if (thingWithComps != null)
             {
-                var comp = thingWithComps.AllComps.FirstOrDefault(x => x is AdeptusMechanicus.CompSlotLoadable);
+                var comp = thingWithComps.AllComps.FirstOrDefault(x => x is OgsCompSlotLoadable.CompSlotLoadable);
                 if (comp != null)
                 {
                     var compSlotLoadable = comp as CompSlotLoadable;
@@ -81,7 +111,7 @@ namespace AdeptusMechanicus
                         foreach (var slot in compSlotLoadable.Slots)
                             if (!slot.IsEmpty())
                             {
-                                var slotBonus = slot.SlotOccupant.TryGetComp<AdeptusMechanicus.CompSlottedBonus>();
+                                var slotBonus = slot.SlotOccupant.TryGetComp<OgsCompSlotLoadable.CompSlottedBonus>();
                                 if (slotBonus != null)
                                     if (slotBonus.Props != null)
                                     {
@@ -151,10 +181,10 @@ namespace AdeptusMechanicus
             //Log.Message("1");
             if (thing is ThingWithComps thingWithComps)
             {
-                var comp = thingWithComps.AllComps.FirstOrDefault(x => x is AdeptusMechanicus.CompSlotLoadable);
+                var comp = thingWithComps.AllComps.FirstOrDefault(x => x is OgsCompSlotLoadable.CompSlotLoadable);
                 if (comp != null)
                 {
-                    var compSlotLoadable = comp as AdeptusMechanicus.CompSlotLoadable;
+                    var compSlotLoadable = comp as OgsCompSlotLoadable.CompSlotLoadable;
                     if (compSlotLoadable.Slots != null && compSlotLoadable.Slots.Count > 0)
                         foreach (var slot in compSlotLoadable.Slots)
                             if (!slot.IsEmpty())
@@ -183,6 +213,44 @@ namespace AdeptusMechanicus
         }
 
         // RimWorld.Verb_MeleeAttack
+        public static void get_Projectile_PostFix(Verb_LaunchProjectile __instance, ref ThingDef __result)
+        {
+            //__result = null;
+            var EquipmentSource = __instance.EquipmentSource;
+            if (EquipmentSource != null)
+            {
+                //Log.Message("1");
+                var comp = EquipmentSource.AllComps.FirstOrDefault(x => x is OgsCompSlotLoadable.CompSlotLoadable);
+                if (comp != null)
+                {
+                    //Log.Message("2");
+                    var compSlotLoadable = comp as OgsCompSlotLoadable.CompSlotLoadable;
+                    if (compSlotLoadable.Slots != null && compSlotLoadable.Slots.Count > 0)
+                    {
+                        //Log.Message("3");
+                        var statSlots = compSlotLoadable.Slots.FindAll(z =>
+                            !z.IsEmpty() && ((OgsCompSlotLoadable.SlotLoadableDef) z.def).doesChangeStats);
+                        if (statSlots != null && statSlots.Count > 0)
+                            foreach (var slot in statSlots)
+                            {
+                                //Log.Message("5");
+                                var slotBonus = slot.SlotOccupant.TryGetComp<OgsCompSlotLoadable.CompSlottedBonus>();
+                                if (slotBonus != null)
+                                {
+                                    //Log.Message("6");
+                                    var superClass = __instance.GetType().BaseType;
+                                    if (slotBonus.Props.projectileReplacer != null)
+                                    {
+                                        __result = slotBonus.Props.projectileReplacer;
+                                    }
+                                }
+                            }
+                    }
+                }
+            }
+        }
+        
+        // RimWorld.Verb_MeleeAttack
         public static void DamageInfosToApply_PostFix(Verb_MeleeAttack __instance, ref IEnumerable<DamageInfo> __result,
             LocalTargetInfo target)
         {
@@ -192,21 +260,21 @@ namespace AdeptusMechanicus
             if (EquipmentSource != null)
             {
                 //Log.Message("1");
-                var comp = EquipmentSource.AllComps.FirstOrDefault(x => x is AdeptusMechanicus.CompSlotLoadable);
+                var comp = EquipmentSource.AllComps.FirstOrDefault(x => x is OgsCompSlotLoadable.CompSlotLoadable);
                 if (comp != null)
                 {
                     //Log.Message("2");
-                    var compSlotLoadable = comp as AdeptusMechanicus.CompSlotLoadable;
+                    var compSlotLoadable = comp as OgsCompSlotLoadable.CompSlotLoadable;
                     if (compSlotLoadable.Slots != null && compSlotLoadable.Slots.Count > 0)
                     {
                         //Log.Message("3");
                         var statSlots = compSlotLoadable.Slots.FindAll(z =>
-                            !z.IsEmpty() && ((AdeptusMechanicus.SlotLoadableDef) z.def).doesChangeStats);
+                            !z.IsEmpty() && ((OgsCompSlotLoadable.SlotLoadableDef) z.def).doesChangeStats);
                         if (statSlots != null && statSlots.Count > 0)
                             foreach (var slot in statSlots)
                             {
                                 //Log.Message("5");
-                                var slotBonus = slot.SlotOccupant.TryGetComp<AdeptusMechanicus.CompSlottedBonus>();
+                                var slotBonus = slot.SlotOccupant.TryGetComp<OgsCompSlotLoadable.CompSlottedBonus>();
                                 if (slotBonus != null)
                                 {
                                     //Log.Message("6");
@@ -288,11 +356,11 @@ namespace AdeptusMechanicus
             var c = IntVec3.FromVector3(clickPos);
 
             var slotLoadable =
-                pawn.equipment.AllEquipmentListForReading.FirstOrDefault(x => x.TryGetComp<AdeptusMechanicus.CompSlotLoadable>() != null);
+                pawn.equipment.AllEquipmentListForReading.FirstOrDefault(x => x.TryGetComp<OgsCompSlotLoadable.CompSlotLoadable>() != null);
             if (slotLoadable != null)
             {
-                var compSlotLoadable = slotLoadable.GetComp<AdeptusMechanicus.CompSlotLoadable>();
-                if (compSlotLoadable != null)
+                CompSlotLoadable compSlotLoadable = slotLoadable.GetComp<OgsCompSlotLoadable.CompSlotLoadable>();
+                if (compSlotLoadable != null && compSlotLoadable.QualityReqMet)
                 {
                     var thingList = c.GetThingList(pawn.Map);
 
@@ -348,7 +416,7 @@ namespace AdeptusMechanicus
             var retValue = 0.0f;
             try
             {
-                retValue = AdeptusMechanicus.SlotLoadableUtility.CheckThingSlotsForStatAugment(thing, stat);
+                retValue = OgsCompSlotLoadable.SlotLoadableUtility.CheckThingSlotsForStatAugment(thing, stat);
             }
             catch (Exception e)
             {
@@ -362,7 +430,7 @@ namespace AdeptusMechanicus
             if (__instance is ThingWithComps thingWithComps)
             {
                 //Log.Message("3");
-                var CompSlotLoadable = thingWithComps.GetComp<AdeptusMechanicus.CompSlotLoadable>();
+                var CompSlotLoadable = thingWithComps.GetComp<OgsCompSlotLoadable.CompSlotLoadable>();
                 if (CompSlotLoadable != null)
                 {
                     //ThingComp activatableEffect = thingWithComps.AllComps.FirstOrDefault<ThingComp>((ThingComp y) => y.GetType().ToString() == "CompActivatableEffect.CompActivatableEffect");
@@ -371,7 +439,7 @@ namespace AdeptusMechanicus
                     if (slot != null)
                         if (!slot.IsEmpty())
                         {
-                            var slotBonus = slot.SlotOccupant.TryGetComp<AdeptusMechanicus.CompSlottedBonus>();
+                            var slotBonus = slot.SlotOccupant.TryGetComp<OgsCompSlotLoadable.CompSlottedBonus>();
                             if (slotBonus != null)
                             {
                                 //if (activatableEffect != null)
@@ -405,7 +473,7 @@ namespace AdeptusMechanicus
             if (__instance is ThingWithComps thingWithComps)
             {
                 //Log.Message("3");
-                var CompSlotLoadable = thingWithComps.GetComp<AdeptusMechanicus.CompSlotLoadable>();
+                var CompSlotLoadable = thingWithComps.GetComp<OgsCompSlotLoadable.CompSlotLoadable>();
                 if (CompSlotLoadable != null)
                 {
                     var slot = CompSlotLoadable.ColorChangingSlot;
@@ -424,7 +492,7 @@ namespace AdeptusMechanicus
             if (__instance is ThingWithComps thingWithComps)
             {
                 //Log.Message("3");
-                var CompSlotLoadable = thingWithComps.GetComp<AdeptusMechanicus.CompSlotLoadable>();
+                var CompSlotLoadable = thingWithComps.GetComp<OgsCompSlotLoadable.CompSlotLoadable>();
                 if (CompSlotLoadable != null)
                 {
                     var slot = CompSlotLoadable.SecondColorChangingSlot;
@@ -438,10 +506,10 @@ namespace AdeptusMechanicus
             }
         }
 
-        public static IEnumerable<Gizmo> GizmoGetter(AdeptusMechanicus.CompSlotLoadable CompSlotLoadable)
+        public static IEnumerable<Gizmo> GizmoGetter(OgsCompSlotLoadable.CompSlotLoadable CompSlotLoadable)
         {
             //Log.Message("5");
-            if (CompSlotLoadable.GizmosOnEquip)
+            if (CompSlotLoadable.GizmosOnEquip && CompSlotLoadable.QualityReqMet)
             {
                 //Log.Message("6");
                 //Iterate EquippedGizmos
@@ -469,7 +537,7 @@ namespace AdeptusMechanicus
                 if (thingWithComps != null)
                 {
                     //Log.Message("3");
-                    var CompSlotLoadable = thingWithComps.GetComp<AdeptusMechanicus.CompSlotLoadable>();
+                    var CompSlotLoadable = thingWithComps.GetComp<OgsCompSlotLoadable.CompSlotLoadable>();
                     if (CompSlotLoadable != null)
                         if (GizmoGetter(CompSlotLoadable).Count() > 0)
                             if (__instance != null)

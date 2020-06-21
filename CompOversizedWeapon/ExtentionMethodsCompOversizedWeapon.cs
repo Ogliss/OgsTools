@@ -7,7 +7,7 @@ using System.Text;
 using System.Threading.Tasks;
 using Verse;
 
-namespace AdeptusMechanicus
+namespace OgsCompOversizedWeapon
 {
     public static class ExtentionMethodsCompOversizedWeapon
     {

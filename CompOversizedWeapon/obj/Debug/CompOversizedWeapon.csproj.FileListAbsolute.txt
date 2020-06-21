@@ -17,6 +17,6 @@ C:\Program Files (x86)\Steam\steamapps\common\RimWorld\Mods\AdMechArmoury\1.1\So
 C:\Program Files (x86)\Steam\steamapps\common\RimWorld\Mods\AdMechArmoury\1.1\Source\CompOversizedWeapon\obj\Debug\1CompOversizedWeapon.dll
 C:\Users\User\Desktop\OgsTools\CompOversizedWeapon\bin\Debug\1CompOversizedWeapon.dll
 C:\Users\User\Desktop\OgsTools\CompOversizedWeapon\bin\Debug\0Harmony.dll
-C:\Users\User\Desktop\OgsTools\CompOversizedWeapon\obj\Debug\CompOversizedWeapon.csprojAssemblyReference.cache
 C:\Users\User\Desktop\OgsTools\CompOversizedWeapon\obj\Debug\CompOversizedWeapon.csproj.CopyComplete
 C:\Users\User\Desktop\OgsTools\CompOversizedWeapon\obj\Debug\1CompOversizedWeapon.dll
+C:\Users\User\Desktop\OgsTools\CompOversizedWeapon\obj\Debug\CompOversizedWeapon.csprojAssemblyReference.cache

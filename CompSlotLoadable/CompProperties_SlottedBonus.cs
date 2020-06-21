@@ -3,7 +3,7 @@ using RimWorld;
 using UnityEngine;
 using Verse;
 
-namespace AdeptusMechanicus
+namespace OgsCompSlotLoadable
 {
     public class CompProperties_SlottedBonus : CompProperties
     {
@@ -20,6 +20,8 @@ namespace AdeptusMechanicus
         public float muzzleFlashMod = 0.0f;
 
         public ThingDef projectileReplacer = null;
+
+        public VerbProperties verbReplacer = null;
 
         public SoundDef soundCastReplacer = null;
         public List<StatModifier> statModifiers = null;

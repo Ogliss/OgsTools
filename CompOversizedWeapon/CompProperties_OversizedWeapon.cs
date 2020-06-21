@@ -1,7 +1,7 @@
 ﻿using UnityEngine;
 using Verse;
 
-namespace AdeptusMechanicus
+namespace OgsCompOversizedWeapon
 {
     public class CompProperties_OversizedWeapon : CompProperties
     {

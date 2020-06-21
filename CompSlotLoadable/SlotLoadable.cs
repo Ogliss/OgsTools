@@ -3,7 +3,7 @@ using RimWorld;
 using UnityEngine;
 using Verse;
 
-namespace AdeptusMechanicus
+namespace OgsCompSlotLoadable
 {
     public class SlotLoadable : Thing, IThingHolder
     {

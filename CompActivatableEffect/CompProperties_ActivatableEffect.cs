@@ -1,6 +1,6 @@
 ﻿using Verse;
 
-namespace AdeptusMechanicus
+namespace OgsCompActivatableEffect
 {
     public class CompProperties_ActivatableEffect : CompProperties
     {

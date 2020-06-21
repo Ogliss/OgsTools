@@ -6,7 +6,7 @@ using UnityEngine;
 using Verse;
 using Verse.AI;
 
-namespace AdeptusMechanicus
+namespace OgsCompSlotLoadable
 {
     public class SloatLoadbleFloatMenuPatch : FloatMenuPatch
     {

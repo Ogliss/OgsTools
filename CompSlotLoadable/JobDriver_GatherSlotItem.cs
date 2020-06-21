@@ -4,7 +4,7 @@ using Verse;
 using Verse.AI;
 using Verse.Sound;
 
-namespace AdeptusMechanicus
+namespace OgsCompSlotLoadable
 {
     /**
      * Modified JobDriver_Equip
@@ -52,7 +52,7 @@ namespace AdeptusMechanicus
                         if (thingWithComps != null)
                         {
                             //Log.Message("3");
-                            var CompSlotLoadable = thingWithComps.GetComp<AdeptusMechanicus.CompSlotLoadable>();
+                            var CompSlotLoadable = thingWithComps.GetComp<OgsCompSlotLoadable.CompSlotLoadable>();
                             if (CompSlotLoadable != null)
                             {
                                 CompSlotLoadable.TryLoadSlot(itemToGather);

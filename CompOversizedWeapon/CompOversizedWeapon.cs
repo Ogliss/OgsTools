@@ -3,7 +3,7 @@ using System;
 using System.Linq;
 using Verse;
 
-namespace AdeptusMechanicus
+namespace OgsCompOversizedWeapon
 {
     public class CompOversizedWeapon : ThingComp
     {
@@ -18,6 +18,7 @@ namespace AdeptusMechanicus
         private bool initComps = false;
         private CompEquippable compEquippable;
         private Func<bool> compDeflectorIsAnimatingNow;
+        private Func<bool> compActivatableEffectIsActiveNow;
 
         private void InitCompsAsNeeded()
         {
@@ -33,6 +34,17 @@ namespace AdeptusMechanicus
                     compDeflectorIsAnimatingNow =
                         (Func<bool>)AccessTools.PropertyGetter(deflector.GetType(), "IsAnimatingNow").CreateDelegate(
                             typeof(Func<bool>), deflector);
+                }
+                var activateable = parent.AllComps.FirstOrDefault(y =>
+                    y.GetType().ToString() == "OgsCompActivatableEffect.CompActivatableEffect" ||
+                    y.GetType().BaseType.ToString() == "OgsCompActivatableEffect.CompActivatableEffect");
+                if (activateable != null)
+                {
+                    compActivatableEffectIsActiveNow =
+                        (Func<bool>)AccessTools.PropertyGetter(deflector.GetType(), "IsActiveNow").CreateDelegate(
+                            typeof(Func<bool>), activateable);
+
+
                 }
                 initComps = true;
             }

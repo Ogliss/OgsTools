@@ -1,7 +1,7 @@
 ﻿using System.Collections.Generic;
 using Verse;
 
-namespace AdeptusMechanicus
+namespace OgsCompSlotLoadable
 {
     public class SlotLoadableDef : ThingDef
     {
