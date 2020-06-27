@@ -30,6 +30,8 @@ namespace AbilitesExtended
         }
 
         public ThingWithComps sourceEquipment;
+        public CompAbilityItem abilityItem => sourceEquipment?.TryGetComp<CompAbilityItem>();
+
         public int MaxCastingTicks => (int)(abilityDef.cooldown * GenTicks.TicksPerRealSecond);
         private int TicksUntilCasting = -1;
         public int CooldownTicksLeft
@@ -140,6 +142,10 @@ namespace AbilitesExtended
             if (CooldownTicksLeft > -1 && !Find.TickManager.Paused)
             {
                 CooldownTicksLeft--;
+                if (abilityItem!=null)
+                {
+                //    abilityItem;
+                }
                 if (!this.gizmo.disabled)
                 {
                     this.gizmo.Disable("On Cooldown");

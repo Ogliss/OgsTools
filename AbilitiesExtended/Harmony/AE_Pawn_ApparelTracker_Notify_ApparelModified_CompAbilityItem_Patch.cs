@@ -59,11 +59,11 @@ namespace AbilitesExtended.HarmonyInstance
                 }
                 if (!abilityItem.Props.Abilities.NullOrEmpty())
                 {
-                    foreach (AbilityDef def in abilityItem.Props.Abilities)
+                    foreach (EquipmentAbilityDef def in abilityItem.Props.Abilities)
                     {
                         if (!__instance.pawn.abilities.abilities.Any(x => x.def == def))
                         {
-                            __instance.pawn.abilities.GainAbility(def, apparel);
+                            __instance.pawn.abilities.GainEquipmentAbility(def, apparel);
                             Ability ability = __instance.pawn.abilities.abilities.Find(x => x.def == def);
                         }
                     }

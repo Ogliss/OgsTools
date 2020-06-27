@@ -31,7 +31,7 @@
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
   <ItemGroup>
-    <Compile Include="AbilityTracker_Extentions.cs" />
+    <Compile Include="ExtentionMethods\AbilityTracker_Extentions.cs" />
     <Compile Include="Harmony\AE_Pawn_EquipmentTracker_Notify_EquipmentModified_CompAbilityItem_Patch.cs" />
     <Compile Include="Harmony\AE_NeurotrainerDefGenerator_ImpliedThingDefs_Filter_Patch.cs" />
     <Compile Include="Harmony\AE_Pawn_ApparelTracker_Notify_ApparelModified_CompAbilityItem_Patch.cs" />
@@ -42,7 +42,7 @@
     <Compile Include="Verb_EquipmentLaunchProjectile.cs" />
     <Compile Include="Verb_UseEquipment_Thrown.cs" />
     <Compile Include="StatPart_Reliability.cs" />
-    <Compile Include="Pawn_AbilityTrackerExtensions.cs" />
+    <Compile Include="ExtentionMethods\Pawn_AbilityTrackerExtensions.cs" />
     <Compile Include="Verb_UseEquipment.cs" />
     <Compile Include="Verb_ShootEquipment.cs" />
     <Compile Include="HediffComp_Ability.cs" />
@@ -64,8 +64,6 @@
       <Version>2.0.1</Version>
     </PackageReference>
   </ItemGroup>
-  <ItemGroup>
-    <Folder Include="ExtentionMethods\" />
-  </ItemGroup>
+  <ItemGroup />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>

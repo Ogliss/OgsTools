@@ -16,3 +16,4 @@ C:\Users\User\Desktop\OgsTools\HediffCompRaceChanger\bin\Debug\0Harmony.dll
 C:\Users\User\Desktop\OgsTools\HediffCompRaceChanger\obj\Debug\HediffCompRaceChanger.csproj.CopyComplete
 C:\Users\User\Desktop\OgsTools\HediffCompRaceChanger\obj\Debug\HediffCompRaceChanger.dll
 C:\Users\User\Desktop\OgsTools\HediffCompRaceChanger\obj\Debug\HediffCompRaceChanger.pdb
+C:\Users\User\Desktop\OgsTools\HediffCompRaceChanger\obj\Debug\HediffCompRaceChanger.csprojAssemblyReference.cache

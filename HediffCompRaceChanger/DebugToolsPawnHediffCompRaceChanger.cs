@@ -8,6 +8,7 @@ using Verse.AI.Group;
 
 namespace Verse
 {
+    /*
     public static class CybermenDebugToolsPawn
     {
         [DebugAction("Pawns", null, actionType = DebugActionType.ToolMapForPawns, allowedGameStates = AllowedGameStates.PlayingOnMap)]
@@ -32,4 +33,5 @@ namespace Verse
         }
 
     }
+    */
 }

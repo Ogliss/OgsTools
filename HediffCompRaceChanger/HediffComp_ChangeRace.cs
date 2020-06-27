@@ -9,7 +9,7 @@ using Verse;
 
 namespace HediffCompRaceChanger
 {
-    public class ExtendedTraitEntry
+    public class ExtendedTraitEntry : TraitEntry
     {
         public TraitDef def = null;
         public int degree = 0;

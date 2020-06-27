@@ -1,0 +1,69 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="15.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <Import Project="$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props" Condition="Exists('$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props')" />
+  <PropertyGroup>
+    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
+    <ProjectGuid>{E5E3328F-5E90-4A6E-ADBC-311F5E8A3C74}</ProjectGuid>
+    <OutputType>Library</OutputType>
+    <AppDesignerFolder>Properties</AppDesignerFolder>
+    <RootNamespace>OgsLasers</RootNamespace>
+    <AssemblyName>OgsLasers</AssemblyName>
+    <TargetFrameworkVersion>v4.7.2</TargetFrameworkVersion>
+    <FileAlignment>512</FileAlignment>
+    <Deterministic>true</Deterministic>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
+    <DebugSymbols>true</DebugSymbols>
+    <DebugType>full</DebugType>
+    <Optimize>false</Optimize>
+    <OutputPath>bin\Debug\</OutputPath>
+    <DefineConstants>DEBUG;TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
+    <DebugType>pdbonly</DebugType>
+    <Optimize>true</Optimize>
+    <OutputPath>bin\Release\</OutputPath>
+    <DefineConstants>TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+  </PropertyGroup>
+  <ItemGroup>
+    <Compile Include="Building_LaserGun.cs" />
+    <Compile Include="Harmony\HarmonyInstance.cs" />
+    <Compile Include="LaserBeamGraphic.cs" />
+    <Compile Include="LightningLaserBoltMeshMaker.cs" />
+    <Compile Include="LaserBeamDecoration.cs" />
+    <Compile Include="LaserGunDef.cs" />
+    <Compile Include="LightningLaserBoltMeshPool.cs" />
+    <Compile Include="MeshMakerLaser.cs" />
+    <Compile Include="MoteLaserDectoration.cs" />
+    <Compile Include="SpinningLaserGun.cs" />
+    <Compile Include="SpinningLaserGunBase.cs" />
+    <Compile Include="SpinningLaserGunDef.cs" />
+    <Compile Include="SpinningLaserGunTurret.cs" />
+    <Compile Include="ThingExtensions.cs" />
+    <Compile Include="Building_LaserGunDef.cs" />
+    <Compile Include="IBeamColorThing.cs" />
+    <Compile Include="IDrawnWeaponWithRotation.cs" />
+    <Compile Include="JobDriver_ChangeLaserColor.cs" />
+    <Compile Include="LaserBeam.cs" />
+    <Compile Include="LaserColor.cs" />
+    <Compile Include="LaserBeamDef.cs" />
+    <Compile Include="LaserGun.cs" />
+    <Compile Include="Harmony\Patches\OL_TuretTop_DrawTurret_LaserTurret_Patch.cs" />
+    <Compile Include="Harmony\Patches\OL_PawnRenderer_Draw_WquipmentAiming_GunDrawing_Patch.cs" />
+    <Compile Include="Properties\AssemblyInfo.cs" />
+  </ItemGroup>
+  <ItemGroup>
+    <PackageReference Include="Krafs.Rimworld.Ref">
+      <Version>1.1.2654</Version>
+    </PackageReference>
+    <PackageReference Include="Lib.Harmony">
+      <Version>2.0.1</Version>
+    </PackageReference>
+  </ItemGroup>
+  <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
+</Project>

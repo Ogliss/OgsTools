@@ -96,9 +96,11 @@ namespace AbilitesExtended
             {
                 allVerbs[i].Notify_EquipmentLost();
             }
+        //    abilityTracker.
         }
 
         public VerbTracker verbTracker;
+        public Pawn_AbilityTracker abilityTracker;
     }
 
     [StaticConstructorOnStartup]
