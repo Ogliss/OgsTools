@@ -33,6 +33,7 @@
     <Prefer32Bit>false</Prefer32Bit>
   </PropertyGroup>
   <ItemGroup>
+    <Compile Include="Harmony_PawnRenderer_DrawEquipmentAiming_Transpiler.cs" />
     <Compile Include="ExtentionMethodsCompOversizedWeapon.cs" />
     <Compile Include="CompOversizedWeapon.cs" />
     <Compile Include="CompProperties_OversizedWeapon.cs" />
@@ -42,7 +43,7 @@
   </ItemGroup>
   <ItemGroup>
     <PackageReference Include="Krafs.Rimworld.Ref">
-      <Version>1.1.2624</Version>
+      <Version>1.1.2654</Version>
     </PackageReference>
     <PackageReference Include="Lib.Harmony">
       <Version>2.0.1</Version>

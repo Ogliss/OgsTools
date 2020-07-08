@@ -1,6 +1,7 @@
 ﻿using HarmonyLib;
 using System;
 using System.Linq;
+using UnityEngine;
 using Verse;
 
 namespace OgsCompOversizedWeapon
@@ -19,6 +20,12 @@ namespace OgsCompOversizedWeapon
         private CompEquippable compEquippable;
         private Func<bool> compDeflectorIsAnimatingNow;
         private Func<bool> compActivatableEffectIsActiveNow;
+        public Quaternion renderAngle;
+        public Vector3 renderPos;
+        public Quaternion renderAngleDual;
+        public Vector3 renderPosDual;
+        public Vector2 drawScale;
+
 
         private void InitCompsAsNeeded()
         {

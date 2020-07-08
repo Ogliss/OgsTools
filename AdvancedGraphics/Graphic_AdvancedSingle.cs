@@ -95,7 +95,7 @@ namespace AdvancedGraphics
 			CompArt art = thing.TryGetComp<CompArt>();
 			if (comp != null)
 			{
-				Log.Message("SubGraphicFor "+ thing.Label + " found CompAdvancedGraphic int " + comp.gfxint);
+			//	Log.Message("SubGraphicFor "+ thing.Label + " found CompAdvancedGraphic int " + comp.gfxint);
 				if (!comp.Props.onlyArtable || (art != null && art.Active))
 				{
 					if (comp.Props.quality)
@@ -119,7 +119,7 @@ namespace AdvancedGraphics
 			else
 			{
 
-				Log.Message("SubGraphicFor " + thing.Label + " Didnt find CompAdvancedGraphic");
+			//	Log.Message("SubGraphicFor " + thing.Label + " Didnt find CompAdvancedGraphic");
 			}
 			return this.subGraphics[0];
 		}
@@ -172,12 +172,12 @@ namespace AdvancedGraphics
 
 			if (advancedWeaponGraphic.gfxint == -1)
 			{
-				Log.Message("SubGraphicFor " + thing.Label + " init CompAdvancedGraphic int " + advancedWeaponGraphic.gfxint);
+			//	Log.Message("SubGraphicFor " + thing.Label + " init CompAdvancedGraphic int " + advancedWeaponGraphic.gfxint);
 				Rand.PushState();
 				advancedWeaponGraphic.gfxint = Rand.RangeInclusive(0, subGraphics.Length - 1);
 				Rand.PopState();
 			}
-			Log.Message("SubGraphicFor " + thing.Label + " now CompAdvancedGraphic int " + advancedWeaponGraphic.gfxint);
+		//	Log.Message("SubGraphicFor " + thing.Label + " now CompAdvancedGraphic int " + advancedWeaponGraphic.gfxint);
 			return subGraphics[advancedWeaponGraphic.gfxint];
 		}
 

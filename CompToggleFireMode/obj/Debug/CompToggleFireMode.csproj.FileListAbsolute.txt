@@ -4,3 +4,4 @@ C:\Users\User\Desktop\OgsTools\CompToggleFireMode\bin\Debug\0Harmony.dll
 C:\Users\User\Desktop\OgsTools\CompToggleFireMode\obj\Debug\CompToggleFireMode.csproj.CopyComplete
 C:\Users\User\Desktop\OgsTools\CompToggleFireMode\obj\Debug\CompToggleFireMode.dll
 C:\Users\User\Desktop\OgsTools\CompToggleFireMode\obj\Debug\CompToggleFireMode.pdb
+C:\Users\User\Desktop\OgsTools\CompToggleFireMode\obj\Debug\CompToggleFireMode.csprojAssemblyReference.cache

@@ -7,3 +7,4 @@ C:\Users\User\Desktop\OgsTools\CompSlotLoadable\bin\Debug\1CompSlotLoadable.dll
 C:\Users\User\Desktop\OgsTools\CompSlotLoadable\bin\Debug\0Harmony.dll
 C:\Users\User\Desktop\OgsTools\CompSlotLoadable\obj\Debug\CompSlotLoadable.csproj.CopyComplete
 C:\Users\User\Desktop\OgsTools\CompSlotLoadable\obj\Debug\1CompSlotLoadable.dll
+C:\Users\User\Desktop\OgsTools\CompSlotLoadable\obj\Debug\CompSlotLoadable.csprojAssemblyReference.cache

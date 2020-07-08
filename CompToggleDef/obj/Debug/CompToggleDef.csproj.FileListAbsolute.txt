@@ -11,3 +11,4 @@ C:\Users\User\Desktop\OgsTools\CompToggleDef\bin\Debug\1CompToggleDef.dll
 C:\Users\User\Desktop\OgsTools\CompToggleDef\bin\Debug\0Harmony.dll
 C:\Users\User\Desktop\OgsTools\CompToggleDef\obj\Debug\CompToggleDef.csproj.CopyComplete
 C:\Users\User\Desktop\OgsTools\CompToggleDef\obj\Debug\1CompToggleDef.dll
+C:\Users\User\Desktop\OgsTools\CompToggleDef\obj\Debug\CompToggleDef.csprojAssemblyReference.cache

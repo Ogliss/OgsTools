@@ -4,3 +4,4 @@ C:\Users\User\Desktop\OgsTools\ExpandedCrashedShips\bin\Debug\0Harmony.dll
 C:\Users\User\Desktop\OgsTools\ExpandedCrashedShips\obj\Debug\CrashedShipsExtension.csproj.CopyComplete
 C:\Users\User\Desktop\OgsTools\ExpandedCrashedShips\obj\Debug\CrashedShipsExtension.dll
 C:\Users\User\Desktop\OgsTools\ExpandedCrashedShips\obj\Debug\CrashedShipsExtension.pdb
+C:\Users\User\Desktop\OgsTools\ExpandedCrashedShips\obj\Debug\CrashedShipsExtension.csprojAssemblyReference.cache

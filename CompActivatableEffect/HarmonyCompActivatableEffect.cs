@@ -279,13 +279,14 @@ namespace OgsCompActivatableEffect
             //else num += numMod;
             //    }
             //}
-
+            Quaternion rotation = Quaternion.AngleAxis(num, Vector3.up);
             var matSingle = compActivatableEffect.Graphic.MatSingle;
             //if (mesh == null) mesh = MeshPool.GridPlane(thingWithComps.def.graphicData.drawSize);
-            Vector3 s;
+            Vector3 s = new Vector3(eq.def.graphicData.drawSize.x, 1f, eq.def.graphicData.drawSize.y);
             if (compOversized!=null)
             {
-                if (enabled_AlienRaces)
+                /*
+                if (enabled_AlienRaces && pawn.RaceProps.Humanlike)
                 {
                     Vector2 v = OgsCompOversizedWeapon.HarmonyCompOversizedWeapon.AlienRacesPatch(___pawn);
                     s = new Vector3(eq.def.graphicData.drawSize.x * v.x, 1f, eq.def.graphicData.drawSize.y * v.y);
@@ -294,36 +295,46 @@ namespace OgsCompActivatableEffect
                 {
                     s = new Vector3(eq.def.graphicData.drawSize.x, 1f, eq.def.graphicData.drawSize.y);
                 }
-            }
-            else
-            {
-                s = new Vector3(eq.def.graphicData.drawSize.x, 1f, eq.def.graphicData.drawSize.y);
+                */
+
+                offset = compOversized.renderPos;
+                rotation = compOversized.renderAngle;
+                s = new Vector3(compOversized.drawScale.x, 1f, compOversized.drawScale.y);
             }
             var matrix = default(Matrix4x4);
             drawLoc.y = compActivatableEffect.Altitude(drawLoc);
-            matrix.SetTRS(drawLoc + offset , Quaternion.AngleAxis(num, Vector3.up), s);
+            matrix.SetTRS(drawLoc + offset , rotation, s);
+            Graphics.DrawMesh((!flip) ? MeshPool.plane10 : MeshPool.plane10Flip, matrix, matSingle, 0);
+            /*
             if (!flip) Graphics.DrawMesh(MeshPool.plane10, matrix, matSingle, 0);
             else Graphics.DrawMesh(MeshPool.plane10Flip, matrix, matSingle, 0);
+            */
             //Graphics.DrawMesh(mesh, drawLoc, Quaternion.AngleAxis(num, Vector3.up), matSingle, 0);
 
             if (compOversized != null)
             {
                 if (compOversized.Props != null && compOversized.Props.isDualWeapon)
                 {
-                    offset = new Vector3(-1f * offset.x, offset.y, offset.z);
                     Mesh curPool;
                     if (pawn.Rotation == Rot4.North || pawn.Rotation == Rot4.South)
                     {
+                        /*
+                        offset = new Vector3(-1f * offset.x, offset.y, offset.z);
                         num += 135f;
                         num %= 360f;
+                        */
                         curPool = !flip ? MeshPool.plane10Flip : MeshPool.plane10;
                     }
                     else
                     {
-                        offset = new Vector3(offset.x, offset.y - 0.1f, offset.z + 0.15f);
+                    //    offset = new Vector3(offset.x, offset.y - 0.1f, offset.z + 0.15f);
                         curPool = !flip ? MeshPool.plane10 : MeshPool.plane10Flip;
                     }
-                    matrix.SetTRS(drawLoc + offset, Quaternion.AngleAxis(num, Vector3.up), s);
+
+
+                    offset = compOversized.renderPosDual;
+                    rotation = compOversized.renderAngleDual;
+                    matrix.SetTRS(drawLoc + offset, rotation, s);
                     Graphics.DrawMesh(curPool, matrix, matSingle, 0);
                 }
             }

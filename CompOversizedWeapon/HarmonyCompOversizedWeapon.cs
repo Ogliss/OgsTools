@@ -1,7 +1,7 @@
-﻿using System;
-using System.Linq;
-using HarmonyLib;
+﻿using HarmonyLib;
 using RimWorld;
+using System.Linq;
+using System.Reflection;
 using UnityEngine;
 using Verse;
 
@@ -17,16 +17,20 @@ namespace OgsCompOversizedWeapon
             enabled_AlienRaces = ModsConfig.ActiveModsInLoadOrder.Any((ModMetaData m) => m.PackageIdPlayerFacing == "erdelf.HumanoidAlienRaces"); 
             enabled_rooloDualWield = ModsConfig.ActiveModsInLoadOrder.Any((ModMetaData m) => m.PackageIdPlayerFacing == "Roolo.DualWield");
             var harmony = new Harmony("rimworld.Ogliss.comps.oversized");
+            harmony.PatchAll(Assembly.GetExecutingAssembly());
 
             if (enabled_rooloDualWield)
             {
+                Log.Message("Dual Wield detected");
                 DualWieldPatch(harmony);
             }
             else
             {
+                Log.Message("Dual Wield NOT detected");
+                /*
                 harmony.Patch(typeof(PawnRenderer).GetMethod("DrawEquipmentAiming"),
                     new HarmonyMethod(typeof(HarmonyCompOversizedWeapon).GetMethod("DrawEquipmentAimingPreFix")), null);
-
+                */
             }
 
             harmony.Patch(AccessTools.Method(typeof(Thing), "get_DefaultGraphic"), null,
@@ -113,11 +117,15 @@ namespace OgsCompOversizedWeapon
                     }
                     else
                     {
-                        s = new Vector3(eq.def.graphicData.drawSize.x, 1f, eq.def.graphicData.drawSize.y);
+                        Vector2 v = ___pawn.Graphic.data.drawSize;
+                        //    s = new Vector3(eq.def.graphicData.drawSize.x + v.x, 1f, eq.def.graphicData.drawSize.y + v.y);
+                    //    s = new Vector3(eq.def.graphicData.drawSize.x, 1f, eq.def.graphicData.drawSize.y);
+                        s = new Vector3(eq.def.graphicData.drawSize.x * v.x, 1f, eq.def.graphicData.drawSize.y * v.y);
                     }
                     Matrix4x4 matrix = default(Matrix4x4);
                     Vector3 vector = HarmonyCompOversizedWeapon.AdjustRenderOffsetFromDir(___pawn, compOversizedWeapon);
                     matrix.SetTRS(drawLoc + vector, Quaternion.AngleAxis(num, Vector3.up), s);
+                //    Log.Message("remderomg "+eq.LabelShortCap +" at "+s);
                     Graphics.DrawMesh((!flag4) ? MeshPool.plane10 : MeshPool.plane10Flip, matrix, matSingle, 0);
                     bool flag11 = compOversizedWeapon.Props != null && compOversizedWeapon.Props.isDualWeapon;
                     if (flag11)
@@ -233,6 +241,7 @@ namespace OgsCompOversizedWeapon
                     Matrix4x4 matrix = default(Matrix4x4);
                     Vector3 vector = HarmonyCompOversizedWeapon.AdjustRenderOffsetFromDir(___pawn, compOversizedWeapon);
                     matrix.SetTRS(drawLoc + vector, Quaternion.AngleAxis(num, Vector3.up), s);
+                //    Log.Message("remderomg " + eq.LabelShortCap + " at " + s);
                     Graphics.DrawMesh((!flag4) ? MeshPool.plane10 : MeshPool.plane10Flip, matrix, matSingle, 0);
                     bool flag11 = compOversizedWeapon.Props != null && compOversizedWeapon.Props.isDualWeapon;
                     if (flag11)
@@ -275,7 +284,6 @@ namespace OgsCompOversizedWeapon
             {
                 return true;
             }
-            Log.Message("oversized weapon with Dual Wield active");
             float num = aimAngle - 90f;
             bool flag = false;
             Mesh mesh;
@@ -311,6 +319,7 @@ namespace OgsCompOversizedWeapon
             Matrix4x4 matrix = default(Matrix4x4);
             Vector3 vector = HarmonyCompOversizedWeapon.AdjustRenderOffsetFromDir(___pawn, compOversizedWeapon);
             matrix.SetTRS(drawLoc + vector, Quaternion.AngleAxis(num, Vector3.up), s);
+        //    Log.Message("remderomg " + eq.LabelShortCap + " at " + s);
             Graphic_StackCount graphic_StackCount = eq.Graphic as Graphic_StackCount;
             if (graphic_StackCount != null)
             {

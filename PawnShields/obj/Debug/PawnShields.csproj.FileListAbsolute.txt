@@ -10,3 +10,4 @@ C:\Users\User\Desktop\OgsTools\PawnShields\bin\Debug\PawnShields.dll
 C:\Users\User\Desktop\OgsTools\PawnShields\bin\Debug\0Harmony.dll
 C:\Users\User\Desktop\OgsTools\PawnShields\obj\Debug\PawnShields.csproj.CopyComplete
 C:\Users\User\Desktop\OgsTools\PawnShields\obj\Debug\PawnShields.dll
+C:\Users\User\Desktop\OgsTools\PawnShields\obj\Debug\PawnShields.csprojAssemblyReference.cache
