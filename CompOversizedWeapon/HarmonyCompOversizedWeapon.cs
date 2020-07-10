@@ -21,12 +21,12 @@ namespace OgsCompOversizedWeapon
 
             if (enabled_rooloDualWield)
             {
-                Log.Message("Dual Wield detected");
+                Log.Message("OgsCompOversizedWeapon Dual Wield Compatability mode");
                 DualWieldPatch(harmony);
             }
             else
             {
-                Log.Message("Dual Wield NOT detected");
+            //    Log.Message("Dual Wield NOT detected");
                 /*
                 harmony.Patch(typeof(PawnRenderer).GetMethod("DrawEquipmentAiming"),
                     new HarmonyMethod(typeof(HarmonyCompOversizedWeapon).GetMethod("DrawEquipmentAimingPreFix")), null);

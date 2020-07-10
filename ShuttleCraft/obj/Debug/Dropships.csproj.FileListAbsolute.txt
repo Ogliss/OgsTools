@@ -1,0 +1,7 @@
+C:\Users\User\Desktop\OgsTools\ShuttleCraft\obj\Debug\Dropships.csprojAssemblyReference.cache
+C:\Users\User\Desktop\OgsTools\ShuttleCraft\bin\Debug\Dropships.dll
+C:\Users\User\Desktop\OgsTools\ShuttleCraft\bin\Debug\Dropships.pdb
+C:\Users\User\Desktop\OgsTools\ShuttleCraft\bin\Debug\0Harmony.dll
+C:\Users\User\Desktop\OgsTools\ShuttleCraft\obj\Debug\Dropships.csproj.CopyComplete
+C:\Users\User\Desktop\OgsTools\ShuttleCraft\obj\Debug\Dropships.dll
+C:\Users\User\Desktop\OgsTools\ShuttleCraft\obj\Debug\Dropships.pdb

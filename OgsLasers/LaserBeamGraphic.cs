@@ -19,8 +19,6 @@ namespace OgsLasers
         public Matrix4x4 drawingMatrix = default(Matrix4x4);
         Material materialBeam;
         Mesh mesh;
-        Mesh meshb;
-        Mesh meshc;
         Thing launcher;
         ThingDef equipmentDef;
         public List<Mesh> meshes = new List<Mesh>();
