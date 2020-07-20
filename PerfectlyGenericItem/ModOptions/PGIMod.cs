@@ -29,10 +29,11 @@ namespace PerfectlyGenericItem
 			float lineheight = (Text.LineHeight + list.verticalSpacing);
 			list.Begin(rect);
 
-			Listing_Standard listing_FungalLabel = list.BeginSection(lineheight);
-			listing_FungalLabel.ColumnWidth *= 0.488f;
-			listing_FungalLabel.CheckboxLabeled("PGI_RemoveOption".Translate(), ref settings.removePGI, "PGI_RemoveOptionToolTip".Translate());
-			list.EndSection(listing_FungalLabel);
+			Listing_Standard listing_PGI = list.BeginSection(lineheight);
+			listing_PGI.ColumnWidth *= 0.488f;
+			listing_PGI.CheckboxLabeled("PGI_RemoveOption".Translate(), ref settings.removePGI, "PGI_RemoveOptionToolTip".Translate());
+		//	listing_FungalLabel.CheckboxLabeled("PGI_replaceFactionsOption".Translate(), ref settings.removePGI, "PGI_replaceFactionsOptionToolTip".Translate());
+			list.EndSection(listing_PGI);
 
 			list.End();
 

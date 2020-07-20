@@ -1,4 +1,5 @@
 ﻿using HarmonyLib;
+using RimWorld;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -31,6 +32,12 @@ namespace PerfectlyGenericItem
                 {
                     __result = "PerfectlyGenericItem";
                 }
+                /*
+                if (defType == typeof(FactionDef) && PGISettings.Instance.replaceFactions)
+                {
+                    __result = "OutlanderRough";
+                }
+                */
             }
         }
     }

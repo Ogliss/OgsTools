@@ -6,6 +6,7 @@ namespace PerfectlyGenericItem
     public class PGISettings : ModSettings
     {
         public bool removePGI = false;
+        public bool replaceFactions = false;
 
         public PGISettings()
         {
@@ -17,6 +18,7 @@ namespace PerfectlyGenericItem
         {
             base.ExposeData();
             Scribe_Values.Look(ref this.removePGI, "PGI_remove", false);
+            Scribe_Values.Look(ref this.replaceFactions, "PGI_replaceFactions", false);
 
         }
     }

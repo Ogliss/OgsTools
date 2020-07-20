@@ -5,3 +5,5 @@ C:\Users\User\Desktop\OgsTools\PerfectlyGenericItem\obj\Debug\PerfectlyGenericIt
 C:\Users\User\Desktop\OgsTools\PerfectlyGenericItem\obj\Debug\PerfectlyGenericItem.csproj.CopyComplete
 C:\Users\User\Desktop\OgsTools\PerfectlyGenericItem\obj\Debug\PerfectlyGenericItem.dll
 C:\Users\User\Desktop\OgsTools\PerfectlyGenericItem\obj\Debug\PerfectlyGenericItem.pdb
+C:\Program Files (x86)\Steam\steamapps\common\RimWorld\Mods\PerfectlyGenericItem\Assemblies\PerfectlyGenericItem.dll
+C:\Program Files (x86)\Steam\steamapps\common\RimWorld\Mods\PerfectlyGenericItem\Assemblies\PerfectlyGenericItem.pdb
