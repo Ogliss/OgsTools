@@ -13,12 +13,14 @@ namespace CompToggleFireMode
             this.compClass = typeof(CompToggleFireMode);
         }
         public ResearchProjectDef requiredResearch;
+        public bool canSwitchWhileBusy = false;
+        public bool switchStartsCooldown = false;
     }
 
     public class CompToggleFireMode : ThingComp
     {
         public CompProperties_ToggleFireMode Props => (CompProperties_ToggleFireMode)props;
-        protected virtual Pawn GetWearer
+        protected virtual Pawn GetUser
         {
             get
             {
@@ -33,7 +35,7 @@ namespace CompToggleFireMode
             }
         }
 
-        protected virtual bool IsWorn => (GetWearer != null);
+        protected virtual bool IsWorn => (GetUser != null);
         public CompEquippable Equippable => parent.TryGetComp<CompEquippable>();
         public Pawn lastWearer;
         public bool GizmosOnEquip = true;
@@ -43,14 +45,18 @@ namespace CompToggleFireMode
         public void SwitchFireMode(int x)
         {
             fireMode = x;
+            if (Props.switchStartsCooldown)
+            {
+                this.GetUser.stances.SetStance(new Stance_Cooldown(this.Active.AdjustedCooldownTicks(this.Equippable.PrimaryVerb, this.GetUser), this.Equippable.PrimaryVerb.CurrentTarget, this.Equippable.PrimaryVerb));
+            }
         }
 
         public override void CompTick()
         {
             base.CompTick();
-            if (GetWearer != lastWearer)
+            if (GetUser != lastWearer)
             {
-                lastWearer = GetWearer;
+                lastWearer = GetUser;
             }
         }
         public VerbProperties Active
@@ -86,9 +92,9 @@ namespace CompToggleFireMode
         }
         public virtual IEnumerable<Gizmo> EquippedGizmos()
         {
-            ThingWithComps owner = IsWorn ? GetWearer : parent;
-            bool flag = Find.Selector.SingleSelectedThing == GetWearer;
-            if (flag && GetWearer.Drafted)
+            ThingWithComps owner = IsWorn ? GetUser : parent;
+            bool flag = Find.Selector.SingleSelectedThing == GetUser;
+            if (flag && GetUser.Drafted)
             {
                 int num = 700000101;
                 Command_Action command_Action = new Command_Action()
@@ -104,11 +110,11 @@ namespace CompToggleFireMode
                     },
                     groupKey = num + 1
                 };
-                if (GetWearer.Faction != Faction.OfPlayer)
+                if (GetUser.Faction != Faction.OfPlayer)
                 {
                     command_Action.Disable("CannotOrderNonControlled".Translate());
                 }
-                else if (GetWearer.stances.curStance.StanceBusy)
+                else if (GetUser.stances.curStance.StanceBusy && !Props.canSwitchWhileBusy)
                 {
                     command_Action.Disable("Is Busy");
                 }

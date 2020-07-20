@@ -13,16 +13,16 @@ namespace ExtraHives
 		{
 			if (Scribe.mode == LoadSaveMode.Saving)
 			{
-				this.assignedHives.RemoveAll((KeyValuePair<Pawn, ExtraHive> x) => x.Key.Destroyed);
+				this.assignedHives.RemoveAll((KeyValuePair<Pawn, Hive> x) => x.Key.Destroyed);
 			}
-			Scribe_Collections.Look<Pawn, ExtraHive>(ref this.assignedHives, "assignedHives", LookMode.Reference, LookMode.Reference);
+			Scribe_Collections.Look<Pawn, Hive>(ref this.assignedHives, "assignedHives", LookMode.Reference, LookMode.Reference);
 			if (Scribe.mode == LoadSaveMode.PostLoadInit)
 			{
-				this.assignedHives.RemoveAll((KeyValuePair<Pawn, ExtraHive> x) => x.Value == null);
+				this.assignedHives.RemoveAll((KeyValuePair<Pawn, Hive> x) => x.Value == null);
 			}
 		}
 
 		// Token: 0x04001B5C RID: 7004
-		public Dictionary<Pawn, ExtraHive> assignedHives = new Dictionary<Pawn, ExtraHive>();
+		public Dictionary<Pawn, Hive> assignedHives = new Dictionary<Pawn, Hive>();
 	}
 }

@@ -1,0 +1,7 @@
+C:\Users\User\Desktop\OgsTools\Desicator\bin\Debug\Dessicator.dll
+C:\Users\User\Desktop\OgsTools\Desicator\bin\Debug\Dessicator.pdb
+C:\Users\User\Desktop\OgsTools\Desicator\bin\Debug\0Harmony.dll
+C:\Users\User\Desktop\OgsTools\Desicator\obj\Debug\Dessicator.csprojAssemblyReference.cache
+C:\Users\User\Desktop\OgsTools\Desicator\obj\Debug\Dessicator.csproj.CopyComplete
+C:\Users\User\Desktop\OgsTools\Desicator\obj\Debug\Dessicator.dll
+C:\Users\User\Desktop\OgsTools\Desicator\obj\Debug\Dessicator.pdb

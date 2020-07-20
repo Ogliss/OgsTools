@@ -18,7 +18,7 @@ namespace ExtraHives
 		public ThingDef HiveDefchild;
 	}
 	// Token: 0x02000CA1 RID: 3233
-	public class ExtraHive : ThingWithComps, IAttackTarget, ILoadReferenceable
+	public class Hive : ThingWithComps, IAttackTarget, ILoadReferenceable
 	{
 		public HiveExtension Ext => this.def.HasModExtension<HiveExtension>() ? this.def.GetModExtension<HiveExtension>() : null;
 
@@ -86,10 +86,10 @@ namespace ExtraHives
 		// Token: 0x06004E23 RID: 20003 RVA: 0x001A4098 File Offset: 0x001A2298
 		public static void ResetStaticData()
 		{
-			ExtraHive.spawnablePawnKinds.Clear();
-			ExtraHive.spawnablePawnKinds.Add(PawnKindDefOf.Megascarab);
-			ExtraHive.spawnablePawnKinds.Add(PawnKindDefOf.Spelopede);
-			ExtraHive.spawnablePawnKinds.Add(PawnKindDefOf.Megaspider);
+			Hive.spawnablePawnKinds.Clear();
+			Hive.spawnablePawnKinds.Add(PawnKindDefOf.Megascarab);
+			Hive.spawnablePawnKinds.Add(PawnKindDefOf.Spelopede);
+			Hive.spawnablePawnKinds.Add(PawnKindDefOf.Megaspider);
 		}
 
 		// Token: 0x06004E24 RID: 20004 RVA: 0x001A40D1 File Offset: 0x001A22D1
@@ -132,9 +132,9 @@ namespace ExtraHives
 			List<Lord> lords = map.lordManager.lords;
 			for (int i = 0; i < lords.Count; i++)
 			{
-				lords[i].ReceiveMemo(ExtraHive.MemoDeSpawned);
+				lords[i].ReceiveMemo(Hive.MemoDeSpawned);
 			}
-			ExtraHiveUtility.Notify_HiveDespawned(this, map);
+			HiveUtility.Notify_HiveDespawned(this, map);
 		}
 
 		// Token: 0x06004E27 RID: 20007 RVA: 0x001A417C File Offset: 0x001A237C
@@ -146,8 +146,8 @@ namespace ExtraHives
 				List<Thing> list = base.Map.listerThings.ThingsOfDef(this.def);
 				for (int i = 0; i < list.Count; i++)
 				{
-					ExtraHive hive;
-					if ((hive = (list[i] as ExtraHive)) != null && hive != this && hive.CompDormant.Awake && !hive.questTags.NullOrEmpty<string>() && QuestUtility.AnyMatchingTags(hive.questTags, this.questTags))
+					Hive hive;
+					if ((hive = (list[i] as Hive)) != null && hive != this && hive.CompDormant.Awake && !hive.questTags.NullOrEmpty<string>() && QuestUtility.AnyMatchingTags(hive.questTags, this.questTags))
 					{
 						flag = true;
 						break;
@@ -169,7 +169,7 @@ namespace ExtraHives
 				Lord lord = base.GetComp<CompSpawnerPawn>().Lord;
 				if (lord != null)
 				{
-					lord.ReceiveMemo(ExtraHive.MemoAttackedByEnemy);
+					lord.ReceiveMemo(Hive.MemoAttackedByEnemy);
 				}
 			}
 			if (dinfo.Def == DamageDefOf.Flame && (float)this.HitPoints < (float)base.MaxHitPoints * 0.3f)
@@ -177,7 +177,7 @@ namespace ExtraHives
 				Lord lord2 = base.GetComp<CompSpawnerPawn>().Lord;
 				if (lord2 != null)
 				{
-					lord2.ReceiveMemo(ExtraHive.MemoBurnedBadly);
+					lord2.ReceiveMemo(Hive.MemoBurnedBadly);
 				}
 			}
 			base.PostApplyDamage(dinfo, totalDamageDealt);
@@ -191,7 +191,7 @@ namespace ExtraHives
 				List<Lord> lords = base.Map.lordManager.lords;
 				for (int i = 0; i < lords.Count; i++)
 				{
-					lords[i].ReceiveMemo(ExtraHive.MemoDestroyedNonRoofCollapse);
+					lords[i].ReceiveMemo(Hive.MemoDestroyedNonRoofCollapse);
 				}
 			}
 			base.Kill(dinfo, exactCulprit);

@@ -94,7 +94,7 @@ namespace ExtraHives
 			Destroy();
 			if (spawnHive)
 			{
-				ExtraHive obj = (ExtraHive)GenSpawn.Spawn(ThingMaker.MakeThing(ThingDefOf.Hive), position, map);
+				Hive obj = (Hive)GenSpawn.Spawn(ThingMaker.MakeThing(ThingDefOf.Hive), position, map);
 				obj.SetFaction(Faction.OfInsects);
 				obj.questTags = questTags;
 				foreach (CompSpawner comp in obj.GetComps<CompSpawner>())
@@ -110,7 +110,7 @@ namespace ExtraHives
 			{
 				return;
 			}
-			insectsPoints = Mathf.Max(insectsPoints, Hive.spawnablePawnKinds.Min((PawnKindDef x) => x.combatPower));
+            insectsPoints = Mathf.Max(insectsPoints, RimWorld.Hive.spawnablePawnKinds.Min((PawnKindDef x) => x.combatPower));
 			float pointsLeft = insectsPoints;
 			List<Pawn> list = new List<Pawn>();
 			int num = 0;

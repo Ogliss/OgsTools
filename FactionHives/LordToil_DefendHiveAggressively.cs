@@ -13,7 +13,7 @@ namespace ExtraHives
 			base.FilterOutUnspawnedHives();
 			for (int i = 0; i < this.lord.ownedPawns.Count; i++)
 			{
-				ExtraHive hiveFor = base.GetHiveFor(this.lord.ownedPawns[i]);
+				Hive hiveFor = base.GetHiveFor(this.lord.ownedPawns[i]);
 				PawnDuty duty = new PawnDuty(DutyDefOf.DefendHiveAggressively, hiveFor, this.distToHiveToAttack);
 				this.lord.ownedPawns[i].mindState.duty = duty;
 			}

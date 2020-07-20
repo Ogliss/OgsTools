@@ -221,7 +221,7 @@ namespace OgsCompActivatableEffect
             }
         }
 
-        public CompProperties_ActivatableEffect Props => (CompProperties_ActivatableEffect) props;
+        public virtual CompProperties_ActivatableEffect Props => (CompProperties_ActivatableEffect) props;
 
         public virtual Graphic Graphic
         {

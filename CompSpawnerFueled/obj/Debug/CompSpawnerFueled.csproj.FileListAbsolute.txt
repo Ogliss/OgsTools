@@ -1,0 +1,5 @@
+C:\Users\User\Desktop\OgsTools\CompSpawnerFueled\bin\Debug\CompSpawnerFueled.dll
+C:\Users\User\Desktop\OgsTools\CompSpawnerFueled\bin\Debug\CompSpawnerFueled.pdb
+C:\Users\User\Desktop\OgsTools\CompSpawnerFueled\obj\Debug\CompSpawnerFueled.csprojAssemblyReference.cache
+C:\Users\User\Desktop\OgsTools\CompSpawnerFueled\obj\Debug\CompSpawnerFueled.dll
+C:\Users\User\Desktop\OgsTools\CompSpawnerFueled\obj\Debug\CompSpawnerFueled.pdb

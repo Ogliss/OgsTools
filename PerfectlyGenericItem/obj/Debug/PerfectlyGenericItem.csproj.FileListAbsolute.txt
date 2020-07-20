@@ -1,0 +1,7 @@
+C:\Users\User\Desktop\OgsTools\PerfectlyGenericItem\bin\Debug\PerfectlyGenericItem.dll
+C:\Users\User\Desktop\OgsTools\PerfectlyGenericItem\bin\Debug\PerfectlyGenericItem.pdb
+C:\Users\User\Desktop\OgsTools\PerfectlyGenericItem\bin\Debug\0Harmony.dll
+C:\Users\User\Desktop\OgsTools\PerfectlyGenericItem\obj\Debug\PerfectlyGenericItem.csprojAssemblyReference.cache
+C:\Users\User\Desktop\OgsTools\PerfectlyGenericItem\obj\Debug\PerfectlyGenericItem.csproj.CopyComplete
+C:\Users\User\Desktop\OgsTools\PerfectlyGenericItem\obj\Debug\PerfectlyGenericItem.dll
+C:\Users\User\Desktop\OgsTools\PerfectlyGenericItem\obj\Debug\PerfectlyGenericItem.pdb

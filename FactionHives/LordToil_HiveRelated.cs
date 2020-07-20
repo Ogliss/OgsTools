@@ -29,13 +29,13 @@ namespace ExtraHives
 		// Token: 0x0600329E RID: 12958 RVA: 0x00119629 File Offset: 0x00117829
 		protected void FilterOutUnspawnedHives()
 		{
-			this.Data.assignedHives.RemoveAll((KeyValuePair<Pawn, ExtraHive> x) => x.Value == null || !x.Value.Spawned);
+			this.Data.assignedHives.RemoveAll((KeyValuePair<Pawn, Hive> x) => x.Value == null || !x.Value.Spawned);
 		}
 
 		// Token: 0x0600329F RID: 12959 RVA: 0x0011965C File Offset: 0x0011785C
-		protected ExtraHive GetHiveFor(Pawn pawn)
+		protected Hive GetHiveFor(Pawn pawn)
 		{
-			ExtraHive hive;
+			Hive hive;
 			if (this.Data.assignedHives.TryGetValue(pawn, out hive))
 			{
 				return hive;
@@ -49,9 +49,9 @@ namespace ExtraHives
 		}
 
 		// Token: 0x060032A0 RID: 12960 RVA: 0x001196A0 File Offset: 0x001178A0
-		private ExtraHive FindClosestHive(Pawn pawn)
+		private Hive FindClosestHive(Pawn pawn)
 		{
-			return (ExtraHive)GenClosest.ClosestThingReachable(pawn.Position, pawn.Map, ThingRequest.ForDef(ThingDefOf.Hive), PathEndMode.Touch, TraverseParms.For(pawn, Danger.Deadly, TraverseMode.ByPawn, false), 30f, (Thing x) => x.Faction == pawn.Faction, null, 0, 30, false, RegionType.Set_Passable, false);
+			return (Hive)GenClosest.ClosestThingReachable(pawn.Position, pawn.Map, ThingRequest.ForDef(ThingDefOf.Hive), PathEndMode.Touch, TraverseParms.For(pawn, Danger.Deadly, TraverseMode.ByPawn, false), 30f, (Thing x) => x.Faction == pawn.Faction, null, 0, 30, false, RegionType.Set_Passable, false);
 		}
 	}
 }

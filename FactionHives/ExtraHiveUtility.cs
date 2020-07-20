@@ -6,7 +6,7 @@ using Verse;
 namespace ExtraHives
 {
 	// Token: 0x02000CA2 RID: 3234
-	public static class ExtraHiveUtility
+	public static class HiveUtility
 	{
 		// Token: 0x06004E30 RID: 20016 RVA: 0x001A4409 File Offset: 0x001A2609
 		public static int TotalSpawnedHivesCount(Map map)
@@ -34,7 +34,7 @@ namespace ExtraHives
 		}
 
 		// Token: 0x06004E32 RID: 20018 RVA: 0x001A4484 File Offset: 0x001A2684
-		public static void Notify_HiveDespawned(ExtraHive hive, Map map)
+		public static void Notify_HiveDespawned(Hive hive, Map map)
 		{
 			int num = GenRadial.NumCellsInRadius(2f);
 			for (int i = 0; i < num; i++)
@@ -45,7 +45,7 @@ namespace ExtraHives
 					List<Thing> thingList = c.GetThingList(map);
 					for (int j = 0; j < thingList.Count; j++)
 					{
-						if (thingList[j].Faction == Faction.OfInsects && !ExtraHiveUtility.AnyHivePreventsClaiming(thingList[j]) && !(thingList[j] is Pawn))
+						if (thingList[j].Faction == Faction.OfInsects && !HiveUtility.AnyHivePreventsClaiming(thingList[j]) && !(thingList[j] is Pawn))
 						{
 							thingList[j].SetFaction(null, null);
 						}

@@ -23,7 +23,7 @@ namespace Recruiters
 			{
 				return false;
 			}
-			Log.Message("TraderKindDefs with RecruiterExt: " + DefDatabase<TraderKindDef>.AllDefs.Where(x=> x.HasModExtension<RecruiterExt>()).Count());
+		//	Log.Message("TraderKindDefs with RecruiterExt: " + DefDatabase<TraderKindDef>.AllDefs.Where(x=> x.HasModExtension<RecruiterExt>()).Count());
 			TraderKindDef traderKindDef;
 
 			if ((from x in DefDatabase<TraderKindDef>.AllDefs.Where(x => x.HasModExtension<RecruiterExt>())

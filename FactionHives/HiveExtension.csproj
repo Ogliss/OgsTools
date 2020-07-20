@@ -40,7 +40,7 @@
     <Compile Include="LordToil_DefendAndExpandHive.cs" />
     <Compile Include="LordToil_HiveRelated.cs" />
     <Compile Include="LordToil_HiveRelatedData.cs" />
-    <Compile Include="ExtraHive.cs" />
+    <Compile Include="Hive.cs" />
     <Compile Include="ExtraHiveUtility.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>

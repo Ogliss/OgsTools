@@ -55,7 +55,7 @@ namespace ExtraHives
 		{
 			get
 			{
-				return this.canSpawnHives && ExtraHiveUtility.TotalSpawnedHivesCount(this.parent.Map) < 30;
+				return this.canSpawnHives && HiveUtility.TotalSpawnedHivesCount(this.parent.Map) < 30;
 			}
 		}
 
@@ -80,7 +80,7 @@ namespace ExtraHives
 			}
 			if ((comp == null || comp.Awake) && Find.TickManager.TicksGame >= this.nextHiveSpawnTick)
 			{
-				ExtraHive t;
+				Hive t;
 				if (this.TrySpawnChildHive(false, out t))
 				{
 					Messages.Message("MessageHiveReproduced".Translate(), t, MessageTypeDefOf.NegativeEvent, true);
@@ -115,7 +115,7 @@ namespace ExtraHives
 				IntVec3 intVec = this.parent.Position + GenRadial.RadialPattern[i];
 				if (intVec.InBounds(this.parent.Map) && intVec.GetRoom(this.parent.Map, RegionType.Set_Passable) == room)
 				{
-					if (intVec.GetThingList(this.parent.Map).Any((Thing t) => t is Hive))
+					if (intVec.GetThingList(this.parent.Map).Any((Thing t) => t is RimWorld.Hive))
 					{
 						num++;
 					}
@@ -126,7 +126,7 @@ namespace ExtraHives
 		}
 
 		// Token: 0x06005333 RID: 21299 RVA: 0x001BD108 File Offset: 0x001BB308
-		public bool TrySpawnChildHive(bool ignoreRoofedRequirement, out ExtraHive newHive)
+		public bool TrySpawnChildHive(bool ignoreRoofedRequirement, out Hive newHive)
 		{
 			if (!this.CanSpawnChildHive)
 			{
@@ -149,12 +149,12 @@ namespace ExtraHives
 			{
 				thingDef = ext.HiveDefchild ?? thingDef;
 			}
-			newHive = (ExtraHive)ThingMaker.MakeThing(thingDef, null);
+			newHive = (Hive)ThingMaker.MakeThing(thingDef, null);
 			if (newHive.Faction != this.parent.Faction)
 			{
 				newHive.SetFaction(this.parent.Faction, null);
 			}
-			ExtraHive hive = this.parent as ExtraHive;
+			Hive hive = this.parent as Hive;
 			if (hive != null)
 			{
 				if (hive.CompDormant.Awake)
@@ -212,7 +212,7 @@ namespace ExtraHives
 					List<Thing> thingList = c2.GetThingList(map);
 					for (int j = 0; j < thingList.Count; j++)
 					{
-						if (thingList[j] is Hive || thingList[j] is TunnelHiveSpawner)
+						if (thingList[j] is RimWorld.Hive || thingList[j] is TunnelHiveSpawner)
 						{
 							return false;
 						}
@@ -242,7 +242,7 @@ namespace ExtraHives
 					icon = TexCommand.GatherSpotActive,
 					action = delegate ()
 					{
-						ExtraHive hive;
+						Hive hive;
 						this.TrySpawnChildHive(false, out hive);
 					}
 				};
