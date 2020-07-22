@@ -1,0 +1,7 @@
+C:\Users\User\Desktop\OgsTools\StartingColonistTitleLetter\bin\Debug\StartingColonistTitleLetter.dll
+C:\Users\User\Desktop\OgsTools\StartingColonistTitleLetter\bin\Debug\StartingColonistTitleLetter.pdb
+C:\Users\User\Desktop\OgsTools\StartingColonistTitleLetter\bin\Debug\0Harmony.dll
+C:\Users\User\Desktop\OgsTools\StartingColonistTitleLetter\obj\Debug\StartingColonistTitleLetter.csprojAssemblyReference.cache
+C:\Users\User\Desktop\OgsTools\StartingColonistTitleLetter\obj\Debug\StartingColonistTitleLetter.csproj.CopyComplete
+C:\Users\User\Desktop\OgsTools\StartingColonistTitleLetter\obj\Debug\StartingColonistTitleLetter.dll
+C:\Users\User\Desktop\OgsTools\StartingColonistTitleLetter\obj\Debug\StartingColonistTitleLetter.pdb

@@ -17,6 +17,10 @@ namespace AdvancedGraphics.HarmonyInstance
 		[HarmonyPostfix]
 		public static void Postfix(Apparel apparel, BodyTypeDef bodyType, ref ApparelGraphicRecord rec)
 		{
+			if (apparel.def.apparel.wornGraphicPath.NullOrEmpty())
+			{
+				return;
+			}
 			CompAdvancedGraphic comp = apparel.TryGetComp<CompAdvancedGraphic>();
 			CompQuality quality = apparel.TryGetComp<CompQuality>();
 			CompArt art = apparel.TryGetComp<CompArt>();

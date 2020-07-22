@@ -56,6 +56,10 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Metamorphasis", "Metamorpha
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CompSpawnerFueled", "CompSpawnerFueled\CompSpawnerFueled.csproj", "{C680A155-5F16-42EA-A583-0C7DB95327D6}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "StartingColonistTitleLetter", "StartingColonistTitleLetter\StartingColonistTitleLetter.csproj", "{EE47C152-9B68-45D1-BB62-A9478A1BCAA0}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CloakingDevice", "CloakingDevice\CloakingDevice.csproj", "{BE714342-1653-4494-9A1E-C641E76CE20C}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -158,6 +162,14 @@ Global
 		{C680A155-5F16-42EA-A583-0C7DB95327D6}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{C680A155-5F16-42EA-A583-0C7DB95327D6}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{C680A155-5F16-42EA-A583-0C7DB95327D6}.Release|Any CPU.Build.0 = Release|Any CPU
+		{EE47C152-9B68-45D1-BB62-A9478A1BCAA0}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{EE47C152-9B68-45D1-BB62-A9478A1BCAA0}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{EE47C152-9B68-45D1-BB62-A9478A1BCAA0}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{EE47C152-9B68-45D1-BB62-A9478A1BCAA0}.Release|Any CPU.Build.0 = Release|Any CPU
+		{BE714342-1653-4494-9A1E-C641E76CE20C}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{BE714342-1653-4494-9A1E-C641E76CE20C}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{BE714342-1653-4494-9A1E-C641E76CE20C}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{BE714342-1653-4494-9A1E-C641E76CE20C}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
