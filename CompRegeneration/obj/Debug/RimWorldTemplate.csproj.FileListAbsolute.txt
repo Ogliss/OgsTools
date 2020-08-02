@@ -1,0 +1,7 @@
+C:\Users\User\Desktop\OgsTools\CompRegeneration\bin\Debug\CompRegeneration.dll
+C:\Users\User\Desktop\OgsTools\CompRegeneration\bin\Debug\CompRegeneration.pdb
+C:\Users\User\Desktop\OgsTools\CompRegeneration\bin\Debug\0Harmony.dll
+C:\Users\User\Desktop\OgsTools\CompRegeneration\obj\Debug\RimWorldTemplate.csprojAssemblyReference.cache
+C:\Users\User\Desktop\OgsTools\CompRegeneration\obj\Debug\RimWorldTemplate.csproj.CopyComplete
+C:\Users\User\Desktop\OgsTools\CompRegeneration\obj\Debug\CompRegeneration.dll
+C:\Users\User\Desktop\OgsTools\CompRegeneration\obj\Debug\CompRegeneration.pdb

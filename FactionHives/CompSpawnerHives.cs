@@ -1,6 +1,7 @@
 ﻿using RimWorld;
 using System;
 using System.Collections.Generic;
+using UnityEngine;
 using Verse;
 
 namespace ExtraHives
@@ -14,6 +15,10 @@ namespace ExtraHives
 			this.compClass = typeof(CompSpawnerHives);
 		}
 
+		public ThingDef hiveDef;
+		public ThingDef tunnelDef;
+
+		public bool requireRoofed = true;
 		// Token: 0x04002DF0 RID: 11760
 		public float HiveSpawnPreferredMinDist = 3.5f;
 
@@ -35,13 +40,15 @@ namespace ExtraHives
 				true
 			}
 		};
+		// Token: 0x04002F97 RID: 12183
+		public SimpleCurve radiusPerDayCurve;
 	}
 	// Token: 0x02000D5B RID: 3419
 	public class CompSpawnerHives : ThingComp
 	{
 		// Token: 0x17000EC9 RID: 3785
 		// (get) Token: 0x0600532D RID: 21293 RVA: 0x001BCEC3 File Offset: 0x001BB0C3
-		private CompProperties_SpawnerHives Props
+		public CompProperties_SpawnerHives Props
 		{
 			get
 			{
@@ -55,10 +62,29 @@ namespace ExtraHives
 		{
 			get
 			{
-				return this.canSpawnHives && HiveUtility.TotalSpawnedHivesCount(this.parent.Map) < 30;
+				return this.canSpawnHives && HiveUtility.TotalSpawnedHivesCount(this.parent.Map, this.Props.hiveDef) < 30;
 			}
 		}
 
+		// Token: 0x17000F07 RID: 3847
+		// (get) Token: 0x060055C2 RID: 21954 RVA: 0x001CB033 File Offset: 0x001C9233
+		public float AgeDays
+		{
+			get
+			{
+				return (float)this.plantHarmAge / 60000f;
+			}
+		}
+
+		// Token: 0x17000F08 RID: 3848
+		// (get) Token: 0x060055C3 RID: 21955 RVA: 0x001CB042 File Offset: 0x001C9242
+		public float CurrentRadius
+		{
+			get
+			{
+				return  Mathf.Max(this.Props.radiusPerDayCurve?.Evaluate(this.AgeDays) ?? this.Props.HiveSpawnRadius, Props.HiveSpawnPreferredMinDist);
+			}
+		}
 		// Token: 0x0600532F RID: 21295 RVA: 0x001BCEF0 File Offset: 0x001BB0F0
 		public override void PostSpawnSetup(bool respawningAfterLoad)
 		{
@@ -66,12 +92,18 @@ namespace ExtraHives
 			{
 				this.CalculateNextHiveSpawnTick();
 			}
+			this.initiatableComp = this.parent.GetComp<CompInitiatable>();
 		}
 
 		// Token: 0x06005330 RID: 21296 RVA: 0x001BCEFC File Offset: 0x001BB0FC
 		public override void CompTick()
 		{
 			base.CompTick();
+			if (this.parent.Map == null)
+			{
+				return;
+			}
+			this.plantHarmAge++;
 			CompCanBeDormant comp = this.parent.GetComp<CompCanBeDormant>();
 			if ((comp == null || comp.Awake) && !this.wasActivated)
 			{
@@ -81,7 +113,7 @@ namespace ExtraHives
 			if ((comp == null || comp.Awake) && Find.TickManager.TicksGame >= this.nextHiveSpawnTick)
 			{
 				Hive t;
-				if (this.TrySpawnChildHive(false, out t))
+				if (this.TrySpawnChildHive(!Props.requireRoofed, out t))
 				{
 					Messages.Message("MessageHiveReproduced".Translate(), t, MessageTypeDefOf.NegativeEvent, true);
 					return;
@@ -90,18 +122,19 @@ namespace ExtraHives
 			}
 		}
 
-		// Token: 0x06005331 RID: 21297 RVA: 0x001BCF90 File Offset: 0x001BB190
 		public override string CompInspectStringExtra()
 		{
+			string str = !Props.radiusPerDayCurve.EnumerableNullOrEmpty() ? "FoliageKillRadius".Translate() + ": " + this.CurrentRadius.ToString("0.0") + "\n" + "RadiusExpandRate".Translate() + ": " + Math.Round((double)(this.Props.radiusPerDayCurve.Evaluate(this.AgeDays + 1f) - this.Props.radiusPerDayCurve.Evaluate(this.AgeDays))) + "/" + "day".Translate() + "\n": TaggedString.Empty;
+
 			if (!this.canSpawnHives)
 			{
-				return "DormantHiveNotReproducing".Translate();
+				return str+"DormantHiveNotReproducing".Translate();
 			}
 			if (this.CanSpawnChildHive)
 			{
-				return "HiveReproducesIn".Translate() + ": " + (this.nextHiveSpawnTick - Find.TickManager.TicksGame).ToStringTicksToPeriod(true, false, true, true);
+				return str  + "HiveReproducesIn".Translate() + ": " + (this.nextHiveSpawnTick - Find.TickManager.TicksGame).ToStringTicksToPeriod(true, false, true, true);
 			}
-			return null;
+			return str;
 		}
 
 		// Token: 0x06005332 RID: 21298 RVA: 0x001BCFF8 File Offset: 0x001BB1F8
@@ -109,7 +142,7 @@ namespace ExtraHives
 		{
 			Room room = this.parent.GetRoom(RegionType.Set_Passable);
 			int num = 0;
-			int num2 = GenRadial.NumCellsInRadius(9f);
+			int num2 = GenRadial.NumCellsInRadius(CurrentRadius);
 			for (int i = 0; i < num2; i++)
 			{
 				IntVec3 intVec = this.parent.Position + GenRadial.RadialPattern[i];
@@ -133,21 +166,18 @@ namespace ExtraHives
 				newHive = null;
 				return false;
 			}
-			IntVec3 loc = CompSpawnerHives.FindChildHiveLocation(this.parent.Position, this.parent.Map, this.parent.def, this.Props, ignoreRoofedRequirement, false);
-			if (!loc.IsValid)
-			{
-				newHive = null;
-				return false;
-			}
 			HiveExtension ext = null;
-			ThingDef thingDef = this.parent.def;
 			if (this.parent.def.HasModExtension<HiveExtension>())
 			{
 				ext = this.parent.def.GetModExtension<HiveExtension>();
 			}
-			if (ext != null)
+			ThingDef thingDef = Props.hiveDef ?? this.parent.def;
+			IntVec3 loc = CompSpawnerHives.FindChildHiveLocation(this.parent.OccupiedRect().AdjacentCells.RandomElement(), this.parent.Map, thingDef, this.Props, ignoreRoofedRequirement, false, CurrentRadius);
+			if (!loc.IsValid)
 			{
-				thingDef = ext.HiveDefchild ?? thingDef;
+				newHive = null;
+				Log.Warning("this !loc.IsValid");
+				return false;
 			}
 			newHive = (Hive)ThingMaker.MakeThing(thingDef, null);
 			if (newHive.Faction != this.parent.Faction)
@@ -163,15 +193,26 @@ namespace ExtraHives
 				}
 				newHive.questTags = hive.questTags;
 			}
-			GenSpawn.Spawn(newHive, loc, this.parent.Map, WipeMode.FullRefund);
-			this.CalculateNextHiveSpawnTick();
+			if (newHive.Ext?.TunnelDef!=null)
+			{
+				TunnelHiveSpawner tunnel = (TunnelHiveSpawner)ThingMaker.MakeThing(newHive.Ext.TunnelDef, null);
+				tunnel.hive = newHive;
+				GenSpawn.Spawn(tunnel, loc, this.parent.Map, WipeMode.FullRefund);
+				this.CalculateNextHiveSpawnTick();
+			}
+			else
+			{
+				GenSpawn.Spawn(newHive, loc, this.parent.Map, WipeMode.FullRefund);
+				this.CalculateNextHiveSpawnTick();
+			}
 			return true;
 		}
 
 		// Token: 0x06005334 RID: 21300 RVA: 0x001BD1F0 File Offset: 0x001BB3F0
-		public static IntVec3 FindChildHiveLocation(IntVec3 pos, Map map, ThingDef parentDef, CompProperties_SpawnerHives props, bool ignoreRoofedRequirement, bool allowUnreachable)
+		public static IntVec3 FindChildHiveLocation(IntVec3 pos, Map map, ThingDef parentDef, CompProperties_SpawnerHives props, bool ignoreRoofedRequirement, bool allowUnreachable, float radius = 0f)
 		{
 			IntVec3 intVec = IntVec3.Invalid;
+			float Radius = radius > 0 ? radius : props.HiveSpawnRadius;
 			for (int i = 0; i < 3; i++)
 			{
 				float minDist = props.HiveSpawnPreferredMinDist;
@@ -182,11 +223,12 @@ namespace ExtraHives
 					{
 						minDist = 0f;
 					}
-					flag = CellFinder.TryFindRandomReachableCellNear(pos, map, props.HiveSpawnRadius, TraverseParms.For(TraverseMode.NoPassClosedDoors, Danger.Deadly, false), (IntVec3 c) => CompSpawnerHives.CanSpawnHiveAt(c, map, pos, parentDef, minDist, ignoreRoofedRequirement), null, out intVec, 999999);
+					flag = CellFinder.TryFindRandomReachableCellNear(pos, map, Radius, TraverseParms.For(TraverseMode.NoPassClosedDoors, Danger.Deadly, false), (IntVec3 c) => CompSpawnerHives.CanSpawnHiveAt(c, map, pos, parentDef, minDist, ignoreRoofedRequirement), null, out intVec, 999999);
+
 				}
 				else
 				{
-					flag = (allowUnreachable && CellFinder.TryFindRandomCellNear(pos, map, (int)props.HiveSpawnRadius, (IntVec3 c) => CompSpawnerHives.CanSpawnHiveAt(c, map, pos, parentDef, minDist, ignoreRoofedRequirement), out intVec, -1));
+					flag = (allowUnreachable && CellFinder.TryFindRandomCellNear(pos, map, (int)Radius, (IntVec3 c) => CompSpawnerHives.CanSpawnHiveAt(c, map, pos, parentDef, minDist, ignoreRoofedRequirement), out intVec, -1));
 				}
 				if (flag)
 				{
@@ -200,8 +242,10 @@ namespace ExtraHives
 		// Token: 0x06005335 RID: 21301 RVA: 0x001BD318 File Offset: 0x001BB518
 		private static bool CanSpawnHiveAt(IntVec3 c, Map map, IntVec3 parentPos, ThingDef parentDef, float minDist, bool ignoreRoofedRequirement)
 		{
-			if ((!ignoreRoofedRequirement && !c.Roofed(map)) || (!c.Walkable(map) || (minDist != 0f && (float)c.DistanceToSquared(parentPos) < minDist * minDist)) || c.GetFirstThing(map, ThingDefOf.InsectJelly) != null || c.GetFirstThing(map, ThingDefOf.GlowPod) != null)
+			Log.Message("Checking "+ c + " for " + parentDef + " minDist "+minDist+ " need roofed: " + !ignoreRoofedRequirement);
+			if ((!ignoreRoofedRequirement && !c.Roofed(map)) || (!c.Walkable(map) || (minDist != 0f && (float)c.DistanceToSquared(parentPos) < minDist * minDist)) || c.GetFirstThing(map, RimWorld.ThingDefOf.InsectJelly) != null || c.GetFirstThing(map, RimWorld.ThingDefOf.GlowPod) != null)
 			{
+				Log.Message(c+" failed due to lacking roof!!");
 				return false;
 			}
 			for (int i = 0; i < 9; i++)
@@ -212,7 +256,7 @@ namespace ExtraHives
 					List<Thing> thingList = c2.GetThingList(map);
 					for (int j = 0; j < thingList.Count; j++)
 					{
-						if (thingList[j] is RimWorld.Hive || thingList[j] is TunnelHiveSpawner)
+						if (thingList[j] is Hive || thingList[j] is TunnelHiveSpawner)
 						{
 							return false;
 						}
@@ -243,7 +287,14 @@ namespace ExtraHives
 					action = delegate ()
 					{
 						Hive hive;
-						this.TrySpawnChildHive(false, out hive);
+						if (this.TrySpawnChildHive(true, out hive))
+						{
+
+						}
+						else
+						{
+							Log.Warning("Failed Spawning hive");
+						}
 					}
 				};
 			}
@@ -256,6 +307,8 @@ namespace ExtraHives
 			Scribe_Values.Look<int>(ref this.nextHiveSpawnTick, "nextHiveSpawnTick", 0, false);
 			Scribe_Values.Look<bool>(ref this.canSpawnHives, "canSpawnHives", true, false);
 			Scribe_Values.Look<bool>(ref this.wasActivated, "wasActivated", true, false);
+			Scribe_Values.Look<int>(ref this.plantHarmAge, "plantHarmAge", 0, false);
+			Scribe_Values.Look<int>(ref this.ticksToPlantHarm, "ticksToPlantHarm", 0, false);
 		}
 
 		// Token: 0x04002DEC RID: 11756
@@ -269,5 +322,14 @@ namespace ExtraHives
 
 		// Token: 0x04002DEF RID: 11759
 		public const int MaxHivesPerMap = 30;
+
+		// Token: 0x04002F98 RID: 12184
+		private int plantHarmAge;
+
+		// Token: 0x04002F99 RID: 12185
+		private int ticksToPlantHarm;
+
+		// Token: 0x04002F9A RID: 12186
+		protected CompInitiatable initiatableComp;
 	}
 }

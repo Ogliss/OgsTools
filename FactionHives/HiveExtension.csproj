@@ -31,6 +31,32 @@
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
   <ItemGroup>
+    <Compile Include="IncidentWorker_InfestedMeteoriteImpact.cs" />
+    <Compile Include="Harmony\MainHarmonyInstance.cs" />
+    <Compile Include="Harmony\Patches\Patch_GenerateImpliedDefs_PreResolve.cs" />
+    <Compile Include="ThingDefOf.cs" />
+    <Compile Include="PawnGroupKindDefOf.cs" />
+    <Compile Include="PawnsArrivalModeWorker_CenterTunnel.cs" />
+    <Compile Include="PawnsArrivalModeDefOf.cs" />
+    <Compile Include="PawnsArrivalModeWorkerUtility.cs" />
+    <Compile Include="TunnelsArrivalActionUtility.cs" />
+    <Compile Include="PawnsArrivalModeWorker_EdgeTunnelGroups.cs" />
+    <Compile Include="PawnsArrivalModeWorker_EdgeTunnel.cs" />
+    <Compile Include="PawnsArrivalModeWorker_RandomTunnel.cs" />
+    <Compile Include="TunnelRaidSpawner.cs" />
+    <Compile Include="TunnelRaidUtility.cs" />
+    <Compile Include="ExtraInfestationIncidentUtility.cs" />
+    <Compile Include="IncidentWorker_GrowZoneInfestation.cs" />
+    <Compile Include="InfestationExtension.cs" />
+    <Compile Include="ExtendedSpawnedPawnParams.cs" />
+    <Compile Include="IncidentWorker_DeepDrillInfestation.cs" />
+    <Compile Include="PlaceWorker_ShowHiveRadius.cs" />
+    <Compile Include="Main.cs" />
+    <Compile Include="IncidentWorker_Infestation.cs" />
+    <Compile Include="InfestationUtility.cs" />
+    <Compile Include="InfestationCellFinder.cs" />
+    <Compile Include="TunnelExtension.cs" />
+    <Compile Include="HiveExtension.cs" />
     <Compile Include="TunnelHiveSpawner.cs" />
     <Compile Include="CompSpawnerPawn.cs" />
     <Compile Include="CompSpawnerHives.cs" />
@@ -45,6 +71,10 @@
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>
+    <Reference Include="CrashedShipsExtension">
+      <HintPath>..\ExpandedCrashedShips\bin\Debug\CrashedShipsExtension.dll</HintPath>
+      <Private>False</Private>
+    </Reference>
     <Reference Include="System.Runtime.InteropServices.RuntimeInformation" />
   </ItemGroup>
   <ItemGroup>

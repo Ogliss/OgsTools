@@ -5,12 +5,20 @@ using Verse.AI.Group;
 
 namespace CrashedShipsExtension
 {
-    // Token: 0x02000175 RID: 373
+    // Token: 0x02000175 RID: 373 CrashedShipsExtension.LordJob_PawnsDefendShip
     public class LordJob_PawnsDefendShip : LordJob
     {
         // Token: 0x060007BF RID: 1983 RVA: 0x00043D8B File Offset: 0x0004218B
         public LordJob_PawnsDefendShip()
         {
+        }
+
+        public LordJob_PawnsDefendShip(SpawnedPawnParams parms)
+        {
+            this.defSpot = parms.defSpot;
+            this.defendRadius = parms.defendRadius;
+            this.shipPart = parms.spawnerThing;
+            this.faction = parms.spawnerThing.Faction;
         }
 
         // Token: 0x060007C0 RID: 1984 RVA: 0x00043D93 File Offset: 0x00042193
@@ -48,10 +56,11 @@ namespace CrashedShipsExtension
             StateGraph stateGraph = new StateGraph();
             if (!this.defSpot.IsValid)
             {
-                //    Log.Warning("LordJob_PawnsDefendShip defSpot is invalid. Returning graph for LordJob_AssaultColony.", false);
+                Log.Warning("LordJob_PawnsDefendShip defSpot is invalid. Returning graph for LordJob_AssaultColony.", false);
                 stateGraph.AttachSubgraph(new LordJob_AssaultColony(this.faction, true, true, false, false, true).CreateGraph());
                 return stateGraph;
             }
+            Log.Message("defspot "+ this.defSpot+" defradius "+ this.defendRadius);
             LordToil_DefendPoint lordToil_DefendPoint = new LordToil_DefendPoint(this.defSpot, this.defendRadius);
             stateGraph.StartingToil = lordToil_DefendPoint;
             LordToil_AssaultColony lordToil_AssaultColony = new LordToil_AssaultColony(false);

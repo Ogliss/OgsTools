@@ -22,15 +22,15 @@ namespace AbilitesExtended.HarmonyInstance
         {
             if (__instance.GetType() == typeof(Verb_ShootEquipment))
             {
-                Log.Message(__instance.DirectOwner.GetType().Name);
+            //    Log.Message(__instance.DirectOwner.GetType().Name);
                 Verb_ShootEquipment verb = (Verb_ShootEquipment)__instance;
                 EquipmentAbility equipmentAbility = verb.ability as EquipmentAbility;
                 if (equipmentAbility != null)
                 {
-                    Log.Message(equipmentAbility.def.LabelCap);
+                //    Log.Message(equipmentAbility.def.LabelCap);
                     if (equipmentAbility.sourceEquipment != null)
                     {
-                        Log.Message(equipmentAbility.sourceEquipment.def.LabelCap);
+                    //    Log.Message(equipmentAbility.sourceEquipment.def.LabelCap);
                     }
                     __result = equipmentAbility.sourceEquipment;
                 }

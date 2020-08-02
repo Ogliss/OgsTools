@@ -10,13 +10,6 @@ using Verse.AI.Group;
 
 namespace ExtraHives
 {
-	public class HiveExtension : DefModExtension
-	{
-		public FactionDef Faction;
-		public ThingDef TunnelDef;
-		public ThingDef TunnelDefchild;
-		public ThingDef HiveDefchild;
-	}
 	// Token: 0x02000CA1 RID: 3233
 	public class Hive : ThingWithComps, IAttackTarget, ILoadReferenceable
 	{
@@ -87,15 +80,11 @@ namespace ExtraHives
 		public static void ResetStaticData()
 		{
 			Hive.spawnablePawnKinds.Clear();
-			Hive.spawnablePawnKinds.Add(PawnKindDefOf.Megascarab);
-			Hive.spawnablePawnKinds.Add(PawnKindDefOf.Spelopede);
-			Hive.spawnablePawnKinds.Add(PawnKindDefOf.Megaspider);
 		}
 
 		// Token: 0x06004E24 RID: 20004 RVA: 0x001A40D1 File Offset: 0x001A22D1
 		public override void SpawnSetup(Map map, bool respawningAfterLoad)
 		{
-			base.SpawnSetup(map, respawningAfterLoad);
 			if (base.Faction == null)
 			{
 				Faction faction = Faction.OfInsects;
@@ -111,6 +100,7 @@ namespace ExtraHives
 					}
 				}
 				this.SetFaction(faction, null);
+				base.SpawnSetup(map, respawningAfterLoad);
 			}
 		}
 
@@ -171,6 +161,10 @@ namespace ExtraHives
 				{
 					lord.ReceiveMemo(Hive.MemoAttackedByEnemy);
 				}
+				if (Main.CrashedShipsExtension)
+				{
+					CrashedShipsExtensionMemoAttackedByEnemy();
+				}
 			}
 			if (dinfo.Def == DamageDefOf.Flame && (float)this.HitPoints < (float)base.MaxHitPoints * 0.3f)
 			{
@@ -179,8 +173,29 @@ namespace ExtraHives
 				{
 					lord2.ReceiveMemo(Hive.MemoBurnedBadly);
 				}
+				if (Main.CrashedShipsExtension)
+				{
+					CrashedShipsExtensionMemoBurnedBadly();
+				}
 			}
 			base.PostApplyDamage(dinfo, totalDamageDealt);
+		}
+
+		public void CrashedShipsExtensionMemoAttackedByEnemy()
+		{
+			Lord lord = base.GetComp<CrashedShipsExtension.CompSpawnerOnDamaged>()?.Lord;
+			if (lord != null)
+			{
+				lord.ReceiveMemo(Hive.MemoAttackedByEnemy);
+			}
+		}
+		public void CrashedShipsExtensionMemoBurnedBadly()
+		{
+			Lord lord = base.GetComp<CrashedShipsExtension.CompSpawnerOnDamaged>()?.Lord;
+			if (lord != null)
+			{
+				lord.ReceiveMemo(Hive.MemoBurnedBadly);
+			}
 		}
 
 		// Token: 0x06004E29 RID: 20009 RVA: 0x001A42B8 File Offset: 0x001A24B8
@@ -264,5 +279,7 @@ namespace ExtraHives
 
 		// Token: 0x04002BE3 RID: 11235
 		public static readonly string MemoDestroyedNonRoofCollapse = "HiveDestroyedNonRoofCollapse";
+
+		public static readonly string MemoAssaultOnSpawn = "AssaultOnSpawn";
 	}
 }

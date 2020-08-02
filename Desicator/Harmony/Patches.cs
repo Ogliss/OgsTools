@@ -56,7 +56,7 @@ namespace Dessicator
             HediffDef def = DefDatabase<HediffDef>.GetNamed("RT_HuskTouch");
             if (__instance.health.hediffSet.HasHediff(def))
             {
-                Log.Message("husktouch present");
+            //    Log.Message("husktouch present");
                 CompRottable compRottable = __instance.Corpse.TryGetComp<CompRottable>();
                 compRottable.RotImmediately();
             }

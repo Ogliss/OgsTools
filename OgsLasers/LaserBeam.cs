@@ -68,14 +68,14 @@ namespace OgsLasers
             a.y = b.y = def.Altitude;
 
             SpawnBeam(a, b);
-            /*
+            
             bool createsExplosion = this.def.projectile.explosionRadius>0f;
             if (createsExplosion)
             {
                 this.Explode(hitThing, false);
                 GenExplosion.NotifyNearbyPawnsOfDangerousExplosive(this, this.def.projectile.damageDef, this.launcher.Faction);
             }
-            */
+            
             Pawn pawn = launcher as Pawn;
             IDrawnWeaponWithRotation weapon = null;
             if (pawn != null && pawn.equipment != null) weapon = pawn.equipment.Primary as IDrawnWeaponWithRotation;

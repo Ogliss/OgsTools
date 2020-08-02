@@ -9,9 +9,10 @@ namespace ExtraHives
 	public static class HiveUtility
 	{
 		// Token: 0x06004E30 RID: 20016 RVA: 0x001A4409 File Offset: 0x001A2609
-		public static int TotalSpawnedHivesCount(Map map)
+		public static int TotalSpawnedHivesCount(Map map, ThingDef thingDef = null)
 		{
-			return map.listerThings.ThingsOfDef(ThingDefOf.Hive).Count;
+			ThingDef def = thingDef ?? RimWorld.ThingDefOf.Hive;
+			return map.listerThings.ThingsOfDef(def).Count;
 		}
 
 		// Token: 0x06004E31 RID: 20017 RVA: 0x001A4420 File Offset: 0x001A2620

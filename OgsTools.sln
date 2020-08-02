@@ -48,8 +48,6 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ApparelRestrictor", "Appare
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Dessicator", "Desicator\Dessicator.csproj", "{AE9AA452-D61D-40F6-BF6F-027C450E52BE}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PerfectlyGenericItem", "PerfectlyGenericItem\PerfectlyGenericItem.csproj", "{D1F9F9C6-8975-4051-AF2B-79087673F89B}"
-EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "WeaponizedNanites", "WeaponizedNanites\WeaponizedNanites.csproj", "{2F6FA017-C6D2-4A13-BEF6-42964EA04B6D}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Metamorphasis", "Metamorphasis\Metamorphasis.csproj", "{C48EC39B-CA79-4903-82C9-0A9E0C29D810}"
@@ -59,6 +57,8 @@ EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "StartingColonistTitleLetter", "StartingColonistTitleLetter\StartingColonistTitleLetter.csproj", "{EE47C152-9B68-45D1-BB62-A9478A1BCAA0}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CloakingDevice", "CloakingDevice\CloakingDevice.csproj", "{BE714342-1653-4494-9A1E-C641E76CE20C}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "RimWorldTemplate", "CompRegeneration\RimWorldTemplate.csproj", "{E19E5881-D99B-401A-8F7E-75389191EBE9}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -146,10 +146,6 @@ Global
 		{AE9AA452-D61D-40F6-BF6F-027C450E52BE}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{AE9AA452-D61D-40F6-BF6F-027C450E52BE}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{AE9AA452-D61D-40F6-BF6F-027C450E52BE}.Release|Any CPU.Build.0 = Release|Any CPU
-		{D1F9F9C6-8975-4051-AF2B-79087673F89B}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{D1F9F9C6-8975-4051-AF2B-79087673F89B}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{D1F9F9C6-8975-4051-AF2B-79087673F89B}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{D1F9F9C6-8975-4051-AF2B-79087673F89B}.Release|Any CPU.Build.0 = Release|Any CPU
 		{2F6FA017-C6D2-4A13-BEF6-42964EA04B6D}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{2F6FA017-C6D2-4A13-BEF6-42964EA04B6D}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{2F6FA017-C6D2-4A13-BEF6-42964EA04B6D}.Release|Any CPU.ActiveCfg = Release|Any CPU
@@ -170,6 +166,10 @@ Global
 		{BE714342-1653-4494-9A1E-C641E76CE20C}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{BE714342-1653-4494-9A1E-C641E76CE20C}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{BE714342-1653-4494-9A1E-C641E76CE20C}.Release|Any CPU.Build.0 = Release|Any CPU
+		{E19E5881-D99B-401A-8F7E-75389191EBE9}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{E19E5881-D99B-401A-8F7E-75389191EBE9}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{E19E5881-D99B-401A-8F7E-75389191EBE9}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{E19E5881-D99B-401A-8F7E-75389191EBE9}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

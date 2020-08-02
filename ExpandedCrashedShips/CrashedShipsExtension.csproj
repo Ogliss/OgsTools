@@ -31,6 +31,9 @@
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
   <ItemGroup>
+    <Compile Include="Class1.cs" />
+    <Compile Include="ExtendedSpawnedPawnParams.cs" />
+    <Compile Include="CompSpawnerPawn.cs" />
     <Compile Include="CompSpawnerOnDamaged.cs" />
     <Compile Include="LordJob_PawnsDefendShip.cs" />
     <Compile Include="IncidentWorker_CrashedShip.cs" />

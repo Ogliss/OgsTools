@@ -65,6 +65,7 @@ namespace AbilitesExtended
                 launcher = compMannable.ManningPawn;
                 equipment = this.caster;
             }
+            /*
             if (equipment == null)
             {
                 Log.Message("equipment==null");
@@ -73,6 +74,7 @@ namespace AbilitesExtended
             {
                 Log.Message(equipment.LabelShortCap);
             }
+            */
             Vector3 drawPos = this.caster.DrawPos;
             Projectile projectile2 = (Projectile)GenSpawn.Spawn(projectile, shootLine.Source, this.caster.Map, WipeMode.Vanish);
             if (this.verbProps.forcedMissRadius > 0.5f)

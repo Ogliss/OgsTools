@@ -6,7 +6,7 @@ using Verse;
 
 namespace CrashedShipsExtension
 {
-    // Token: 0x0200034F RID: 847
+    // Token: 0x0200034F RID: 847 CrashedShipsExtension.IncidentWorker_CrashedShip
     public class IncidentWorker_CrashedShip : IncidentWorker
     {
         // Token: 0x17000227 RID: 551
@@ -46,14 +46,14 @@ namespace CrashedShipsExtension
             for (int i = 0; i < countToSpawn; i++)
             {
                 IntVec3 intVec;
-                if (!CellFinderLoose.TryFindSkyfallerCell(ThingDefOf.CrashedShipPartIncoming, map, out intVec, 14, default(IntVec3), -1, false, true, true, true, true, false, null))
+                ThingDef faller = CrashedShipPart.GetComp<CompSpawnerOnDamaged>().Props.skyFaller ?? ThingDefOf.CrashedShipPartIncoming;
+                if (!CellFinderLoose.TryFindSkyfallerCell(faller, map, out intVec, 14, default(IntVec3), -1, false, true, true, true, true, false, null))
                 {
                     break;
                 }
                 CrashedShipPart.SetFaction(faction, null);
                 CrashedShipPart.GetComp<CompSpawnerOnDamaged>().pointsLeft = Mathf.Max(parms.points * 0.9f, 300f);
 
-                ThingDef faller = CrashedShipPart.GetComp<CompSpawnerOnDamaged>().Props.skyFaller ?? ThingDefOf.CrashedShipPartIncoming;
                 Skyfaller skyfaller = SkyfallerMaker.MakeSkyfaller(faller, CrashedShipPart);
                 skyfaller.shrapnelDirection = shrapnelDirection;
                 GenSpawn.Spawn(skyfaller, intVec, map, WipeMode.Vanish);

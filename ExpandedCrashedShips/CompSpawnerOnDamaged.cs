@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using RimWorld;
 using RimWorld.Planet;
+using UnityEngine;
 using Verse;
 using Verse.AI;
 using Verse.AI.Group;
@@ -20,7 +21,7 @@ namespace CrashedShipsExtension
         }
         public FactionDef Faction;
         public Faction faction;
-        public List<PawnKindDef> allowedKinddefs = new List<PawnKindDef>();
+        public List<PawnGenOption> allowedKinddefs = new List<PawnGenOption>();
         public List<PawnKindDef> disallowedKinddefs = new List<PawnKindDef>();
         public List<FactionDef> Factions = new List<FactionDef>();
         public List<FactionDef> disallowedFactions = new List<FactionDef>();
@@ -29,6 +30,8 @@ namespace CrashedShipsExtension
         public bool allowNonHumanlike = false;
         public bool allowDefeated = true;
         public ThingDef skyFaller;
+        public float defaultPoints = 550f;
+        public float minPoints = 300f;
     }
 
     // Token: 0x02000769 RID: 1897
@@ -37,6 +40,7 @@ namespace CrashedShipsExtension
         public CompProperties_SpawnerOnDamaged Props => (CompProperties_SpawnerOnDamaged)props;
         public FactionDef factionDef;
         public Faction faction = null;
+        public Lord Lord => this.lord;
         public List<Faction> AllFactions
         {
             get
@@ -183,6 +187,24 @@ namespace CrashedShipsExtension
             }
         }
 
+        public override void PostSpawnSetup(bool respawningAfterLoad)
+        {
+            base.PostSpawnSetup(respawningAfterLoad);
+            if (!respawningAfterLoad)
+            {
+                if (parent.Faction == null)
+                {
+                    parent.SetFaction(OfFaction);
+                    Log.Message("set parent faction to "+ this.parent.Faction);
+                }
+                if (this.pointsLeft == 0f)
+                {
+                    this.pointsLeft = Mathf.Max(Props.defaultPoints * 0.9f, Props.minPoints);
+                    Log.Message("set pointsLeft to " + this.pointsLeft);
+                }
+            }
+        }
+
         // Token: 0x060029EE RID: 10734 RVA: 0x0013DA2C File Offset: 0x0013BE2C
         private void TrySpawnPawns()
         {
@@ -198,7 +220,7 @@ namespace CrashedShipsExtension
             {
                 if (!CellFinder.TryFindRandomCellNear(this.parent.Position, this.parent.Map, 5, (IntVec3 c) => c.Standable(this.parent.Map) && this.parent.Map.reachability.CanReach(c, this.parent, PathEndMode.Touch, TraverseParms.For(TraverseMode.PassDoors, Danger.Deadly, false)), out IntVec3 invalid, -1))
                 {
-                    //    Log.Error("Found no place for Pawns to defend " + this, false);
+                        Log.Error("Found no place for Pawns to defend " + this, false);
                     invalid = IntVec3.Invalid;
                 }
                 LordJob_PawnsDefendShip lordJob = new LordJob_PawnsDefendShip(this.parent, this.parent.Faction, 21f, invalid);
@@ -208,10 +230,10 @@ namespace CrashedShipsExtension
             {
                 while (this.pointsLeft > 0f)
                 {
-                    if (!(from def in Props.allowedKinddefs.NullOrEmpty() ? DefDatabase<PawnKindDef>.AllDefs : Props.allowedKinddefs
-                          where ((def.defaultFactionType == faction.def && def.defaultFactionType != null) || (def.defaultFactionType == null && faction.def.pawnGroupMakers.Any(pgm => pgm.options.Any(opt => opt.kind == def) && pgm.kindDef != PawnGroupKindDefOf.Trader && pgm.kindDef != PawnGroupKindDefOf.Peaceful))) && def.isFighter && def.combatPower <= this.pointsLeft
+                    if (!(from def in Props.allowedKinddefs
+                          where ((def.kind.defaultFactionType == faction.def && def.kind.defaultFactionType != null) || (def.kind.defaultFactionType == null && faction.def.pawnGroupMakers.Any(pgm => pgm.options.Any(opt => opt.kind == def.kind) && pgm.kindDef != PawnGroupKindDefOf.Trader && pgm.kindDef != PawnGroupKindDefOf.Peaceful))) && def.kind.isFighter && def.kind.combatPower <= this.pointsLeft
                           //where ((def.defaultFactionType == faction.def && def.defaultFactionType != null) || (!faction.def.pawnGroupMakers.All(pgm => pgm.options.Any(opt => opt.kind == def)) && def.defaultFactionType == null)) && def.isFighter && def.combatPower <= this.pointsLeft
-                          select def).TryRandomElement(out PawnKindDef kind))
+                          select def).TryRandomElementByWeight( x=> x.selectionWeight, out PawnGenOption kind))
                     {
                         //    Log.Message(string.Format("kindDef: {0}", kind));
                         break;
@@ -223,7 +245,7 @@ namespace CrashedShipsExtension
                         break;
                     }
                     //    Log.Message(string.Format("kindDef: {0}", kind));
-                    PawnGenerationRequest request = new PawnGenerationRequest(kind, faction, PawnGenerationContext.NonPlayer, -1, true, false, false, false, true, false, 1f, false, true, true, false, false, false, false);
+                    PawnGenerationRequest request = new PawnGenerationRequest(kind.kind, faction, PawnGenerationContext.NonPlayer, -1, true, false, false, false, true, false, 1f, false, true, true, false, false, false, false);
                     Pawn pawn = PawnGenerator.GeneratePawn(request);
                     if (!GenPlace.TryPlaceThing(pawn, center, this.parent.Map, ThingPlaceMode.Near, null, null))
                     {

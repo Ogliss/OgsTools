@@ -30,7 +30,7 @@ namespace StartingColonistTitleLetter
             List<Pawn> startingPawns = Find.GameInitData.startingAndOptionalPawns;
             if (startingPawns.NullOrEmpty())
             {
-                Log.Message("startingPawns.NullOrEmpty()");
+            //    Log.Message("startingPawns.NullOrEmpty()");
                 return true;
             }
             if (pawn.Faction == Faction.OfPlayer)

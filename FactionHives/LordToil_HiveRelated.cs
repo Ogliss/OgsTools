@@ -1,6 +1,7 @@
 ﻿using RimWorld;
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using Verse;
 using Verse.AI;
 using Verse.AI.Group;
@@ -51,7 +52,27 @@ namespace ExtraHives
 		// Token: 0x060032A0 RID: 12960 RVA: 0x001196A0 File Offset: 0x001178A0
 		private Hive FindClosestHive(Pawn pawn)
 		{
-			return (Hive)GenClosest.ClosestThingReachable(pawn.Position, pawn.Map, ThingRequest.ForDef(ThingDefOf.Hive), PathEndMode.Touch, TraverseParms.For(pawn, Danger.Deadly, TraverseMode.ByPawn, false), 30f, (Thing x) => x.Faction == pawn.Faction, null, 0, 30, false, RegionType.Set_Passable, false);
+			ThingDef hiveDef = RimWorld.ThingDefOf.Hive;
+			Hive hive = null;
+			bool pawnFaction = pawn.Faction != null;
+			bool pawnDefaultFaction = pawn.kindDef.defaultFactionType != null;
+			FactionDef factionDef = pawnFaction ? pawn.Faction.def : (pawnDefaultFaction ? pawn.kindDef.defaultFactionType : null);
+
+			List <ThingDef> defs = Main.HivedefsFor(factionDef);
+
+			if (pawn.Faction!=null && !defs.NullOrEmpty())
+			{
+				foreach (ThingDef td in defs)
+				{
+					hiveDef = td;
+					hive = GenClosest.ClosestThingReachable(pawn.Position, pawn.Map, ThingRequest.ForDef(hiveDef), PathEndMode.Touch, TraverseParms.For(pawn, Danger.Deadly, TraverseMode.ByPawn, false), 30f, (Thing x) => x.Faction == pawn.Faction, null, 0, 30, false, RegionType.Set_Passable, false) as Hive;
+					if (hive != null)
+					{
+						return hive;
+					}
+				}
+			}
+			return GenClosest.ClosestThingReachable(pawn.Position, pawn.Map, ThingRequest.ForDef(hiveDef), PathEndMode.Touch, TraverseParms.For(pawn, Danger.Deadly, TraverseMode.ByPawn, false), 30f, (Thing x) => x.Faction == pawn.Faction, null, 0, 30, false, RegionType.Set_Passable, false) as Hive;
 		}
 	}
 }

@@ -19,7 +19,8 @@ namespace ExtraHives
 		}
 
 		// Token: 0x04002DFD RID: 11773
-		public List<PawnKindDef> spawnablePawnKinds;
+		public List<PawnGenOption> spawnablePawnKinds = new List<PawnGenOption>();
+		public List<PawnKindDef> AlwaysSpawnWith = new List<PawnKindDef>();
 
 		// Token: 0x04002DFE RID: 11774
 		public SoundDef spawnSound;
@@ -35,6 +36,7 @@ namespace ExtraHives
 
 		// Token: 0x04002E02 RID: 11778
 		public bool showNextSpawnInInspect;
+		public bool assaultOnSpawn;
 
 		// Token: 0x04002E03 RID: 11779
 		public bool shouldJoinParentLord;
@@ -46,6 +48,8 @@ namespace ExtraHives
 		public float defendRadius = 21f;
 
 		// Token: 0x04002E06 RID: 11782
+		public int initialSpawnDelay = 0;
+
 		public int initialPawnsCount;
 
 		// Token: 0x04002E07 RID: 11783
@@ -85,6 +89,15 @@ namespace ExtraHives
 			}
 		}
 
+		public HiveExtension HiveExtension
+		{
+			get
+			{
+				HiveExtension hiveExtension = null;
+				hiveExtension = this.parent.def.GetModExtension<HiveExtension>();
+				return hiveExtension;
+			}
+		}
 		// Token: 0x17000ECF RID: 3791
 		// (get) Token: 0x0600534B RID: 21323 RVA: 0x001BD7ED File Offset: 0x001BB9ED
 		public Lord Lord
@@ -192,7 +205,9 @@ namespace ExtraHives
 					return lord2 != null && lord2.LordJob.GetType() == lordJobType;
 				};
 				Pawn foundPawn = null;
-				RegionTraverser.BreadthFirstTraverse(spawner.GetRegion(RegionType.Set_Passable), (Region from, Region to) => true, delegate (Region r)
+				Log.Message("for map " + spawner.Map);
+				Log.Message("try get region at "+ spawner.OccupiedRect().AdjacentCells.Where(x=> x.Walkable(spawner.Map)).RandomElement());
+				RegionTraverser.BreadthFirstTraverse(spawner.OccupiedRect().AdjacentCells.Where(x => x.Walkable(spawner.Map)).RandomElement().GetRegion(spawner.Map), (Region from, Region to) => true, delegate (Region r)
 				{
 					List<Thing> list = r.ListerThings.ThingsOfDef(spawner.def);
 					for (int i = 0; i < list.Count; i++)
@@ -221,7 +236,7 @@ namespace ExtraHives
 		}
 
 		// Token: 0x06005352 RID: 21330 RVA: 0x001BDA2C File Offset: 0x001BBC2C
-		public static Lord CreateNewLord(Thing byThing, bool aggressive, float defendRadius, Type lordJobType)
+		public Lord CreateNewLord(Thing byThing, bool aggressive, float defendRadius, Type lordJobType)
 		{
 			IntVec3 invalid;
 			if (!CellFinder.TryFindRandomCellNear(byThing.Position, byThing.Map, 5, (IntVec3 c) => c.Standable(byThing.Map) && byThing.Map.reachability.CanReach(c, byThing, PathEndMode.Touch, TraverseParms.For(TraverseMode.PassDoors, Danger.Deadly, false)), out invalid, -1))
@@ -229,7 +244,7 @@ namespace ExtraHives
 				Log.Error("Found no place for mechanoids to defend " + byThing, false);
 				invalid = IntVec3.Invalid;
 			}
-			return LordMaker.MakeNewLord(byThing.Faction, Activator.CreateInstance(lordJobType, new object[]
+			Lord lord =  LordMaker.MakeNewLord(byThing.Faction, Activator.CreateInstance(lordJobType, new object[]
 			{
 				new SpawnedPawnParams
 				{
@@ -239,11 +254,13 @@ namespace ExtraHives
 					spawnerThing = byThing
 				}
 			}) as LordJob, byThing.Map, null);
+			return lord;
 		}
 
 		// Token: 0x06005353 RID: 21331 RVA: 0x001BDAE8 File Offset: 0x001BBCE8
 		private void SpawnInitialPawns()
 		{
+			Log.Message("SpawnInitialPawns");
 			int num = 0;
 			Pawn pawn;
 			while (num < this.Props.initialPawnsCount && this.TrySpawnPawn(out pawn))
@@ -251,6 +268,13 @@ namespace ExtraHives
 				num++;
 			}
 			this.SpawnPawnsUntilPoints(this.Props.initialPawnsPoints);
+			if (!this.Props.AlwaysSpawnWith.NullOrEmpty())
+			{
+				foreach (var item in this.Props.AlwaysSpawnWith)
+				{
+					this.TrySpawnPawn(out pawn, item);
+				}
+			}
 			this.CalculateNextPawnSpawnTick();
 		}
 
@@ -304,23 +328,24 @@ namespace ExtraHives
 		private PawnKindDef RandomPawnKindDef()
 		{
 			float curPoints = this.SpawnedPawnsPoints;
-			IEnumerable<PawnKindDef> source = !this.Props.spawnablePawnKinds.NullOrEmpty() ? this.Props.spawnablePawnKinds : DefDatabase<PawnKindDef>.AllDefs.Where(x=> x.defaultFactionType!=null && x.defaultFactionType == this.parent.Faction.def);
+
+			IEnumerable<PawnGenOption> source = !this.Props.spawnablePawnKinds.NullOrEmpty() ? this.Props.spawnablePawnKinds : HiveExtension.Faction.pawnGroupMakers.FindAll(x=> x.kindDef == RimWorld.PawnGroupKindDefOf.Combat || x.kindDef == RimWorld.PawnGroupKindDefOf.Settlement).RandomElement().options;
 			if (this.Props.maxSpawnedPawnsPoints > -1f)
 			{
 				source = from x in source
-						 where curPoints + x.combatPower <= this.Props.maxSpawnedPawnsPoints
+						 where curPoints + x.kind.combatPower <= this.Props.maxSpawnedPawnsPoints
 						 select x;
 			}
-			PawnKindDef result;
-			if (source.TryRandomElement(out result))
+			PawnGenOption result;
+			if (source.TryRandomElementByWeight( x=> x.selectionWeight ,out result))
 			{
-				return result;
+				return result.kind;
 			}
 			return null;
 		}
 
 		// Token: 0x06005359 RID: 21337 RVA: 0x001BDC90 File Offset: 0x001BBE90
-		private bool TrySpawnPawn(out Pawn pawn)
+		private bool TrySpawnPawn(out Pawn pawn, PawnKindDef kindDef = null)
 		{
 			if (!this.canSpawnPawns)
 			{
@@ -329,21 +354,38 @@ namespace ExtraHives
 			}
 			if (!this.Props.chooseSingleTypeToSpawn)
 			{
-				this.chosenKind = this.RandomPawnKindDef();
+				this.chosenKind = kindDef !=null ? kindDef : this.RandomPawnKindDef();
 			}
 			if (this.chosenKind == null)
 			{
+				Log.Message("TrySpawnPawn chosenKind == null return false");
 				pawn = null;
 				return false;
 			}
 			int index = this.chosenKind.lifeStages.Count - 1;
-			pawn = PawnGenerator.GeneratePawn(new PawnGenerationRequest(this.chosenKind, this.parent.Faction, PawnGenerationContext.NonPlayer, -1, false, false, false, false, true, false, 1f, false, true, true, true, false, false, false, false, 0f, null, 1f, null, null, null, null, null, new float?(this.chosenKind.race.race.lifeStageAges[index].minAge), null, null, null, null, null, null));
+			Faction faction = null;
+
+			if (HiveExtension?.Faction!=null)
+			{
+				faction = Find.FactionManager.FirstFactionOfDef(HiveExtension.Faction);
+			}
+			else
+			{
+				faction = parent.Faction;
+			}
+			if (parent.Faction == null)
+			{
+				parent.SetFaction(faction);
+			}
+			pawn = PawnGenerator.GeneratePawn(new PawnGenerationRequest(this.chosenKind, faction, PawnGenerationContext.NonPlayer, -1, false, false, false, false, true, false, 1f, false, true, true, true, false, false, false, false, 0f, null, 1f, null, null, null, null, null, new float?(this.chosenKind.race.race.lifeStageAges[index].minAge), null, null, null, null, null, null));
+
 			this.spawnedPawns.Add(pawn);
-			GenSpawn.Spawn(pawn, CellFinder.RandomClosewalkCellNear(this.parent.Position, this.parent.Map, this.Props.pawnSpawnRadius, null), this.parent.Map, WipeMode.Vanish);
+			GenSpawn.Spawn(pawn, CellFinder.RandomClosewalkCellNear(this.parent.OccupiedRect().AdjacentCells.RandomElement(), this.parent.Map, this.Props.pawnSpawnRadius, null), this.parent.Map, WipeMode.Vanish);
 			Lord lord = this.Lord;
 			if (lord == null)
 			{
-				lord = CompSpawnerPawn.CreateNewLord(this.parent, this.aggressive, this.Props.defendRadius, this.Props.lordJob);
+			//	Log.Message("make new lord of "+ this.parent.Faction +" for "+this.parent+" agro "+aggressive+" radius "+Props.defendRadius+" Job: "+this.Props.lordJob);
+				lord = CreateNewLord(this.parent, this.aggressive, this.Props.defendRadius, this.Props.lordJob);
 			}
 			lord.AddPawn(pawn);
 			if (this.Props.spawnSound != null)
@@ -364,18 +406,37 @@ namespace ExtraHives
 			base.PostSpawnSetup(respawningAfterLoad);
 			if (!respawningAfterLoad && this.Active && this.nextPawnSpawnTick == -1)
 			{
-				this.SpawnInitialPawns();
+				initialSpawnDelay = Props.initialSpawnDelay;
+				//	this.SpawnInitialPawns();
 			}
+		}
+
+		public override void PostPostMake()
+		{
+			base.PostPostMake();
+		//	Log.Message("SpawnInitialPawns delay " + initialSpawnDelay);
 		}
 
 		// Token: 0x0600535B RID: 21339 RVA: 0x001BDE5C File Offset: 0x001BC05C
 		public override void CompTick()
 		{
-			if (this.Active && this.parent.Spawned && this.nextPawnSpawnTick == -1)
+			if (this.parent.Map == null)
+			{
+				if (this.initialSpawnDelay == -1)
+				{
+					initialSpawnDelay = Props.initialSpawnDelay;
+				}
+				return;
+			}
+			if (initialSpawnDelay>-1)
+			{
+				initialSpawnDelay--;
+			}
+			if (this.Active && this.parent.Spawned && this.initialSpawnDelay == 0)
 			{
 				this.SpawnInitialPawns();
 			}
-			if (this.parent.Spawned)
+			if (this.parent.Spawned && this.initialSpawnDelay == -1)
 			{
 				this.FilterOutUnspawnedPawns();
 				if (this.Active && Find.TickManager.TicksGame >= this.nextPawnSpawnTick)
@@ -454,6 +515,7 @@ namespace ExtraHives
 		{
 			base.PostExposeData();
 			Scribe_Values.Look<int>(ref this.nextPawnSpawnTick, "nextPawnSpawnTick", 0, false);
+			Scribe_Values.Look<int>(ref this.initialSpawnDelay, "initialSpawnDelay", 0, false);
 			Scribe_Values.Look<int>(ref this.pawnsLeftToSpawn, "pawnsLeftToSpawn", -1, false);
 			Scribe_Collections.Look<Pawn>(ref this.spawnedPawns, "spawnedPawns", LookMode.Reference, Array.Empty<object>());
 			Scribe_Values.Look<bool>(ref this.aggressive, "aggressive", false, false);
@@ -471,6 +533,7 @@ namespace ExtraHives
 
 		// Token: 0x04002E0F RID: 11791
 		public int nextPawnSpawnTick = -1;
+		public int initialSpawnDelay = -1;
 
 		// Token: 0x04002E10 RID: 11792
 		public int pawnsLeftToSpawn = -1;

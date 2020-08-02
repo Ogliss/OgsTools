@@ -11,11 +11,12 @@ namespace ExtraHives
 	[StaticConstructorOnStartup]
 	public class TunnelHiveSpawner : ThingWithComps
 	{
+		public TunnelExtension Ext => this.def.HasModExtension<TunnelExtension>() ? this.def.GetModExtension<TunnelExtension>() : null;
 		private int secondarySpawnTick;
-
 		public bool spawnHive = true;
+		public Hive hive = null;
 
-		public float insectsPoints;
+		public float initialPoints;
 
 		public bool spawnedByInfestationThingComp;
 
@@ -23,7 +24,7 @@ namespace ExtraHives
 
 		private static MaterialPropertyBlock matPropertyBlock = new MaterialPropertyBlock();
 
-		private readonly FloatRange ResultSpawnDelay = new FloatRange(26f, 30f);
+		public FloatRange ResultSpawnDelay = new FloatRange(26f, 30f);
 
 		[TweakValue("Gameplay", 0f, 1f)]
 		private static float DustMoteSpawnMTB = 0.2f;
@@ -38,13 +39,35 @@ namespace ExtraHives
 
 		private static List<ThingDef> filthTypes = new List<ThingDef>();
 
+		private Faction faction = null;
+		public FactionDef factiondef = null;
+		public new Faction Faction
+		{
+			get
+			{
+				if (faction == null && (Ext != null && Ext.Faction != null))
+				{
+					faction = Find.FactionManager.FirstFactionOfDef(Ext.Faction);
+				}
+				if (faction == null && factiondef!=null)
+				{
+					faction = Find.FactionManager.FirstFactionOfDef(factiondef);
+				}
+				return faction;
+			}
+			set
+			{
+				faction = value;
+			}
+		}
+
 		public static void ResetStaticData()
 		{
 			filthTypes.Clear();
-			filthTypes.Add(ThingDefOf.Filth_Dirt);
-			filthTypes.Add(ThingDefOf.Filth_Dirt);
-			filthTypes.Add(ThingDefOf.Filth_Dirt);
-			filthTypes.Add(ThingDefOf.Filth_RubbleRock);
+			filthTypes.Add(RimWorld.ThingDefOf.Filth_Dirt);
+			filthTypes.Add(RimWorld.ThingDefOf.Filth_Dirt);
+			filthTypes.Add(RimWorld.ThingDefOf.Filth_Dirt);
+			filthTypes.Add(RimWorld.ThingDefOf.Filth_RubbleRock);
 		}
 
 		public override void ExposeData()
@@ -52,15 +75,26 @@ namespace ExtraHives
 			base.ExposeData();
 			Scribe_Values.Look(ref secondarySpawnTick, "secondarySpawnTick", 0);
 			Scribe_Values.Look(ref spawnHive, "spawnHive", defaultValue: true);
-			Scribe_Values.Look(ref insectsPoints, "insectsPoints", 0f);
+			Scribe_Values.Look(ref initialPoints, "insectsPoints", 0f);
 			Scribe_Values.Look(ref spawnedByInfestationThingComp, "spawnedByInfestationThingComp", defaultValue: false);
+			Scribe_Defs.Look(ref factiondef, "factiondef");
+			Scribe_References.Look(ref faction, "faction");
+			Scribe_Deep.Look(ref hive, "hive", null);
 		}
 
 		public override void SpawnSetup(Map map, bool respawningAfterLoad)
 		{
 			base.SpawnSetup(map, respawningAfterLoad);
+			ResetStaticData();
 			if (!respawningAfterLoad)
 			{
+				if (Ext!=null)
+				{
+					if (Ext.spawnWavePoints>0)
+					{
+						this.initialPoints = Ext.spawnWavePoints;
+					}
+				}
 				secondarySpawnTick = Find.TickManager.TicksGame + ResultSpawnDelay.RandomInRange.SecondsToTicks();
 			}
 			CreateSustainer();
@@ -68,13 +102,14 @@ namespace ExtraHives
 
 		public override void Tick()
 		{
+			
 			if (!base.Spawned)
 			{
 				return;
 			}
 			sustainer.Maintain();
 			Vector3 vector = base.Position.ToVector3Shifted();
-			if (Rand.MTBEventOccurs(FilthSpawnMTB, 1f, 1.TicksToSeconds()) && CellFinder.TryFindRandomReachableCellNear(base.Position, base.Map, FilthSpawnRadius, TraverseParms.For(TraverseMode.NoPassClosedDoors), null, null, out IntVec3 result))
+			if (Rand.MTBEventOccurs(FilthSpawnMTB, 1f, 1.TicksToSeconds()) && CellFinder.TryFindRandomReachableCellNear(base.Position, base.Map, FilthSpawnRadius, TraverseParms.For(TraverseMode.NoPassClosedDoors), null, null, out IntVec3 result) && !filthTypes.NullOrEmpty())
 			{
 				FilthMaker.TryMakeFilth(result, base.Map, filthTypes.RandomElement());
 			}
@@ -92,49 +127,59 @@ namespace ExtraHives
 			Map map = base.Map;
 			IntVec3 position = base.Position;
 			Destroy();
+			Hive obj = null;
 			if (spawnHive)
 			{
-				Hive obj = (Hive)GenSpawn.Spawn(ThingMaker.MakeThing(ThingDefOf.Hive), position, map);
-				obj.SetFaction(Faction.OfInsects);
+				obj = (Hive)GenSpawn.Spawn(ThingMaker.MakeThing(this.Ext.HiveDef), position, map);
+				obj.SetFaction(Faction);
 				obj.questTags = questTags;
 				foreach (CompSpawner comp in obj.GetComps<CompSpawner>())
 				{
-					if (comp.PropsSpawner.thingToSpawn == ThingDefOf.InsectJelly)
+					if (comp.PropsSpawner.thingToSpawn == RimWorld.ThingDefOf.InsectJelly)
 					{
 						comp.TryDoSpawn();
 						break;
 					}
 				}
 			}
-			if (!(insectsPoints > 0f))
-			{
-				return;
-			}
-            insectsPoints = Mathf.Max(insectsPoints, RimWorld.Hive.spawnablePawnKinds.Min((PawnKindDef x) => x.combatPower));
-			float pointsLeft = insectsPoints;
 			List<Pawn> list = new List<Pawn>();
-			int num = 0;
-			PawnKindDef result2;
-			for (; pointsLeft > 0f; pointsLeft -= result2.combatPower)
+			if ((initialPoints > 0f))
 			{
-				num++;
-				if (num > 1000)
+				initialPoints = Mathf.Max(initialPoints, this.Ext.HiveDef.GetCompProperties<CompProperties_SpawnerPawn>().spawnablePawnKinds.Min((PawnGenOption x) => x.Cost));
+				float pointsLeft = initialPoints;
+				int num = 0;
+				PawnGenOption result2;
+				for (; pointsLeft > 0f; pointsLeft -= result2.Cost)
 				{
-					Log.Error("Too many iterations.");
-					break;
+					num++;
+					if (num > 1000)
+					{
+						Log.Error("Too many iterations.");
+						break;
+					}
+					if (!this.Ext.HiveDef.GetCompProperties<CompProperties_SpawnerPawn>().spawnablePawnKinds.Where((PawnGenOption x) => x.Cost <= pointsLeft).TryRandomElementByWeight(x=> x.selectionWeight, out result2))
+					{
+						break;
+					}
+					Pawn pawn = PawnGenerator.GeneratePawn(result2.kind, Faction);
+					GenSpawn.Spawn(pawn, CellFinder.RandomClosewalkCellNear(position, map, 2), map);
+					pawn.mindState.spawnedByInfestationThingComp = spawnedByInfestationThingComp;
+					list.Add(pawn);
 				}
-				if (!Hive.spawnablePawnKinds.Where((PawnKindDef x) => x.combatPower <= pointsLeft).TryRandomElement(out result2))
-				{
-					break;
-				}
-				Pawn pawn = PawnGenerator.GeneratePawn(result2, Faction.OfInsects);
-				GenSpawn.Spawn(pawn, CellFinder.RandomClosewalkCellNear(position, map, 2), map);
-				pawn.mindState.spawnedByInfestationThingComp = spawnedByInfestationThingComp;
-				list.Add(pawn);
 			}
 			if (list.Any())
 			{
-				LordMaker.MakeNewLord(Faction.OfInsects, new LordJob_AssaultColony(Faction.OfInsects, canKidnap: true, canTimeoutOrFlee: false), map, list);
+
+
+			//	Log.Message("make new lord of " + Faction + " for " + obj);
+				LordMaker.MakeNewLord(Faction, new LordJob_AssaultColony(new SpawnedPawnParams
+				{
+					aggressive = false,
+					defendRadius = 50,
+					defSpot = position,
+					spawnerThing = (Thing)obj ?? this
+				}), map, list);
+			//	Log.Message("made attacking lord");
 			}
 		}
 

@@ -1,5 +1,11 @@
 CompToggleFireMode is a simple method to give your guns the option to toggle between multiple fire modes via a gizmo.
 
+Requires Harmony
+
+copy the CompToggleFireMode.dll from the bin/Debug folder to your mods Assemblies folder
+
+simpley add the CompToggleFireMode.CompProperties_ToggleFireMode to your weapon, and as many verbs as you want it to have
+
 Example gun
 
   <ThingDef ParentName="BaseHumanMakeableGun">
@@ -28,8 +34,8 @@ Example gun
     </recipeMaker>
     <comps>
 	<li Class="CompToggleFireMode.CompProperties_ToggleFireMode">
-		<canSwitchWhileBusy>false</canSwitchWhileBusy> <!-- Default = False, pawn cannot swap modes while 'Busy' (while firing or on cooldown) -->
-		<switchStartsCooldown>true</switchStartsCooldown> <!-- Default = False, starts the current verbs cooldown when switched  -->
+            <canSwitchWhileBusy>false</canSwitchWhileBusy> <!-- Default = False, pawn cannot swap modes while 'Busy' (while firing or on cooldown) -->
+            <switchStartsCooldown>true</switchStartsCooldown> <!-- Default = False, starts the current verbs cooldown when switched  -->
 	</li>
     </comps>
     <verbs>
