@@ -3,7 +3,7 @@ using Verse;
 
 namespace ExtraHives
 {
-    public class HiveExtension : DefModExtension
+    public class HiveDefExtension : DefModExtension
 	{
 		public FactionDef Faction;
 		public ThingDef TunnelDef;

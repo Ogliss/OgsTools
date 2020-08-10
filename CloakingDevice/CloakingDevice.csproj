@@ -31,11 +31,14 @@
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
   <ItemGroup>
-    <Compile Include="Class1.cs" />
-    <Compile Include="Class2.cs" />
-    <Compile Include="Class3.cs" />
-    <Compile Include="Class4.cs" />
-    <Compile Include="Class5.cs" />
+    <Compile Include="HarmonyPatches.cs" />
+    <Compile Include="AvP_PawnRenderer_DrawEquipment_Cloak_Patch.cs" />
+    <Compile Include="AvPConstants.cs" />
+    <Compile Include="CompCloakGenerator.cs" />
+    <Compile Include="AvP_PawnUtility_IsInvisible_Patch.cs" />
+    <Compile Include="AvP_PawnRenderer_OverrideMaterialIfNeeded_Xenomorph_Patch.cs" />
+    <Compile Include="AvP_PawnGraphicSet_HairMatAt_Invis_Patch.cs" />
+    <Compile Include="AvP_PawnGraphicSet_HeadMatAt_Invis_Patch.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>

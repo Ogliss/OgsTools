@@ -31,6 +31,18 @@
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
   <ItemGroup>
+    <Compile Include="Class1.cs" />
+    <None Include="GenStuff\SymbolResolver_HiveBaseMoundMaker.cs.bak" />
+    <Compile Include="GenStuff\SymbolResolver_HiveInternals.cs" />
+    <Compile Include="GenStuff\Class1.cs" />
+    <Compile Include="GenStuff\SymbolResolver_HiveBaseMoundMaker.cs" />
+    <Compile Include="GenStuff\SymbolResolver_Hivebase.cs" />
+    <Compile Include="GenStuff\SymbolResolver_OutdoorLightingHivebase.cs" />
+    <Compile Include="GenStuff\SymbolResolver_RandomCorpse.cs" />
+    <Compile Include="GenStuff\SymbolResolver_RandomDamage.cs" />
+    <Compile Include="GenStuff\SymbolResolver_RandomHives.cs" />
+    <Compile Include="Harmony\Patches\GenStep_Settlement_ScatterAt_ExtraHives_Patch.cs" />
+    <Compile Include="HiveFactionExtension.cs" />
     <Compile Include="IncidentWorker_InfestedMeteoriteImpact.cs" />
     <Compile Include="Harmony\MainHarmonyInstance.cs" />
     <Compile Include="Harmony\Patches\Patch_GenerateImpliedDefs_PreResolve.cs" />
@@ -56,7 +68,7 @@
     <Compile Include="InfestationUtility.cs" />
     <Compile Include="InfestationCellFinder.cs" />
     <Compile Include="TunnelExtension.cs" />
-    <Compile Include="HiveExtension.cs" />
+    <Compile Include="HiveDefExtension.cs" />
     <Compile Include="TunnelHiveSpawner.cs" />
     <Compile Include="CompSpawnerPawn.cs" />
     <Compile Include="CompSpawnerHives.cs" />

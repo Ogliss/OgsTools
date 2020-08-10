@@ -18,12 +18,12 @@ namespace ExtraHives
 			{
 				return false;
 			}
-			if (!def.mechClusterBuilding.HasModExtension<HiveExtension>())
+			if (!def.mechClusterBuilding.HasModExtension<HiveDefExtension>())
 			{
 				return false;
 			}
 			ThingDef hiveDef = def.mechClusterBuilding;
-			HiveExtension hive = hiveDef.GetModExtension<HiveExtension>();
+			HiveDefExtension hive = hiveDef.GetModExtension<HiveDefExtension>();
 			return this.TryFindCell(out intVec, map);
 		}
 
@@ -36,12 +36,12 @@ namespace ExtraHives
 			{
 				return false;
 			}
-			if (!def.mechClusterBuilding.HasModExtension<HiveExtension>())
+			if (!def.mechClusterBuilding.HasModExtension<HiveDefExtension>())
 			{
 				return false;
 			}
 			ThingDef hiveDef = def.mechClusterBuilding;
-			HiveExtension hive = hiveDef.GetModExtension<HiveExtension>();
+			HiveDefExtension hive = hiveDef.GetModExtension<HiveDefExtension>();
 			if (!this.TryFindCell(out intVec, map))
 			{
 				return false;
@@ -53,7 +53,7 @@ namespace ExtraHives
 			tunnelHiveSpawner.spawnHive = false;
 			tunnelHiveSpawner.initialPoints = Mathf.Max(parms.points * Rand.Range(0.3f, 0.6f), 200f);
 			tunnelHiveSpawner.spawnedByInfestationThingComp = true;
-			tunnelHiveSpawner.ResultSpawnDelay = new FloatRange(0.5f,1.5f);
+			tunnelHiveSpawner.ResultSpawnDelay = new FloatRange(0.1f,0.5f);
 			tunnelHiveSpawner.spawnablePawnKinds = hiveDef.GetCompProperties<CompProperties_SpawnerPawn>().spawnablePawnKinds;
 			if (tunnelHiveSpawner.Faction == null)
 			{
@@ -64,7 +64,9 @@ namespace ExtraHives
 			}
 			Log.Message("TunnelRaidSpawner "+ tunnelHiveSpawner.Faction);
 			list.Add(tunnelHiveSpawner);
-			Generate(out list);
+			List<Thing> outThings;
+			Generate(out outThings);
+			list.AddRange(outThings);
 			SkyfallerMaker.SpawnSkyfaller(ThingDefOf.InfestedMeteoriteIncoming_ExtraHives, list, intVec, map);
 			LetterDef baseLetterDef = list[list.Count-1].def.building.isResourceRock ? LetterDefOf.PositiveEvent : LetterDefOf.NeutralEvent;
 			string str = string.Format(this.def.letterText, list[list.Count - 1].def.label).CapitalizeFirst();

@@ -9,7 +9,7 @@ namespace ExtraHives
 		public static Thing SpawnTunnels(ThingDef hiveDef, int hiveCount, Map map, bool spawnAnywhereIfNoGoodCell = false, bool ignoreRoofedRequirement = false, string questTag = null)
 		{
 			ThingDef HiveDef = hiveDef ?? RimWorld.ThingDefOf.Hive;
-			HiveExtension HiveExt = HiveDef.GetModExtension<HiveExtension>();
+			HiveDefExtension HiveExt = HiveDef.GetModExtension<HiveDefExtension>();
 			ThingDef TunnelDef = HiveExt?.TunnelDef ?? RimWorld.ThingDefOf.TunnelHiveSpawner;
 			if (!InfestationCellFinder.TryFindCell(out IntVec3 cell, map, HiveExt))
 			{
@@ -44,7 +44,7 @@ namespace ExtraHives
 					return null;
 				}
 			}
-			HiveExtension extension = HiveDef.GetModExtension<HiveExtension>();
+			HiveDefExtension extension = HiveDef.GetModExtension<HiveDefExtension>();
 			if (extension!=null && extension.TunnelDef!=null)
 			{
 				TunnelDef = extension.TunnelDef;
@@ -65,9 +65,9 @@ namespace ExtraHives
 		public static Thing SpawnTunnels(ThingDef hiveDef, int hiveCount, Map map, IntVec3 cell, bool spawnAnywhereIfNoGoodCell = false, bool ignoreRoofedRequirement = false, string questTag = null)
 		{
 			ThingDef HiveDef = hiveDef ?? RimWorld.ThingDefOf.Hive;
-			HiveExtension HiveExt = HiveDef.GetModExtension<HiveExtension>();
+			HiveDefExtension HiveExt = HiveDef.GetModExtension<HiveDefExtension>();
 			ThingDef TunnelDef = HiveExt?.TunnelDef ?? RimWorld.ThingDefOf.TunnelHiveSpawner;
-			HiveExtension extension = HiveDef.GetModExtension<HiveExtension>();
+			HiveDefExtension extension = HiveDef.GetModExtension<HiveDefExtension>();
 			if (extension!=null && extension.TunnelDef!=null)
 			{
 				TunnelDef = extension.TunnelDef;

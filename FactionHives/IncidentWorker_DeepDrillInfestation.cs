@@ -16,7 +16,7 @@ namespace ExtraHives
 			{
 				return false;
 			}
-			if (!def.mechClusterBuilding.HasModExtension<HiveExtension>())
+			if (!def.mechClusterBuilding.HasModExtension<HiveDefExtension>())
 			{
 				return false;
 			}
@@ -38,12 +38,12 @@ namespace ExtraHives
 			{
 				return false;
 			}
-			if (!def.mechClusterBuilding.HasModExtension<HiveExtension>())
+			if (!def.mechClusterBuilding.HasModExtension<HiveDefExtension>())
 			{
 				return false;
 			}
 			ThingDef hiveDef = def.mechClusterBuilding;
-			HiveExtension hive = hiveDef.GetModExtension<HiveExtension>();
+			HiveDefExtension hive = hiveDef.GetModExtension<HiveDefExtension>();
 			if (hive == null)
 			{
 				return false;

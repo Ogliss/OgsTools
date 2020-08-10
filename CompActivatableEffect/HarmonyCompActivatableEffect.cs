@@ -185,9 +185,11 @@ namespace OgsCompActivatableEffect
             {
                 if (pawn.equipment.CAETryGetOffHandEquipment(out ThingWithComps thingy))
                 {
-                    return; 
+                //    Log.Message("DrawEquipmentAimingPostFix enabled_rooloDualWield Offhand Detected");
+                    return;
                 }
-                 
+            //    Log.Message("DrawEquipmentAimingPostFix enabled_rooloDualWield");
+
             }
             OgsCompOversizedWeapon.CompOversizedWeapon compOversized = thingWithComps.TryGetComp<OgsCompOversizedWeapon.CompOversizedWeapon>();
             var compActivatableEffect = thingWithComps?.GetComp<OgsCompActivatableEffect.CompActivatableEffect>();
@@ -297,14 +299,22 @@ namespace OgsCompActivatableEffect
                 }
                 */
 
-                offset = compOversized.renderPos;
-                rotation = compOversized.renderAngle;
-                s = new Vector3(compOversized.drawScale.x, 1f, compOversized.drawScale.y);
+                if (enabled_AlienRaces)
+                {
+                    Vector2 v = OgsCompOversizedWeapon.HarmonyCompOversizedWeapon.AlienRacesPatch(pawn);
+                    s = new Vector3(eq.def.graphicData.drawSize.x * v.x, 1f, eq.def.graphicData.drawSize.y * v.y);
+                }
+                else
+                {
+                    s = new Vector3(eq.def.graphicData.drawSize.x, 1f, eq.def.graphicData.drawSize.y);
+                }
+            //    Log.Message("DrawEquipmentAimingPostFix compOversized offset: "+ offset + " Rotation: "+rotation + " size: " + s);
             }
             var matrix = default(Matrix4x4);
             drawLoc.y = compActivatableEffect.Altitude(drawLoc);
             matrix.SetTRS(drawLoc + offset , rotation, s);
             Graphics.DrawMesh((!flip) ? MeshPool.plane10 : MeshPool.plane10Flip, matrix, matSingle, 0);
+        //    Log.Message("DrawEquipmentAimingPostFix DrawMesh");
             /*
             if (!flip) Graphics.DrawMesh(MeshPool.plane10, matrix, matSingle, 0);
             else Graphics.DrawMesh(MeshPool.plane10Flip, matrix, matSingle, 0);
@@ -315,6 +325,9 @@ namespace OgsCompActivatableEffect
             {
                 if (compOversized.Props != null && compOversized.Props.isDualWeapon)
                 {
+                    offset = compOversized.renderPos;
+                    rotation = compOversized.renderAngle;
+                    s = new Vector3(compOversized.drawScale.x, 1f, compOversized.drawScale.y);
                     Mesh curPool;
                     if (pawn.Rotation == Rot4.North || pawn.Rotation == Rot4.South)
                     {
@@ -356,6 +369,7 @@ namespace OgsCompActivatableEffect
                     bool flag = ((compActivatableEffect != null) ? compActivatableEffect.Graphic : null) == null;
                     if (!flag)
                     {
+                    //    Log.Message("DrawEquipmentAimingPreFix_DualWield");
                         bool flag2 = compActivatableEffect.CurrentState != OgsCompActivatableEffect.CompActivatableEffect.State.Activated;
                         if (!flag2)
                         {

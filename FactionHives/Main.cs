@@ -34,21 +34,10 @@ namespace ExtraHives
                     break;
                 }
             }
-            HiveDefs = DefDatabase<ThingDef>.AllDefs.Where(x=> x.HasModExtension<ExtraHives.HiveExtension>()).ToList();
+            HiveDefs = DefDatabase<ThingDef>.AllDefs.Where(x=> x.HasModExtension<ExtraHives.HiveDefExtension>()).ToList();
             TunnelDefs = DefDatabase<ThingDef>.AllDefs.Where(x=> x.HasModExtension<ExtraHives.TunnelExtension>()).ToList();
             Log.Message("ExtraHives: loaded "+HiveDefs.Count + " HiveDefs and " + TunnelDefs.Count + " TunnelDefs");
         }
 
-        public static List<ThingDef> HivedefsFor(FactionDef factionDef)
-        {
-            List<ThingDef> defs = new List<ThingDef>();
-            if (HiveDefs.Any(x=> x.GetModExtension<ExtraHives.HiveExtension>().Faction == factionDef && x.thingClass == typeof(Hive)))
-            {
-                defs = HiveDefs.FindAll(x => x.GetModExtension<ExtraHives.HiveExtension>().Faction == factionDef);
-            }
-            Log.Message(defs.Count + " Hives loaded for "+ factionDef);
-            return defs;
-
-        }
     }
 }

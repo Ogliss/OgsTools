@@ -53,7 +53,7 @@ namespace ExtraHives
 
 		private static List<KeyValuePair<IntVec3, float>> tmpDistanceResult = new List<KeyValuePair<IntVec3, float>>();
 
-		public static bool TryFindCell(out IntVec3 cell, Map map, HiveExtension HiveExt)
+		public static bool TryFindCell(out IntVec3 cell, Map map, HiveDefExtension HiveExt)
 		{
 			CalculateLocationCandidates(map, HiveExt);
 			if (!locationCandidates.TryRandomElementByWeight((LocationCandidate x) => x.score, out LocationCandidate result))
@@ -65,7 +65,7 @@ namespace ExtraHives
 			return true;
 		}
 
-		private static float GetScoreAt(IntVec3 cell, Map map, HiveExtension HiveExt)
+		private static float GetScoreAt(IntVec3 cell, Map map, HiveDefExtension HiveExt)
 		{
 			float minTemp = HiveExt.minTemp ?? 17f;
 			float maxTemp = HiveExt.maxTemp ?? 40f;
@@ -205,7 +205,7 @@ namespace ExtraHives
 			}
 		}
 		*/
-		private static void CalculateLocationCandidates(Map map, HiveExtension HiveExt)
+		private static void CalculateLocationCandidates(Map map, HiveDefExtension HiveExt)
 		{
 			locationCandidates.Clear();
 			CalculateTraversalDistancesToUnroofed(map);

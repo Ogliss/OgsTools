@@ -79,6 +79,7 @@ namespace ExtraHives
                 this.sustainer.Maintain();
                 Vector3 vector = base.Position.ToVector3Shifted();
                 IntVec3 c;
+                // throws dust and filth 
                 if (Rand.MTBEventOccurs(TunnelRaidSpawner.FilthSpawnMTB, 1f, 1.TicksToSeconds()) && CellFinder.TryFindRandomReachableCellNear(base.Position, base.Map, TunnelRaidSpawner.FilthSpawnRadius, TraverseParms.For(TraverseMode.NoPassClosedDoors, Danger.Deadly, false), null, null, out c, 999999))
                 {
                     FilthMaker.TryMakeFilth(c, base.Map, TunnelRaidSpawner.filthTypes.RandomElement<ThingDef>(), 1);
@@ -96,6 +97,7 @@ namespace ExtraHives
                     Map map = base.Map;
                     IntVec3 position = base.Position;
                     List<Pawn> list = new List<Pawn>();
+                    // iif initalPoints > 0 spawn until all points are used
                     if ((initialPoints > 0f))
                     {
                         initialPoints = Mathf.Max(initialPoints, this.spawnablePawnKinds.Min((PawnGenOption x) => x.Cost));
@@ -122,24 +124,12 @@ namespace ExtraHives
                     }
                     if (list.Any())
                     {
-                        //	Log.Message("make new lord of " + Faction + " for " + obj);
-                        LordMaker.MakeNewLord(Faction, new LordJob_AssaultColony(new SpawnedPawnParams
-                        {
-                            aggressive = false,
-                            defendRadius = 50,
-                            defSpot = position,
-                            spawnerThing = this
-                        }), map, list);
-                        //	Log.Message("made attacking lord");
+                        LordJob lordJob = new LordJob_AssaultColony(Faction, false, false, false, false, false);
+                        LordMaker.MakeNewLord(Faction, lordJob, map, list);
                     }
                     if (!this.innerContainer.NullOrEmpty())
                     {
-                        //    Log.Message(string.Format("{0} to drop", innerContainer.ContentsString));
-                        this.innerContainer.TryDropAll(position, map, ThingPlaceMode.Near);
-                    }
-                    if (!position.Walkable(map))
-                    {
-                        position.GetEdifice(map).DeSpawn();
+                        this.innerContainer.TryDropAll(position, map, ThingPlaceMode.Near, null, x=> x.Walkable(map) && position.DistanceTo(x)>2);
                     }
                     this.Destroy(DestroyMode.Vanish);
                 }

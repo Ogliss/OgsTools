@@ -16,11 +16,11 @@ namespace ExtraHives //ExtraHives.IncidentWorker_Infestation
 			{
 				return false;
 			}
-			if (!def.mechClusterBuilding.HasModExtension<HiveExtension>())
+			if (!def.mechClusterBuilding.HasModExtension<HiveDefExtension>())
 			{
 				return false;
 			}
-			HiveExtension HiveExt = def.mechClusterBuilding.GetModExtension<HiveExtension>();
+			HiveDefExtension HiveExt = def.mechClusterBuilding.GetModExtension<HiveDefExtension>();
 			IntVec3 cell;
 			if (/*base.CanFireNowSub(parms) && */HiveUtility.TotalSpawnedHivesCount(map,def.mechClusterBuilding) < 30)
 			{
@@ -35,7 +35,7 @@ namespace ExtraHives //ExtraHives.IncidentWorker_Infestation
 			{
 				return false;
 			}
-			if (!def.mechClusterBuilding.HasModExtension<HiveExtension>())
+			if (!def.mechClusterBuilding.HasModExtension<HiveDefExtension>())
 			{
 				return false;
 			}

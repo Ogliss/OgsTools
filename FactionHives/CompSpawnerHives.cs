@@ -166,10 +166,10 @@ namespace ExtraHives
 				newHive = null;
 				return false;
 			}
-			HiveExtension ext = null;
-			if (this.parent.def.HasModExtension<HiveExtension>())
+			HiveDefExtension ext = null;
+			if (this.parent.def.HasModExtension<HiveDefExtension>())
 			{
-				ext = this.parent.def.GetModExtension<HiveExtension>();
+				ext = this.parent.def.GetModExtension<HiveDefExtension>();
 			}
 			ThingDef thingDef = Props.hiveDef ?? this.parent.def;
 			IntVec3 loc = CompSpawnerHives.FindChildHiveLocation(this.parent.OccupiedRect().AdjacentCells.RandomElement(), this.parent.Map, thingDef, this.Props, ignoreRoofedRequirement, false, CurrentRadius);

@@ -13,7 +13,7 @@ namespace ExtraHives
 	// Token: 0x02000CA1 RID: 3233
 	public class Hive : ThingWithComps, IAttackTarget, ILoadReferenceable
 	{
-		public HiveExtension Ext => this.def.HasModExtension<HiveExtension>() ? this.def.GetModExtension<HiveExtension>() : null;
+		public HiveDefExtension Ext => this.def.HasModExtension<HiveDefExtension>() ? this.def.GetModExtension<HiveDefExtension>() : null;
 
 		// Token: 0x17000DCE RID: 3534
 		// (get) Token: 0x06004E1D RID: 19997 RVA: 0x001A404E File Offset: 0x001A224E

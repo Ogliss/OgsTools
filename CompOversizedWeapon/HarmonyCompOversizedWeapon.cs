@@ -29,7 +29,7 @@ namespace OgsCompOversizedWeapon
             //    Log.Message("Dual Wield NOT detected");
                 /*
                 harmony.Patch(typeof(PawnRenderer).GetMethod("DrawEquipmentAiming"),
-                    new HarmonyMethod(typeof(HarmonyCompOversizedWeapon).GetMethod("DrawEquipmentAimingPreFix")), null);
+                    new HarmonyMethod(typeof(HarmonyCompOversizedWeapon), nameof(DrawEquipmentAimingPreFix)), null);
                 */
             }
 
@@ -40,10 +40,11 @@ namespace OgsCompOversizedWeapon
         public static void DualWieldPatch(Harmony harmony)
         {
             harmony.Patch(typeof(DualWield.Harmony.PawnRenderer_DrawEquipmentAiming).GetMethod("DrawEquipmentAimingOverride"),
-                new HarmonyMethod(typeof(HarmonyCompOversizedWeapon).GetMethod("DrawEquipmentAimingOverride")), null);
-
+                new HarmonyMethod(typeof(HarmonyCompOversizedWeapon), nameof(DrawEquipmentAimingOverride)), null);
+            
             harmony.Patch(typeof(PawnRenderer).GetMethod("DrawEquipmentAiming"),
-                new HarmonyMethod(typeof(HarmonyCompOversizedWeapon).GetMethod("DrawEquipmentAimingDualWieldPreFix")), null);
+                new HarmonyMethod(typeof(HarmonyCompOversizedWeapon), nameof(DrawEquipmentAimingDualWieldPreFix)), null);
+            
         }
 
         /// <summary>
@@ -289,19 +290,16 @@ namespace OgsCompOversizedWeapon
             Mesh mesh;
             if (aimAngle > 20f && aimAngle < 160f)
             {
-                mesh = MeshPool.plane10;
                 num += eq.def.equippedAngleOffset;
             }
             else if (aimAngle > 200f && aimAngle < 340f)
             {
-                mesh = MeshPool.plane10Flip;
                 num -= 180f;
                 num -= eq.def.equippedAngleOffset;
             }
             else
             {
                 
-                mesh = MeshPool.plane10;
                 num += eq.def.equippedAngleOffset;
             }
             num %= 360f;
@@ -329,8 +327,13 @@ namespace OgsCompOversizedWeapon
             {
                 matSingle = eq.Graphic.MatSingle;
             }
-            Graphics.DrawMesh((!flag) ? MeshPool.plane10 : MeshPool.plane10Flip, matrix, matSingle, 0);
-            Graphics.DrawMesh(mesh, drawLoc, Quaternion.AngleAxis(num, Vector3.up), matSingle, 0);
+            if (___pawn.Rotation == Rot4.East)
+            {
+                flag = !flag;
+
+            }
+            Graphics.DrawMesh((flag) ? MeshPool.plane10 : MeshPool.plane10Flip, matrix, matSingle, 0);
+        //    Graphics.DrawMesh(mesh, drawLoc, Quaternion.AngleAxis(num, Vector3.up), matSingle, 0);
             return false;
         }
 

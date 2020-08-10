@@ -10,11 +10,11 @@ using System.Linq;
 using Verse.AI.Group;
 using RimWorld.Planet;
 using UnityEngine;
-using AvP.settings;
-using AvP.ExtensionMethods;
+using CloakingDevice.settings;
+using CloakingDevice.ExtensionMethods;
 using AlienRace;
 
-namespace AvP.HarmonyInstance
+namespace CloakingDevice.HarmonyInstance
 {
     [HarmonyPatch(typeof(PawnUtility), "IsInvisible")]
     public static class AvP_PawnUtility_IsInvisible_Patch

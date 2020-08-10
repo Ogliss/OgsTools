@@ -89,12 +89,12 @@ namespace ExtraHives
 			}
 		}
 
-		public HiveExtension HiveExtension
+		public HiveDefExtension HiveExtension
 		{
 			get
 			{
-				HiveExtension hiveExtension = null;
-				hiveExtension = this.parent.def.GetModExtension<HiveExtension>();
+				HiveDefExtension hiveExtension = null;
+				hiveExtension = this.parent.def.GetModExtension<HiveDefExtension>();
 				return hiveExtension;
 			}
 		}

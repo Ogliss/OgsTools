@@ -1,5 +1,7 @@
-﻿using HarmonyLib;
+﻿using ExtraHives.GenStuff;
+using HarmonyLib;
 using RimWorld;
+using RimWorld.BaseGen;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -35,9 +37,11 @@ namespace ExtraHives.HarmonyInstance
 			pawnsArrivalModeDef.textFriendly = "A group of friendly {0} from {1} have tunneled in nearby.";
 			pawnsArrivalModeDef.textWillArrive = "{0_pawnsPluralDef} will tunnel in.";
 			pawnsArrivalModeDef.workerClass = typeof(ExtraHives.PawnsArrivalModeWorker_EdgeTunnel);
+			/*
 			pawnsArrivalModeDef.selectionWeightCurve = new SimpleCurve();
 			pawnsArrivalModeDef.selectionWeightCurve.Add(new CurvePoint(300f,0f));
 			pawnsArrivalModeDef.selectionWeightCurve.Add(new CurvePoint(700f,0.3f));
+			*/
 			DefGenerator.AddImpliedDef<PawnsArrivalModeDef>(pawnsArrivalModeDef);
 
 			pawnsArrivalModeDef = new PawnsArrivalModeDef();
@@ -46,12 +50,14 @@ namespace ExtraHives.HarmonyInstance
 			pawnsArrivalModeDef.textFriendly = "Several separate groups of friendly {0} from {1} have tunneled in nearby.";
 			pawnsArrivalModeDef.textWillArrive = "Several separate groups of {0_pawnsPluralDef} will tunnel in.";
 			pawnsArrivalModeDef.workerClass = typeof(ExtraHives.PawnsArrivalModeWorker_EdgeTunnelGroups);
+			/*
 			pawnsArrivalModeDef.selectionWeightCurve = new SimpleCurve();
 			pawnsArrivalModeDef.selectionWeightCurve.Add(new CurvePoint(100f, 0f));
 			pawnsArrivalModeDef.selectionWeightCurve.Add(new CurvePoint(300f, 0.2f));
 			pawnsArrivalModeDef.selectionWeightCurve.Add(new CurvePoint(700f, 0.5f));
 			pawnsArrivalModeDef.pointsFactorCurve = new SimpleCurve();
 			pawnsArrivalModeDef.pointsFactorCurve.Add(new CurvePoint(0f, 0.9f));
+			*/
 			DefGenerator.AddImpliedDef<PawnsArrivalModeDef>(pawnsArrivalModeDef);
 
 			pawnsArrivalModeDef = new PawnsArrivalModeDef();
@@ -60,12 +66,14 @@ namespace ExtraHives.HarmonyInstance
 			pawnsArrivalModeDef.textFriendly = "A group of friendly {0} from {1} have tunneled in right on top of you!";
 			pawnsArrivalModeDef.textWillArrive = "{0_pawnsPluralDef} will tunnel in right on top of you.";
 			pawnsArrivalModeDef.workerClass = typeof(ExtraHives.PawnsArrivalModeWorker_CenterTunnel);
+			/*
 			pawnsArrivalModeDef.selectionWeightCurve = new SimpleCurve();
 			pawnsArrivalModeDef.selectionWeightCurve.Add(new CurvePoint(300f, 0.0f));
 			pawnsArrivalModeDef.selectionWeightCurve.Add(new CurvePoint(1000f, 3.5f));
 			pawnsArrivalModeDef.pointsFactorCurve = new SimpleCurve();
 			pawnsArrivalModeDef.pointsFactorCurve.Add(new CurvePoint(0f, 0.75f));
 			pawnsArrivalModeDef.pointsFactorCurve.Add(new CurvePoint(5000f, 0.5f));
+			*/
 			DefGenerator.AddImpliedDef<PawnsArrivalModeDef>(pawnsArrivalModeDef);
 
 			pawnsArrivalModeDef = new PawnsArrivalModeDef();
@@ -74,12 +82,14 @@ namespace ExtraHives.HarmonyInstance
 			pawnsArrivalModeDef.textFriendly = "A group of friendly {0} from {1} have tunneled in. They are scattered all over the area!";
 			pawnsArrivalModeDef.textWillArrive = "{0_pawnsPluralDef} will tunnel in.";
 			pawnsArrivalModeDef.workerClass = typeof(ExtraHives.PawnsArrivalModeWorker_RandomTunnel);
+			/*
 			pawnsArrivalModeDef.selectionWeightCurve = new SimpleCurve();
 			pawnsArrivalModeDef.selectionWeightCurve.Add(new CurvePoint(300f, 0f));
 			pawnsArrivalModeDef.selectionWeightCurve.Add(new CurvePoint(1000f, 1.9f));
 			pawnsArrivalModeDef.pointsFactorCurve = new SimpleCurve();
 			pawnsArrivalModeDef.pointsFactorCurve.Add(new CurvePoint(0f, 0.7f));
 			pawnsArrivalModeDef.pointsFactorCurve.Add(new CurvePoint(5000f, 0.45f));
+			*/
 			DefGenerator.AddImpliedDef<PawnsArrivalModeDef>(pawnsArrivalModeDef);
 
 			ThingDef thingDef = new ThingDef();
@@ -140,6 +150,66 @@ namespace ExtraHives.HarmonyInstance
 			DefGenerator.AddImpliedDef<ThingDef>(thingDef);
 
 			*/
+
+			//RuleDef
+			
+			RuleDef ruleDef;
+			ruleDef = new RuleDef();
+			ruleDef.defName = "ExtraHives_HiveBaseMaker";
+			ruleDef.symbol = "ExtraHives_HiveBaseMaker";
+			ruleDef.resolvers = new List<SymbolResolver>();
+			ruleDef.resolvers.Add(new ExtraHives.GenStuff.SymbolResolver_Hivebase());
+			DefGenerator.AddImpliedDef<RuleDef>(ruleDef);
+
+			ruleDef = new RuleDef();
+			ruleDef.defName = "ExtraHives_HiveMoundMaker";
+			ruleDef.symbol = "ExtraHives_HiveMoundMaker";
+			ruleDef.resolvers = new List<SymbolResolver>();
+			ruleDef.resolvers.Add(new ExtraHives.GenStuff.SymbolResolver_HiveBaseMoundMaker());
+			DefGenerator.AddImpliedDef<RuleDef>(ruleDef);
+			
+			ruleDef = new RuleDef();
+			ruleDef.defName = "ExtraHives_HiveClearChamber";
+			ruleDef.symbol = "ExtraHives_HiveClearChamber";
+			ruleDef.resolvers = new List<SymbolResolver>();
+			ruleDef.resolvers.Add(new ExtraHives.GenStuff.SymbolResolver_ClearChamber());
+			DefGenerator.AddImpliedDef<RuleDef>(ruleDef);
+			
+			ruleDef = new RuleDef();
+			ruleDef.defName = "ExtraHives_HiveInterals";
+			ruleDef.symbol = "ExtraHives_HiveInterals";
+			ruleDef.resolvers = new List<SymbolResolver>();
+			ruleDef.resolvers.Add(new ExtraHives.GenStuff.SymbolResolver_HiveInternals());
+			DefGenerator.AddImpliedDef<RuleDef>(ruleDef);
+
+			ruleDef = new RuleDef();
+			ruleDef.defName = "ExtraHives_HiveOutdoorLighting";
+			ruleDef.symbol = "ExtraHives_HiveOutdoorLighting";
+			ruleDef.resolvers = new List<SymbolResolver>();
+			ruleDef.resolvers.Add(new ExtraHives.GenStuff.SymbolResolver_OutdoorLightingHivebase());
+			DefGenerator.AddImpliedDef<RuleDef>(ruleDef);
+			
+			ruleDef = new RuleDef();
+			ruleDef.defName = "ExtraHives_HiveRandomCorpse";
+			ruleDef.symbol = "ExtraHives_HiveRandomCorpse";
+			ruleDef.resolvers = new List<SymbolResolver>();
+			ruleDef.resolvers.Add(new ExtraHives.GenStuff.SymbolResolver_RandomCorpse());
+			DefGenerator.AddImpliedDef<RuleDef>(ruleDef);
+			
+			ruleDef = new RuleDef();
+			ruleDef.defName = "ExtraHives_HiveRandomDamage";
+			ruleDef.symbol = "ExtraHives_HiveRandomDamage";
+			ruleDef.resolvers = new List<SymbolResolver>();
+			ruleDef.resolvers.Add(new ExtraHives.GenStuff.SymbolResolver_RandomDamage());
+			DefGenerator.AddImpliedDef<RuleDef>(ruleDef);
+			
+			ruleDef = new RuleDef();
+			ruleDef.defName = "ExtraHives_HiveRandomHives";
+			ruleDef.symbol = "ExtraHives_HiveRandomHives";
+			ruleDef.resolvers = new List<SymbolResolver>();
+			ruleDef.resolvers.Add(new ExtraHives.GenStuff.SymbolResolver_RandomHives());
+			DefGenerator.AddImpliedDef<RuleDef>(ruleDef);
+
 		}
 	}
 }

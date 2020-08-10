@@ -1,4 +1,5 @@
-﻿using RimWorld;
+﻿using ExtraHives.ExtensionMethods;
+using RimWorld;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -58,7 +59,11 @@ namespace ExtraHives
 			bool pawnDefaultFaction = pawn.kindDef.defaultFactionType != null;
 			FactionDef factionDef = pawnFaction ? pawn.Faction.def : (pawnDefaultFaction ? pawn.kindDef.defaultFactionType : null);
 
-			List <ThingDef> defs = Main.HivedefsFor(factionDef);
+			if (factionDef == null)
+			{
+				return null;
+			}
+			List <ThingDef> defs = factionDef.HivedefsFor();
 
 			if (pawn.Faction!=null && !defs.NullOrEmpty())
 			{

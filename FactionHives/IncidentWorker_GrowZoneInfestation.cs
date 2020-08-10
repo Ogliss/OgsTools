@@ -17,7 +17,7 @@ namespace ExtraHives
 				Log.Error("Hivedef (def.mechClusterBuilding) not set");
 				return false;
 			}
-			if (!def.mechClusterBuilding.HasModExtension<HiveExtension>())
+			if (!def.mechClusterBuilding.HasModExtension<HiveDefExtension>())
 			{
 				Log.Error("Hivedef (def.mechClusterBuilding) missing HiveExtension");
 				return false;
@@ -42,13 +42,13 @@ namespace ExtraHives
 				Log.Error("Hivedef (def.mechClusterBuilding) not set");
 				return false;
 			}
-			if (!def.mechClusterBuilding.HasModExtension<HiveExtension>())
+			if (!def.mechClusterBuilding.HasModExtension<HiveDefExtension>())
 			{
 				Log.Error("Hivedef (def.mechClusterBuilding) missing HiveExtension");
 				return false;
 			}
 			ThingDef hiveDef = def.mechClusterBuilding;
-			HiveExtension hive = hiveDef.GetModExtension<HiveExtension>();
+			HiveDefExtension hive = hiveDef.GetModExtension<HiveDefExtension>();
 			if (hive == null)
 			{
 				return false;
