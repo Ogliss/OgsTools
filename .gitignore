@@ -43,3 +43,5 @@ Momu/Properties/AssemblyInfo.cs
 Momu/RimWorld/ScenPart_StartingAnimalofGender.cs
 Momu/ThoughtWorker_MomuWorkWithFriends.cs
 obj/
+bin/
+.vs/
