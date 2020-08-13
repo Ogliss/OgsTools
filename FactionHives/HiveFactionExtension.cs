@@ -12,6 +12,9 @@ namespace ExtraHives
 		public bool randomHives = false;
 		public IntRange sizeRange = new IntRange(44, 60);
 
+		public ThingDef smallCaveHive = null;
+		public ThingDef largeCaveHive = null;
+		public ThingDef centerCaveHive = null;
 		public ThingDef cultivatedPlantDef;
 	}
 }

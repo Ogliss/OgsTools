@@ -20,9 +20,12 @@ namespace ExtraHives.GenStuff
 		List<IntVec3> cellforbigcave = new List<IntVec3>();
 		List<IntVec3> cellforlittlecave = new List<IntVec3>();
 		List<IntVec3> entranceCaveCenters = new List<IntVec3>();
+		Faction Faction = null;
 		// Token: 0x0600650C RID: 25868 RVA: 0x00233C80 File Offset: 0x00231E80
 		public override void Resolve(ResolveParams rp)
 		{
+			Faction = rp.faction;
+			HiveFactionExtension hiveFaction = Faction.def.GetModExtension<HiveFactionExtension>();
 			cells.Clear();
 			cavecells.Clear();
 			bigCaveCenters.Clear();
@@ -47,34 +50,14 @@ namespace ExtraHives.GenStuff
 			cellforbigcave = cellst.Where(x => x.DistanceTo(CenterCell) > 15 && x.DistanceTo(CenterCell) < dist / 2).ToList();
 			cellforlittlecave = cellst.Where(x => x.DistanceTo(CenterCell) > dist / 2 && x.DistanceTo(CenterCell) < dist - 10).ToList();
 			float entranceChance = 1f;
-			for (int i = 0; i < cavecountBig; i++)
-			{
-				float dist2 = Rand.RangeInclusive(7, 10);
-				IntVec3 cell = cellforbigcave.Where(x=> !bigCaveCenters.Any(y=> x.DistanceTo(y)<20)).RandomElement();
-				bigCaveCenters.Add(cell);
-				List<IntVec3> ccells = GenRadial.RadialCellsAround(cell, dist2, true).ToList();
 
-				if (this.NorthQuad(cell, CenterCell))
-				{
-					this.GenerateQuad(CenterCell, Rot4.North, cells.Where(x => x.DistanceTo(CenterCell) >= dist && this.NorthQuad(x, CenterCell)).ToList(),entranceChance,dist);
-				}
-				if (this.SouthQuad(cell, CenterCell))
-				{
-					this.GenerateQuad(CenterCell, Rot4.South, cells.Where(x => x.DistanceTo(CenterCell) >= dist && this.SouthQuad(x, CenterCell)).ToList(), entranceChance, dist);
-				}
-				if (this.EastQuad(cell, CenterCell))
-				{
-					this.GenerateQuad(CenterCell, Rot4.East, cells.Where(x => x.DistanceTo(CenterCell) >= dist && this.EastQuad(x, CenterCell)).ToList(), entranceChance, dist);
-				}
-				if (this.WestQuad(cell, CenterCell))
-				{
-					this.GenerateQuad(CenterCell, Rot4.West, cells.Where(x => x.DistanceTo(CenterCell) >= dist && this.WestQuad(x, CenterCell)).ToList(), entranceChance, dist);
-				}
+			this.GenerateQuad(CenterCell, Rot4.North, cells.Where(x => x.DistanceTo(CenterCell) <= dist && this.NorthQuad(x, CenterCell)).ToList(), entranceChance, dist);
+			this.GenerateQuad(CenterCell, Rot4.South, cells.Where(x => x.DistanceTo(CenterCell) <= dist && this.SouthQuad(x, CenterCell)).ToList(), entranceChance, dist);
+			this.GenerateQuad(CenterCell, Rot4.East, cells.Where(x => x.DistanceTo(CenterCell) <= dist && this.EastQuad(x, CenterCell)).ToList(), entranceChance, dist);
+			this.GenerateQuad(CenterCell, Rot4.West, cells.Where(x => x.DistanceTo(CenterCell) <= dist && this.WestQuad(x, CenterCell)).ToList(), entranceChance, dist);
 
-				cavecells.AddRange(ccells);
-			}
-		//	TrySpawnCave(CenterCell, cellst, dist, out List<IntVec3> cavecells2);
-		//	cavecells.AddRange(cavecells2);
+			//	TrySpawnCave(CenterCell, cellst, dist, out List<IntVec3> cavecells2);
+			//	cavecells.AddRange(cavecells2);
 			//	cavecells.AddRange(GenRadial.RadialCellsAround(rp.rect.CenterCell, 10, true));
 			//
 			Log.Message("cavecells contains " + cavecells.Count);
@@ -83,11 +66,57 @@ namespace ExtraHives.GenStuff
 				Thing b = c.GetFirstThing<Thing>(map);
 				if (b != null) b.Destroy();
 			}
-			
+			if (hiveFaction!=null)
+			{
+				if (hiveFaction.largeCaveHive!=null)
+				{
+					foreach (IntVec3 c in bigCaveCenters)
+					{
+						Thing b = c.GetFirstThing<Thing>(map);
+						if (b == null)
+						{
+							Thing thing = GenSpawn.Spawn(ThingMaker.MakeThing(hiveFaction.largeCaveHive), c, map, WipeMode.FullRefund);
+							thing.SetFaction(Faction);
+						}
+					}
+				}
+				if (hiveFaction.smallCaveHive!=null)
+				{
+					foreach (IntVec3 c in smallCaveCenters)
+					{
+						Thing b = c.GetFirstThing<Thing>(map);
+						if (b == null)
+						{
+							Thing thing = GenSpawn.Spawn(ThingMaker.MakeThing(hiveFaction.smallCaveHive), c, map, WipeMode.FullRefund);
+							thing.SetFaction(Faction);
+						}
+					}
+				}
+				if (hiveFaction.centerCaveHive!=null)
+				{
+					Thing b = CenterCell.GetFirstThing<Thing>(map);
+					if (b == null)
+					{
+						Thing thing = GenSpawn.Spawn(ThingMaker.MakeThing(hiveFaction.centerCaveHive), CenterCell, map, WipeMode.FullRefund);
+						thing.SetFaction(Faction);
+					}
+				}
+			}
 		}
+
 		public void GenerateQuad(IntVec3 CenterCell, Rot4 rot, List<IntVec3> QuadCells, float entranceChance, float radius)
 		{
 			Map map = BaseGen.globalSettings.map;
+
+
+			Log.Message("Generatirng " + rot.ToStringHuman().CapitalizeFirst() + " Quad Small Chambers");
+			float dist2 = Rand.RangeInclusive(7, 10);
+			IntVec3 BigCaveCenter = cellforbigcave.Where(x => !bigCaveCenters.Any(y => x.DistanceTo(y) < 20)).RandomElement();
+			bigCaveCenters.Add(BigCaveCenter);
+			List<IntVec3> BigCavecells = GenRadial.RadialCellsAround(BigCaveCenter, dist2, true).ToList();
+
+			cavecells.AddRange(BigCavecells);
+
 			Log.Message("Generatirng "+rot.ToStringHuman().CapitalizeFirst()+ " Quad Small Chambers");
 
 			int cavecountSmall = Rand.RangeInclusive(5, 10);
@@ -105,35 +134,44 @@ namespace ExtraHives.GenStuff
 				Log.Message("Generatirng " + rot.ToStringHuman().CapitalizeFirst() + " Quad Entrance");
 				entranceChance -= 0.0f;
 				float dist = Rand.RangeInclusive(3, 10);
-				IntVec3 cell = cells.Where(x => x.DistanceTo(CenterCell) >= radius && QuadCells.Contains(x)).RandomElement();
-				List<IntVec3> ccells = GenRadial.RadialCellsAround(cell, dist, true).ToList();
-				cavecells.AddRange(ccells);
-				entranceCaveCenters.Add(cell);
-				List<IntVec3> tcells = new List<IntVec3>();
-				tcells.AddRange(smallCaveCenters);
-				tcells.AddRange(bigCaveCenters);
-
-				List<IntVec3> ncells = new List<IntVec3>();
-				ncells = tcells.Where(x => x.DistanceTo(CenterCell) < radius - 5 && !cell.WithinRegions(x, map, 10, TraverseParms.For(TraverseMode.ByPawn), RegionType.Set_Passable)).OrderBy(x => x.DistanceTo(cell)).ToList();
-				Log.Message("Generatirng " + rot.ToStringHuman().CapitalizeFirst() + " Quad path "+ ncells.Count+" Nodes located");
-				IntVec3 prevnode = cell;
-				for (int i = 0; i < ncells.Count; i++)
+				List<IntVec3> ecells = new List<IntVec3>();
+				ecells.AddRange(cells.Where(x => InQuad(x, CenterCell, rot) && GenRadial.RadialCellsAround(x, dist, true).Any(z => map.reachability.CanReachMapEdge(z, TraverseParms.For(TraverseMode.ByPawn))) && GenRadial.RadialCellsAround(x, dist, true).Any(z => QuadCells.Contains(z))));
+				IntVec3 cell = ecells.NullOrEmpty() ? IntVec3.Invalid : ecells.RandomElement();
+				if (cell != IntVec3.Invalid)
 				{
-					IntVec3 node = ncells[i];
-					IntVec3 offset = prevnode - node;
-					float num = 0f;
-					if ((prevnode.ToVector3() - node.ToVector3()).MagnitudeHorizontalSquared() > 0.001f)
-					{
-						num = (prevnode.ToVector3() - node.ToVector3()).AngleFlat();
-					}
-					num += 90f;
-					int trX = prevnode.x < node.x ? prevnode.x : node.x;
-					int trY = prevnode.z < node.z ? prevnode.z : node.z;
-					CellRect rect = new CellRect(trX, trY, (int)node.DistanceTo(prevnode), (int)node.DistanceTo(prevnode));
+					List<IntVec3> ccells = GenRadial.RadialCellsAround(cell, dist, true).ToList();
+					cavecells.AddRange(ccells);
+					entranceCaveCenters.Add(cell);
+					List<IntVec3> tcells = new List<IntVec3>();
+					tcells.AddRange(smallCaveCenters);
+					tcells.AddRange(bigCaveCenters);
 
-					Log.Message((i == 0 ? "Entrace at " : "Prevous node at ") + prevnode + " next node at " + node + " distance: " + node.DistanceTo(prevnode) + " Angele: " + num + " Bottom Left: " + rect.BottomLeft + " Top Right: " + rect.TopRight);
-					Dig(prevnode, num, 3, rect.ToList(), map, closed: false);
-					prevnode = node;
+					List<IntVec3> ncells = new List<IntVec3>();
+					ncells = tcells.Where(x => x.DistanceTo(CenterCell) < radius - 5 && !cell.WithinRegions(x, map, 10, TraverseParms.For(TraverseMode.ByPawn), RegionType.Set_Passable)).OrderBy(x => x.DistanceTo(cell)).ToList();
+					Log.Message("Generatirng " + rot.ToStringHuman().CapitalizeFirst() + " Quad path " + ncells.Count + " Nodes located");
+					IntVec3 prevnode = cell;
+					for (int i = 0; i < ncells.Count; i++)
+					{
+						IntVec3 node = ncells[i];
+						IntVec3 offset = prevnode - node;
+						float num = 0f;
+						if ((prevnode.ToVector3() - node.ToVector3()).MagnitudeHorizontalSquared() > 0.001f)
+						{
+							num = (prevnode.ToVector3() - node.ToVector3()).AngleFlat();
+						}
+						num += 90f;
+						int trX = prevnode.x < node.x ? prevnode.x : node.x;
+						int trY = prevnode.z < node.z ? prevnode.z : node.z;
+						CellRect rect = new CellRect(trX, trY, (int)node.DistanceTo(prevnode), (int)node.DistanceTo(prevnode));
+
+						Log.Message((i == 0 ? "Entrance at " : "Prevous node at ") + prevnode + " next node at " + node + " distance: " + node.DistanceTo(prevnode) + " Angele: " + num + " Bottom Left: " + rect.BottomLeft + " Top Right: " + rect.TopRight);
+						Dig(prevnode, num, 3, rect.ToList(), map, closed: false);
+						prevnode = node;
+					}
+				}
+				else
+				{
+					Log.Warning("Generatirng " + rot.ToStringHuman().CapitalizeFirst() + " Quad Entrance, no suitable cell found out of "+ ecells.Count+" potential targets");
 				}
 			}
 			cellforlittlecave.RemoveAll(x => QuadCells.Contains(x));
@@ -172,6 +210,28 @@ namespace ExtraHives.GenStuff
 				Dig(start, dir, width, group, map, closed: false);
 			}
 		}
+
+		public bool InQuad(IntVec3 cell, IntVec3 CenterCell, Rot4 rot)
+		{
+			if (rot == Rot4.North)
+			{
+				return NorthQuad(cell, CenterCell);
+			}
+			if (rot == Rot4.South)
+			{
+				return SouthQuad(cell, CenterCell);
+			}
+			if (rot == Rot4.East)
+			{
+				return EastQuad(cell, CenterCell);
+			}
+			if (rot == Rot4.West)
+			{
+				return WestQuad(cell, CenterCell);
+			}
+			return false;
+		}
+
 		public bool EastQuad(IntVec3 cell, IntVec3 CenterCell) 
 		{
 

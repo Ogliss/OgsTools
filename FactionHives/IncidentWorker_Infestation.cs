@@ -39,6 +39,7 @@ namespace ExtraHives //ExtraHives.IncidentWorker_Infestation
 			{
 				return false;
 			}
+			CompProperties_SpawnerPawn spawnerPawn = def.mechClusterBuilding.GetCompProperties<CompProperties_SpawnerPawn>();
 			Map map = (Map)parms.target;
 			Thing t = InfestationUtility.SpawnTunnels(def.mechClusterBuilding, Mathf.Max(GenMath.RoundRandom( parms.points / 250f), 1), map);
 			SendStandardLetter(parms, t);

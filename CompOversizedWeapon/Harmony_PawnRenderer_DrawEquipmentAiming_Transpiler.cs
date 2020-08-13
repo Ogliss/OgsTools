@@ -68,11 +68,6 @@ namespace OgsCompOversizedWeapon
             }
             num %= 360f;
             Vector3 s;
-            if (pawn.Rotation == Rot4.East)
-            {
-                flag4 = !flag4;
-
-            }
             if (pawn.RaceProps.Humanlike)
             {
                 if (HarmonyCompOversizedWeapon.enabled_AlienRaces)
@@ -98,7 +93,16 @@ namespace OgsCompOversizedWeapon
             compOversized.renderPos = offset;
             compOversized.drawScale = s;
             if (HarmonyCompOversizedWeapon.enabled_rooloDualWield)
-                Graphics.DrawMesh((flag4) ? MeshPool.plane10 : MeshPool.plane10Flip, matrix, mat, layer);
+            {
+                
+                if (pawn.Rotation == Rot4.East)
+                {
+                    flag4 = !flag4;
+
+                }
+                
+                Graphics.DrawMesh((!flag4) ? MeshPool.plane10 : MeshPool.plane10Flip, matrix, mat, layer);
+            }
             else
                 Graphics.DrawMesh((!flag4) ? MeshPool.plane10 : MeshPool.plane10Flip, matrix, mat, layer);
             if (compOversized.Props != null && compOversized.Props.isDualWeapon)

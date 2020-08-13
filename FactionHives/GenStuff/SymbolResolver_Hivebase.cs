@@ -63,7 +63,7 @@ namespace ExtraHives.GenStuff
 				resolveParams.pawnGroupMakerParams.inhabitants = true;
 				resolveParams.pawnGroupMakerParams.seed = rp.settlementPawnGroupSeed;
 			}
-			BaseGen.symbolStack.Push("pawnGroup", resolveParams, null);
+		//	BaseGen.symbolStack.Push("pawnGroup", resolveParams, null);
 		//	BaseGen.symbolStack.Push("BETABaseLightning", rp, null);
 			PawnGenerationRequest value = new PawnGenerationRequest(parentFaction.def.pawnGroupMakers.Where(x=> x.kindDef == PawnGroupKindDefOf.Hive_ExtraHives|| x.kindDef == RimWorld.PawnGroupKindDefOf.Combat).RandomElement().options.RandomElementByWeight(x=> x.Cost).kind, parentFaction, PawnGenerationContext.NonPlayer, -1, false, false, false, false, true, false, 1f, false, true, true, true, false, false, false, false, 0f, null, 1f, null, null, null, null, null, null, null, null, null, null, null, null);
 			ResolveParams resolveParams2 = rp;

@@ -224,12 +224,16 @@ namespace CrashedShipsExtension
 		// Token: 0x06005739 RID: 22329 RVA: 0x001D315C File Offset: 0x001D135C
 		public static Lord CreateNewLord(Thing byThing, bool aggressive, float defendRadius, Type lordJobType)
 		{
+			Log.Message("CreateNewLord 0");
 			IntVec3 invalid;
+			Log.Message("CreateNewLord 1");
 			if (!CellFinder.TryFindRandomCellNear(byThing.Position, byThing.Map, 5, (IntVec3 c) => c.Standable(byThing.Map) && byThing.Map.reachability.CanReach(c, byThing, PathEndMode.Touch, TraverseParms.For(TraverseMode.PassDoors, Danger.Deadly, false)), out invalid, -1))
 			{
 				Log.Error("Found no place for pawns to defend " + byThing, false);
 				invalid = IntVec3.Invalid;
 			}
+			Log.Message("CreateNewLord 2");
+			Log.Message(byThing.Faction + ", " + aggressive + ", " + defendRadius + ", " + lordJobType);
 			return LordMaker.MakeNewLord(byThing.Faction, Activator.CreateInstance(lordJobType, new object[]
 			{
 				new SpawnedPawnParams

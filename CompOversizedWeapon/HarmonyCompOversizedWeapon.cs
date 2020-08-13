@@ -40,11 +40,19 @@ namespace OgsCompOversizedWeapon
         public static void DualWieldPatch(Harmony harmony)
         {
             harmony.Patch(typeof(DualWield.Harmony.PawnRenderer_DrawEquipmentAiming).GetMethod("DrawEquipmentAimingOverride"),
-                new HarmonyMethod(typeof(HarmonyCompOversizedWeapon), nameof(DrawEquipmentAimingOverride)), null);
-            
+                new HarmonyMethod(typeof(HarmonyCompOversizedWeapon), nameof(DrawEquipmentAimingOverride)), 
+                null
+                /*
+                ,
+                new HarmonyMethod(typeof(Harmony_PawnRenderer_DrawEquipmentAimingOverride_Transpiler), nameof(Harmony_PawnRenderer_DrawEquipmentAimingOverride_Transpiler.Transpiler))
+                */
+                );
+            /*
             harmony.Patch(typeof(PawnRenderer).GetMethod("DrawEquipmentAiming"),
                 new HarmonyMethod(typeof(HarmonyCompOversizedWeapon), nameof(DrawEquipmentAimingDualWieldPreFix)), null);
-            
+            */
+                
+
         }
 
         /// <summary>
@@ -276,7 +284,7 @@ namespace OgsCompOversizedWeapon
             }
             return true;
         }
-        public static bool DrawEquipmentAimingOverride(Thing eq, Vector3 drawLoc, float aimAngle)
+        public static bool DrawEquipmentAimingOverrideOld(Thing eq, Vector3 drawLoc, float aimAngle)
         {
             Pawn ___pawn = eq.TryGetComp<CompEquippable>().PrimaryVerb.CasterPawn;
             ThingWithComps thingWithComps = eq as ThingWithComps;
@@ -327,12 +335,101 @@ namespace OgsCompOversizedWeapon
             {
                 matSingle = eq.Graphic.MatSingle;
             }
-            if (___pawn.Rotation == Rot4.East)
+            if (___pawn.equipment.COWTryGetOffHandEquipment(out ThingWithComps thingy))
             {
-                flag = !flag;
 
+                if (thingy == eq)
+                {
+                    flag = !flag;
+                    if (___pawn.Rotation == Rot4.West)
+                    {
+                        flag = !flag;
+
+                    }
+                    
+                    if (___pawn.Rotation == Rot4.North)
+                    {
+                        flag = !flag;
+                        if (___pawn.TargetCurrentlyAimingAt != null)
+                        {
+                            flag = !flag;
+
+                        }
+                    }
+                }
             }
+            else
+            {
+                if (___pawn.Rotation == Rot4.East)
+                {
+                    flag = !flag;
+
+                }
+                
+                if (___pawn.Rotation == Rot4.North)
+                {
+                    flag = !flag;
+                }
+                
+            }
+
             Graphics.DrawMesh((flag) ? MeshPool.plane10 : MeshPool.plane10Flip, matrix, matSingle, 0);
+        //    Graphics.DrawMesh(mesh, drawLoc, Quaternion.AngleAxis(num, Vector3.up), matSingle, 0);
+            return false;
+        }
+        
+        public static bool DrawEquipmentAimingOverride(Thing eq, Vector3 drawLoc, float aimAngle)
+        {
+            Pawn ___pawn = eq.TryGetComp<CompEquippable>().PrimaryVerb.CasterPawn;
+            ThingWithComps thingWithComps = eq as ThingWithComps;
+            OgsCompOversizedWeapon.CompOversizedWeapon compOversizedWeapon = ThingCompUtility.TryGetComp<OgsCompOversizedWeapon.CompOversizedWeapon>(thingWithComps);
+            if (compOversizedWeapon == null)
+            {
+                return true;
+            }
+            float num = aimAngle - 90f;
+            Mesh mesh;
+            if (aimAngle > 20f && aimAngle < 160f)
+            {
+                mesh = MeshPool.plane10;
+                num += eq.def.equippedAngleOffset;
+            }
+            else if (aimAngle > 200f && aimAngle < 340f)
+            {
+                mesh = MeshPool.plane10Flip;
+                num -= 180f;
+                num -= eq.def.equippedAngleOffset;
+            }
+            else
+            {
+                mesh = MeshPool.plane10;
+                num += eq.def.equippedAngleOffset;
+            }
+            num %= 360f;
+            Vector3 s;
+            if (enabled_AlienRaces)
+            {
+                Vector2 v = AlienRacesPatch(___pawn);
+                s = new Vector3(eq.def.graphicData.drawSize.x * v.x, 1f, eq.def.graphicData.drawSize.y * v.y);
+            }
+            else
+            {
+                s = new Vector3(eq.def.graphicData.drawSize.x, 1f, eq.def.graphicData.drawSize.y);
+            }
+            Material matSingle;
+            Matrix4x4 matrix = default(Matrix4x4);
+            Vector3 vector = HarmonyCompOversizedWeapon.AdjustRenderOffsetFromDir(___pawn, compOversizedWeapon);
+            matrix.SetTRS(drawLoc + vector, Quaternion.AngleAxis(num, Vector3.up), s);
+            Graphic_StackCount graphic_StackCount = eq.Graphic as Graphic_StackCount;
+            if (graphic_StackCount != null)
+            {
+                matSingle = graphic_StackCount.SubGraphicForStackCount(1, eq.def).MatSingle;
+            }
+            else
+            {
+                matSingle = eq.Graphic.MatSingle;
+            }
+            Graphics.DrawMesh(mesh, matrix, matSingle, 0);
         //    Graphics.DrawMesh(mesh, drawLoc, Quaternion.AngleAxis(num, Vector3.up), matSingle, 0);
             return false;
         }

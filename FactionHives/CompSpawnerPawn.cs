@@ -365,13 +365,18 @@ namespace ExtraHives
 			int index = this.chosenKind.lifeStages.Count - 1;
 			Faction faction = null;
 
-			if (HiveExtension?.Faction!=null)
+
+			if (parent.Faction != null)
 			{
-				faction = Find.FactionManager.FirstFactionOfDef(HiveExtension.Faction);
+				faction = parent.Faction;
 			}
 			else
 			{
-				faction = parent.Faction;
+				Log.Warning("Warning faction not found");
+				if (HiveExtension?.Faction != null)
+				{
+					faction = Find.FactionManager.FirstFactionOfDef(HiveExtension.Faction);
+				}
 			}
 			if (parent.Faction == null)
 			{
