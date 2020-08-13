@@ -1,5 +1,0 @@
-C:\Program Files (x86)\Steam\steamapps\common\RimWorld\Mods\Rimtroid - Core\Assemblies\Metamorphasis.dll
-C:\Program Files (x86)\Steam\steamapps\common\RimWorld\Mods\Rimtroid - Core\Assemblies\Metamorphasis.pdb
-C:\Users\User\Desktop\OgsTools\Metamorphasis\obj\Debug\Metamorphasis.csprojAssemblyReference.cache
-C:\Users\User\Desktop\OgsTools\Metamorphasis\obj\Debug\Metamorphasis.dll
-C:\Users\User\Desktop\OgsTools\Metamorphasis\obj\Debug\Metamorphasis.pdb

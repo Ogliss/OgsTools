@@ -1,7 +1,0 @@
-C:\Users\User\Desktop\OgsTools\RandomDrugEffect\bin\Debug\RandomDrugEffect.dll
-C:\Users\User\Desktop\OgsTools\RandomDrugEffect\bin\Debug\RandomDrugEffect.pdb
-C:\Users\User\Desktop\OgsTools\RandomDrugEffect\bin\Debug\0Harmony.dll
-C:\Users\User\Desktop\OgsTools\RandomDrugEffect\obj\Debug\RandomDrugEffect.csprojAssemblyReference.cache
-C:\Users\User\Desktop\OgsTools\RandomDrugEffect\obj\Debug\RandomDrugEffect.csproj.CopyComplete
-C:\Users\User\Desktop\OgsTools\RandomDrugEffect\obj\Debug\RandomDrugEffect.dll
-C:\Users\User\Desktop\OgsTools\RandomDrugEffect\obj\Debug\RandomDrugEffect.pdb

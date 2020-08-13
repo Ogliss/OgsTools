@@ -1,9 +1,0 @@
-C:\Users\User\Desktop\OgsTools\RecruitShips\bin\Debug\RecruitShips.dll
-C:\Users\User\Desktop\OgsTools\RecruitShips\bin\Debug\RecruitShips.pdb
-C:\Users\User\Desktop\OgsTools\RecruitShips\bin\Debug\0Harmony.dll
-C:\Program Files (x86)\Steam\steamapps\common\RimWorld\Mods\AdMechArmoury\1.1\Assemblies\RecruitShips.dll
-C:\Program Files (x86)\Steam\steamapps\common\RimWorld\Mods\AdMechArmoury\1.1\Assemblies\RecruitShips.pdb
-C:\Users\User\Desktop\OgsTools\RecruitShips\obj\Debug\RecruitShips.csprojAssemblyReference.cache
-C:\Users\User\Desktop\OgsTools\RecruitShips\obj\Debug\RecruitShips.csproj.CopyComplete
-C:\Users\User\Desktop\OgsTools\RecruitShips\obj\Debug\RecruitShips.dll
-C:\Users\User\Desktop\OgsTools\RecruitShips\obj\Debug\RecruitShips.pdb

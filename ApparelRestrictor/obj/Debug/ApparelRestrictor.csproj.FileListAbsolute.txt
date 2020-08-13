@@ -1,7 +1,0 @@
-C:\Users\User\Desktop\OgsTools\ApparelRestrictor\bin\Debug\ApparelRestrictor.dll
-C:\Users\User\Desktop\OgsTools\ApparelRestrictor\bin\Debug\ApparelRestrictor.pdb
-C:\Users\User\Desktop\OgsTools\ApparelRestrictor\bin\Debug\0Harmony.dll
-C:\Users\User\Desktop\OgsTools\ApparelRestrictor\obj\Debug\ApparelRestrictor.csprojAssemblyReference.cache
-C:\Users\User\Desktop\OgsTools\ApparelRestrictor\obj\Debug\ApparelRestrictor.csproj.CopyComplete
-C:\Users\User\Desktop\OgsTools\ApparelRestrictor\obj\Debug\ApparelRestrictor.dll
-C:\Users\User\Desktop\OgsTools\ApparelRestrictor\obj\Debug\ApparelRestrictor.pdb

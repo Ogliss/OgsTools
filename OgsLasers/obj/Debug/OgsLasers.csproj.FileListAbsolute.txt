@@ -1,7 +1,0 @@
-C:\Users\User\Desktop\OgsTools\OgsLasers\bin\Debug\OgsLasers.dll
-C:\Users\User\Desktop\OgsTools\OgsLasers\bin\Debug\OgsLasers.pdb
-C:\Users\User\Desktop\OgsTools\OgsLasers\bin\Debug\0Harmony.dll
-C:\Users\User\Desktop\OgsTools\OgsLasers\obj\Debug\OgsLasers.csprojAssemblyReference.cache
-C:\Users\User\Desktop\OgsTools\OgsLasers\obj\Debug\OgsLasers.csproj.CopyComplete
-C:\Users\User\Desktop\OgsTools\OgsLasers\obj\Debug\OgsLasers.dll
-C:\Users\User\Desktop\OgsTools\OgsLasers\obj\Debug\OgsLasers.pdb

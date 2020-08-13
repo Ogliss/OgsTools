@@ -1,7 +1,0 @@
-C:\Users\User\Desktop\OgsTools\FactionHives\bin\Debug\ExtraHives.dll
-C:\Users\User\Desktop\OgsTools\FactionHives\bin\Debug\ExtraHives.pdb
-C:\Users\User\Desktop\OgsTools\FactionHives\bin\Debug\0Harmony.dll
-C:\Users\User\Desktop\OgsTools\FactionHives\obj\Debug\HiveExtension.csproj.CopyComplete
-C:\Users\User\Desktop\OgsTools\FactionHives\obj\Debug\ExtraHives.dll
-C:\Users\User\Desktop\OgsTools\FactionHives\obj\Debug\ExtraHives.pdb
-C:\Users\User\Desktop\OgsTools\FactionHives\obj\Debug\HiveExtension.csprojAssemblyReference.cache
