@@ -28,7 +28,7 @@ namespace OgsCompOversizedWeapon
             {
                 if (list[index: i].OperandIs(AccessTools.Method(type: typeof(Graphics), name: nameof(Graphics.DrawMesh), parameters: new[] { typeof(Mesh), typeof(Vector3), typeof(Quaternion), typeof(Material), typeof(Int32) })))
                 {
-                    Log.Message("CodeInstruction " + i + " of " + list.Count + " " + list[i].operand);
+                //    Log.Message("CodeInstruction " + i + " of " + list.Count + " " + list[i].operand);
                 }
             }
             */
@@ -51,14 +51,14 @@ namespace OgsCompOversizedWeapon
                     yield return new CodeInstruction(opcode: OpCodes.Ldarg_1);
                     yield return new CodeInstruction(opcode: OpCodes.Ldloc_0);
                 }
-                Log.Message("CodeInstruction " + list.IndexOf(item) +" of " + list.Count + " " + item.operand + " " + item);
+            //    Log.Message("CodeInstruction " + list.IndexOf(item) +" of " + list.Count + " " + item.operand + " " + item);
                 yield return item;
             }
             /*
             list = instructions.ToList<CodeInstruction>();
             for (int i = 0; i < instructions.Count(); i++)
             {
-                Log.Message("CodeInstruction " + i + " of " + list.Count + " " + list[i].operand + " " + list[i]);
+            //    Log.Message("CodeInstruction " + i + " of " + list.Count + " " + list[i].operand + " " + list[i]);
             }
             */
             yield break;

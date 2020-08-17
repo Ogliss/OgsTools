@@ -16,13 +16,13 @@ namespace CrashedShipsExtension
         public LordJob_PawnsDefendShip(SpawnedPawnParams parms)
         {
             this.defSpot = parms.defSpot;
-            Log.Message("defSpot "+ defSpot);
+        //    Log.Message("defSpot "+ defSpot);
             this.defendRadius = parms.defendRadius;
-            Log.Message("defendRadius " + defendRadius);
+        //    Log.Message("defendRadius " + defendRadius);
             this.shipPart = parms.spawnerThing;
-            Log.Message("spawnerThing " + shipPart);
+        //    Log.Message("spawnerThing " + shipPart);
             this.faction = parms.spawnerThing.Faction;
-            Log.Message("Faction " + faction);
+        //    Log.Message("Faction " + faction);
         }
 
         // Token: 0x060007C0 RID: 1984 RVA: 0x00043D93 File Offset: 0x00042193
@@ -57,17 +57,17 @@ namespace CrashedShipsExtension
         // Token: 0x060007C3 RID: 1987 RVA: 0x00043DC0 File Offset: 0x000421C0
         public override StateGraph CreateGraph()
         {
-            Log.Message("LordJob_PawnsDefendShip CreateGraph ");
+        //    Log.Message("LordJob_PawnsDefendShip CreateGraph ");
             StateGraph stateGraph = new StateGraph();
-            Log.Message("LordJob_PawnsDefendShip CreateGraph 0");
+        //    Log.Message("LordJob_PawnsDefendShip CreateGraph 0");
             if (!this.defSpot.IsValid)
             {
                 Log.Warning("LordJob_PawnsDefendShip defSpot is invalid. Returning graph for LordJob_AssaultColony.", false);
                 stateGraph.AttachSubgraph(new LordJob_AssaultColony(this.faction, true, true, false, false, true).CreateGraph());
                 return stateGraph;
             }
-            Log.Message("LordJob_PawnsDefendShip CreateGraph 1");
-            Log.Message("defspot "+ this.defSpot+" defradius "+ this.defendRadius);
+        //    Log.Message("LordJob_PawnsDefendShip CreateGraph 1");
+        //    Log.Message("defspot "+ this.defSpot+" defradius "+ this.defendRadius);
             LordToil_DefendPoint lordToil_DefendPoint = new LordToil_DefendPoint(this.defSpot, this.defendRadius);
             stateGraph.StartingToil = lordToil_DefendPoint;
             LordToil_AssaultColony lordToil_AssaultColony = new LordToil_AssaultColony(false);

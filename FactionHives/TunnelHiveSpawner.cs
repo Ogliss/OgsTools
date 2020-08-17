@@ -39,7 +39,7 @@ namespace ExtraHives
 
 		private static List<ThingDef> filthTypes = new List<ThingDef>();
 
-		private Faction faction = null;
+		public Faction faction = null;
 		public FactionDef factiondef = null;
 		public new Faction Faction
 		{

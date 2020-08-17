@@ -1,6 +1,7 @@
 ﻿using RimWorld;
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using UnityEngine;
 using Verse;
 
@@ -47,6 +48,19 @@ namespace ExtraHives
 			if (hive == null)
 			{
 				return false;
+			}
+			HiveDefExtension ext = def.mechClusterBuilding.GetModExtension<HiveDefExtension>();
+			if (parms.faction == null)
+			{
+				try
+				{
+					parms.faction = Find.FactionManager.AllFactions.Where(x => x.def.defName.Contains(ext.Faction.defName))/*.Where(x => (float)GenDate.DaysPassed >= x.def.earliestRaidDays)*/.RandomElement();
+					Log.Message(parms.faction.def.defName);
+				}
+				catch (System.Exception)
+				{
+					parms.faction = Find.FactionManager.FirstFactionOfDef(ext.Faction);
+				}
 			}
 			ThingDef tunnelDef = hive.TunnelDef ?? RimWorld.ThingDefOf.TunnelHiveSpawner;
 			IncidentWorker_DeepDrillInfestation.tmpDrills.Clear();

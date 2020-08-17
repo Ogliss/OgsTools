@@ -1,6 +1,7 @@
 ﻿using RimWorld;
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using UnityEngine;
 using Verse;
 
@@ -53,6 +54,18 @@ namespace ExtraHives
 			{
 				return false;
 			}
+			if (parms.faction == null)
+			{
+				try
+				{
+					parms.faction = Find.FactionManager.AllFactions.Where(x => x.def.defName.Contains(hive.Faction.defName))/*.Where(x => (float)GenDate.DaysPassed >= x.def.earliestRaidDays)*/.RandomElement();
+					Log.Message(parms.faction.def.defName);
+				}
+				catch (System.Exception)
+				{
+					parms.faction = Find.FactionManager.FirstFactionOfDef(hive.Faction);
+				}
+			}
 			ThingDef tunnelDef = hive.TunnelDef ?? RimWorld.ThingDefOf.TunnelHiveSpawner;
 			IncidentWorker_GrowZoneInfestation.tmpZones.Clear();
 			ExtraInfestationIncidentUtility.GetUsableGrowZones(map, IncidentWorker_GrowZoneInfestation.tmpZones);
@@ -85,7 +98,10 @@ namespace ExtraHives
 				Log.Error("intVec == IntVec3.Invalid");
 				return false;
 			}
-			Thing t = InfestationUtility.SpawnTunnels(def.mechClusterBuilding, Mathf.Max(GenMath.RoundRandom(parms.points / 250f), 1), map, intVec, true, true);
+			CompProperties_SpawnerPawn spawnerPawn = def.mechClusterBuilding.GetCompProperties<CompProperties_SpawnerPawn>();
+			float points = spawnerPawn?.initialPawnsPoints ?? 250f;
+			Thing t = InfestationUtility.SpawnTunnels(def.mechClusterBuilding, Mathf.Max(GenMath.RoundRandom(parms.points / points), 1), map, intVec, true, true, faction: parms.faction);
+			
 			/*
 			TunnelHiveSpawner tunnelHiveSpawner = (TunnelHiveSpawner)ThingMaker.MakeThing(tunnelDef, null);
 			tunnelHiveSpawner.spawnHive = true;

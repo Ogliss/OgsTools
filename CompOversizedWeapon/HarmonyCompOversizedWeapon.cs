@@ -21,7 +21,7 @@ namespace OgsCompOversizedWeapon
 
             if (enabled_rooloDualWield)
             {
-                Log.Message("OgsCompOversizedWeapon Dual Wield Compatability mode");
+            //    Log.Message("OgsCompOversizedWeapon Dual Wield Compatability mode");
                 DualWieldPatch(harmony);
             }
             else
@@ -312,7 +312,7 @@ namespace OgsCompOversizedWeapon
             }
             num %= 360f;
             Vector3 s;
-            if (enabled_AlienRaces)
+            if (enabled_AlienRaces && ___pawn.RaceProps.Humanlike)
             {
                 Vector2 v = AlienRacesPatch(___pawn);
                 s = new Vector3(eq.def.graphicData.drawSize.x * v.x, 1f, eq.def.graphicData.drawSize.y * v.y);
@@ -407,7 +407,7 @@ namespace OgsCompOversizedWeapon
             }
             num %= 360f;
             Vector3 s;
-            if (enabled_AlienRaces)
+            if (enabled_AlienRaces && ___pawn.RaceProps.Humanlike)
             {
                 Vector2 v = AlienRacesPatch(___pawn);
                 s = new Vector3(eq.def.graphicData.drawSize.x * v.x, 1f, eq.def.graphicData.drawSize.y * v.y);

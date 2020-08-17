@@ -299,7 +299,7 @@ namespace OgsCompActivatableEffect
                 }
                 */
 
-                if (enabled_AlienRaces)
+                if (enabled_AlienRaces && pawn.RaceProps.Humanlike)
                 {
                     Vector2 v = OgsCompOversizedWeapon.HarmonyCompOversizedWeapon.AlienRacesPatch(pawn);
                     s = new Vector3(eq.def.graphicData.drawSize.x * v.x, 1f, eq.def.graphicData.drawSize.y * v.y);
@@ -463,7 +463,7 @@ namespace OgsCompActivatableEffect
                             drawLoc.y = compActivatableEffect.Altitude(drawLoc);
                             Material matSingle = compActivatableEffect.Graphic.MatSingle;
                             Vector3 s;
-                            if (flag7 && enabled_AlienRaces)
+                            if (flag7 && enabled_AlienRaces && pawn.RaceProps.Humanlike)
                             {
                                 Vector2 v = OgsCompOversizedWeapon.HarmonyCompOversizedWeapon.AlienRacesPatch(pawn);
                                 s = new Vector3(eq.def.graphicData.drawSize.x * v.x, 1f, eq.def.graphicData.drawSize.y * v.y);

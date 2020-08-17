@@ -30,13 +30,13 @@ namespace ExtraHives
                 }
                 if (CrashedShipsExtension)
                 {
-                    Log.Message("CrashedShipsExtension Loaded");
+                //    Log.Message("CrashedShipsExtension Loaded");
                     break;
                 }
             }
             HiveDefs = DefDatabase<ThingDef>.AllDefs.Where(x=> x.HasModExtension<ExtraHives.HiveDefExtension>()).ToList();
             TunnelDefs = DefDatabase<ThingDef>.AllDefs.Where(x=> x.HasModExtension<ExtraHives.TunnelExtension>()).ToList();
-            Log.Message("ExtraHives: loaded "+HiveDefs.Count + " HiveDefs and " + TunnelDefs.Count + " TunnelDefs");
+        //    Log.Message("ExtraHives: loaded "+HiveDefs.Count + " HiveDefs and " + TunnelDefs.Count + " TunnelDefs");
         }
 
     }

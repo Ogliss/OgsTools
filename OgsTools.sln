@@ -60,6 +60,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CloakingDevice", "CloakingD
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "RimWorldTemplate", "CompRegeneration\RimWorldTemplate.csproj", "{E19E5881-D99B-401A-8F7E-75389191EBE9}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CompApparelVerbGiver", "CompApparelVerbGiver\CompApparelVerbGiver.csproj", "{C679CF56-2491-45C5-92B2-CA59CFDECAA6}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -170,6 +172,10 @@ Global
 		{E19E5881-D99B-401A-8F7E-75389191EBE9}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{E19E5881-D99B-401A-8F7E-75389191EBE9}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{E19E5881-D99B-401A-8F7E-75389191EBE9}.Release|Any CPU.Build.0 = Release|Any CPU
+		{C679CF56-2491-45C5-92B2-CA59CFDECAA6}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{C679CF56-2491-45C5-92B2-CA59CFDECAA6}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{C679CF56-2491-45C5-92B2-CA59CFDECAA6}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{C679CF56-2491-45C5-92B2-CA59CFDECAA6}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

@@ -39,7 +39,6 @@
     <Compile Include="ExtentionMethodsCompOversizedWeapon.cs" />
     <Compile Include="CompOversizedWeapon.cs" />
     <Compile Include="CompProperties_OversizedWeapon.cs" />
-    <None Include="HarmonyCompOversizedWeapon.cs.bak" />
     <Compile Include="HarmonyCompOversizedWeapon.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>

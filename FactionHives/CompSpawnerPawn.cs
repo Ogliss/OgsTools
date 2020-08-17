@@ -17,7 +17,7 @@ namespace ExtraHives
 		{
 			this.compClass = typeof(CompSpawnerPawn);
 		}
-
+		public PawnGroupKindDef factionGroupKindDef = PawnGroupKindDefOf.Hive_ExtraHives;
 		// Token: 0x04002DFD RID: 11773
 		public List<PawnGenOption> spawnablePawnKinds = new List<PawnGenOption>();
 		public List<PawnKindDef> AlwaysSpawnWith = new List<PawnKindDef>();
@@ -205,8 +205,8 @@ namespace ExtraHives
 					return lord2 != null && lord2.LordJob.GetType() == lordJobType;
 				};
 				Pawn foundPawn = null;
-				Log.Message("for map " + spawner.Map);
-				Log.Message("try get region at "+ spawner.OccupiedRect().AdjacentCells.Where(x=> x.Walkable(spawner.Map)).RandomElement());
+			//	Log.Message("for map " + spawner.Map);
+			//	Log.Message("try get region at "+ spawner.OccupiedRect().AdjacentCells.Where(x=> x.Walkable(spawner.Map)).RandomElement());
 				RegionTraverser.BreadthFirstTraverse(spawner.OccupiedRect().AdjacentCells.Where(x => x.Walkable(spawner.Map)).RandomElement().GetRegion(spawner.Map), (Region from, Region to) => true, delegate (Region r)
 				{
 					List<Thing> list = r.ListerThings.ThingsOfDef(spawner.def);
@@ -260,7 +260,7 @@ namespace ExtraHives
 		// Token: 0x06005353 RID: 21331 RVA: 0x001BDAE8 File Offset: 0x001BBCE8
 		private void SpawnInitialPawns()
 		{
-			Log.Message("SpawnInitialPawns");
+		//	Log.Message("SpawnInitialPawns");
 			int num = 0;
 			Pawn pawn;
 			while (num < this.Props.initialPawnsCount && this.TrySpawnPawn(out pawn))
@@ -329,7 +329,28 @@ namespace ExtraHives
 		{
 			float curPoints = this.SpawnedPawnsPoints;
 
-			IEnumerable<PawnGenOption> source = !this.Props.spawnablePawnKinds.NullOrEmpty() ? this.Props.spawnablePawnKinds : HiveExtension.Faction.pawnGroupMakers.FindAll(x=> x.kindDef == RimWorld.PawnGroupKindDefOf.Combat || x.kindDef == RimWorld.PawnGroupKindDefOf.Settlement).RandomElement().options;
+			if (spawnablePawnKinds.NullOrEmpty())
+			{
+				if (!this.Props.spawnablePawnKinds.NullOrEmpty())
+				{
+					spawnablePawnKinds = this.Props.spawnablePawnKinds;
+				}
+				else
+				{
+					if (parent.Faction != null)
+					{
+						if (parent.Faction.def.pawnGroupMakers.Any(x=> x.kindDef == this.Props.factionGroupKindDef))
+						{
+							spawnablePawnKinds = parent.Faction.def.pawnGroupMakers.Where(x => x.kindDef == this.Props.factionGroupKindDef).RandomElementByWeight(x=> x.commonality).options;
+						}
+						else
+						{
+							spawnablePawnKinds = parent.Faction.def.pawnGroupMakers.Where(x => x.kindDef == RimWorld.PawnGroupKindDefOf.Combat || x.kindDef == RimWorld.PawnGroupKindDefOf.Settlement).RandomElementByWeight(x => x.commonality).options;
+						}
+					}
+				}
+			}
+			IEnumerable<PawnGenOption> source = spawnablePawnKinds;
 			if (this.Props.maxSpawnedPawnsPoints > -1f)
 			{
 				source = from x in source
@@ -358,7 +379,7 @@ namespace ExtraHives
 			}
 			if (this.chosenKind == null)
 			{
-				Log.Message("TrySpawnPawn chosenKind == null return false");
+			//	Log.Message("TrySpawnPawn chosenKind == null return false");
 				pawn = null;
 				return false;
 			}
@@ -545,6 +566,7 @@ namespace ExtraHives
 
 		// Token: 0x04002E11 RID: 11793
 		public List<Pawn> spawnedPawns = new List<Pawn>();
+		public List<PawnGenOption> spawnablePawnKinds = new List<PawnGenOption>();
 
 		// Token: 0x04002E12 RID: 11794
 		public bool aggressive = true;

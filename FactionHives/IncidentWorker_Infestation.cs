@@ -1,5 +1,6 @@
 ﻿// RimWorld.IncidentWorker_Infestation
 using RimWorld;
+using System.Linq;
 using UnityEngine;
 using Verse;
 
@@ -39,9 +40,23 @@ namespace ExtraHives //ExtraHives.IncidentWorker_Infestation
 			{
 				return false;
 			}
+			HiveDefExtension ext = def.mechClusterBuilding.GetModExtension<HiveDefExtension>();
+			if (parms.faction==null)
+			{
+				try
+				{
+					parms.faction = Find.FactionManager.AllFactions.Where(x => x.def.defName.Contains(ext.Faction.defName))/*.Where(x => (float)GenDate.DaysPassed >= x.def.earliestRaidDays)*/.RandomElement();
+					Log.Message(parms.faction.def.defName);
+				}
+				catch (System.Exception)
+				{
+					parms.faction = Find.FactionManager.FirstFactionOfDef(ext.Faction);
+				}
+			}
 			CompProperties_SpawnerPawn spawnerPawn = def.mechClusterBuilding.GetCompProperties<CompProperties_SpawnerPawn>();
+			float points = spawnerPawn?.initialPawnsPoints ?? 250f;
 			Map map = (Map)parms.target;
-			Thing t = InfestationUtility.SpawnTunnels(def.mechClusterBuilding, Mathf.Max(GenMath.RoundRandom( parms.points / 250f), 1), map);
+			Thing t = InfestationUtility.SpawnTunnels(def.mechClusterBuilding, Mathf.Max(GenMath.RoundRandom( parms.points / points), 1), map, faction: parms.faction);
 			SendStandardLetter(parms, t);
 			Find.TickManager.slower.SignalForceNormalSpeedShort();
 			return true;

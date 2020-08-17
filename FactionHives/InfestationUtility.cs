@@ -6,7 +6,7 @@ namespace ExtraHives
 {
 	public static class InfestationUtility
 	{
-		public static Thing SpawnTunnels(ThingDef hiveDef, int hiveCount, Map map, bool spawnAnywhereIfNoGoodCell = false, bool ignoreRoofedRequirement = false, string questTag = null)
+		public static Thing SpawnTunnels(ThingDef hiveDef, int hiveCount, Map map, bool spawnAnywhereIfNoGoodCell = false, bool ignoreRoofedRequirement = false, string questTag = null, Faction faction = null)
 		{
 			ThingDef HiveDef = hiveDef ?? RimWorld.ThingDefOf.Hive;
 			HiveDefExtension HiveExt = HiveDef.GetModExtension<HiveDefExtension>();
@@ -50,6 +50,18 @@ namespace ExtraHives
 				TunnelDef = extension.TunnelDef;
 			}
 			Thing thing = GenSpawn.Spawn(ThingMaker.MakeThing(TunnelDef), cell, map, WipeMode.FullRefund);
+			TunnelHiveSpawner hiveSpawner = thing as TunnelHiveSpawner;
+			if (hiveSpawner!=null)
+			{
+				if (hiveSpawner.faction == null && faction!=null)
+				{
+					hiveSpawner.faction = faction;
+				}
+			}
+			if (hiveSpawner.Faction != null)
+			{
+			//	Log.Message(hiveSpawner.Faction.def.defName + ": " + hiveSpawner.faction);
+			}
 			QuestUtility.AddQuestTag(thing, questTag);
 			for (int i = 0; i < hiveCount - 1; i++)
 			{
@@ -57,12 +69,24 @@ namespace ExtraHives
 				if (cell.IsValid)
 				{
 					thing = GenSpawn.Spawn(ThingMaker.MakeThing(TunnelDef), cell, map, WipeMode.FullRefund);
+					hiveSpawner = thing as TunnelHiveSpawner;
+					if (hiveSpawner != null)
+					{
+						if (hiveSpawner.faction == null && faction != null)
+						{
+							hiveSpawner.faction = faction;
+						}
+					}
+					if (hiveSpawner.Faction!=null)
+					{
+					//	Log.Message(hiveSpawner.Faction.def.defName+": "+ hiveSpawner.faction);
+					}
 					QuestUtility.AddQuestTag(thing, questTag);
 				}
 			}
 			return thing;
 		}
-		public static Thing SpawnTunnels(ThingDef hiveDef, int hiveCount, Map map, IntVec3 cell, bool spawnAnywhereIfNoGoodCell = false, bool ignoreRoofedRequirement = false, string questTag = null)
+		public static Thing SpawnTunnels(ThingDef hiveDef, int hiveCount, Map map, IntVec3 cell, bool spawnAnywhereIfNoGoodCell = false, bool ignoreRoofedRequirement = false, string questTag = null, Faction faction = null)
 		{
 			ThingDef HiveDef = hiveDef ?? RimWorld.ThingDefOf.Hive;
 			HiveDefExtension HiveExt = HiveDef.GetModExtension<HiveDefExtension>();
@@ -73,6 +97,18 @@ namespace ExtraHives
 				TunnelDef = extension.TunnelDef;
 			}
 			Thing thing = GenSpawn.Spawn(ThingMaker.MakeThing(TunnelDef), cell, map, WipeMode.FullRefund);
+			TunnelHiveSpawner hiveSpawner = thing as TunnelHiveSpawner;
+			if (hiveSpawner != null)
+			{
+				if (hiveSpawner.faction == null && faction != null)
+				{
+					hiveSpawner.faction = faction;
+				}
+			}
+			if (hiveSpawner.Faction != null)
+			{
+			//	Log.Message(hiveSpawner.Faction.def.defName + ": " + hiveSpawner.faction);
+			}
 			QuestUtility.AddQuestTag(thing, questTag);
 			CompSpawnerHives spawnerHives = thing.TryGetComp<CompSpawnerHives>();
 			if (spawnerHives?.Props.tunnelDef!=null)
@@ -85,6 +121,18 @@ namespace ExtraHives
 				if (cell.IsValid)
 				{
 					thing = GenSpawn.Spawn(ThingMaker.MakeThing(TunnelDef), cell, map, WipeMode.FullRefund);
+					hiveSpawner = thing as TunnelHiveSpawner;
+					if (hiveSpawner != null)
+					{
+						if (hiveSpawner.faction == null && faction != null)
+						{
+							hiveSpawner.faction = faction;
+						}
+					}
+					if (hiveSpawner.Faction != null)
+					{
+					//	Log.Message(hiveSpawner.Faction.def.defName + ": " + hiveSpawner.faction);
+					}
 					QuestUtility.AddQuestTag(thing, questTag);
 				}
 			}

@@ -60,7 +60,7 @@ namespace ExtraHives.GenStuff
 			//	cavecells.AddRange(cavecells2);
 			//	cavecells.AddRange(GenRadial.RadialCellsAround(rp.rect.CenterCell, 10, true));
 			//
-			Log.Message("cavecells contains " + cavecells.Count);
+		//	Log.Message("cavecells contains " + cavecells.Count);
 			foreach (IntVec3 c in cavecells)
 			{
 				Thing b = c.GetFirstThing<Thing>(map);
@@ -109,7 +109,7 @@ namespace ExtraHives.GenStuff
 			Map map = BaseGen.globalSettings.map;
 
 
-			Log.Message("Generatirng " + rot.ToStringHuman().CapitalizeFirst() + " Quad Small Chambers");
+		//	Log.Message("Generatirng " + rot.ToStringHuman().CapitalizeFirst() + " Quad Small Chambers");
 			float dist2 = Rand.RangeInclusive(7, 10);
 			IntVec3 BigCaveCenter = cellforbigcave.Where(x => !bigCaveCenters.Any(y => x.DistanceTo(y) < 20)).RandomElement();
 			bigCaveCenters.Add(BigCaveCenter);
@@ -117,7 +117,7 @@ namespace ExtraHives.GenStuff
 
 			cavecells.AddRange(BigCavecells);
 
-			Log.Message("Generatirng "+rot.ToStringHuman().CapitalizeFirst()+ " Quad Small Chambers");
+		//	Log.Message("Generatirng "+rot.ToStringHuman().CapitalizeFirst()+ " Quad Small Chambers");
 
 			int cavecountSmall = Rand.RangeInclusive(5, 10);
 			for (int i2 = 0; i2 < cavecountSmall; i2++)
@@ -131,7 +131,7 @@ namespace ExtraHives.GenStuff
 			
 			if (Rand.Chance(entranceChance))
 			{
-				Log.Message("Generatirng " + rot.ToStringHuman().CapitalizeFirst() + " Quad Entrance");
+			//	Log.Message("Generatirng " + rot.ToStringHuman().CapitalizeFirst() + " Quad Entrance");
 				entranceChance -= 0.0f;
 				float dist = Rand.RangeInclusive(3, 10);
 				List<IntVec3> ecells = new List<IntVec3>();
@@ -148,7 +148,7 @@ namespace ExtraHives.GenStuff
 
 					List<IntVec3> ncells = new List<IntVec3>();
 					ncells = tcells.Where(x => x.DistanceTo(CenterCell) < radius - 5 && !cell.WithinRegions(x, map, 10, TraverseParms.For(TraverseMode.ByPawn), RegionType.Set_Passable)).OrderBy(x => x.DistanceTo(cell)).ToList();
-					Log.Message("Generatirng " + rot.ToStringHuman().CapitalizeFirst() + " Quad path " + ncells.Count + " Nodes located");
+				//	Log.Message("Generatirng " + rot.ToStringHuman().CapitalizeFirst() + " Quad path " + ncells.Count + " Nodes located");
 					IntVec3 prevnode = cell;
 					for (int i = 0; i < ncells.Count; i++)
 					{
@@ -164,7 +164,7 @@ namespace ExtraHives.GenStuff
 						int trY = prevnode.z < node.z ? prevnode.z : node.z;
 						CellRect rect = new CellRect(trX, trY, (int)node.DistanceTo(prevnode), (int)node.DistanceTo(prevnode));
 
-						Log.Message((i == 0 ? "Entrance at " : "Prevous node at ") + prevnode + " next node at " + node + " distance: " + node.DistanceTo(prevnode) + " Angele: " + num + " Bottom Left: " + rect.BottomLeft + " Top Right: " + rect.TopRight);
+					//	Log.Message((i == 0 ? "Entrance at " : "Prevous node at ") + prevnode + " next node at " + node + " distance: " + node.DistanceTo(prevnode) + " Angele: " + num + " Bottom Left: " + rect.BottomLeft + " Top Right: " + rect.TopRight);
 						Dig(prevnode, num, 3, rect.ToList(), map, closed: false);
 						prevnode = node;
 					}
@@ -355,11 +355,11 @@ namespace ExtraHives.GenStuff
 			{
 				if (visited[allCell])
 				{
-					Log.Message("been to "+ allCell + " already");
+				//	Log.Message("been to "+ allCell + " already");
 				}
 				if (!IsRock(allCell, elevation, map))
 				{
-					Log.Message(allCell + " is not rock");
+				//	Log.Message(allCell + " is not rock");
 				}
 				if (allCell.DistanceTo(c) < dist && cells.Contains(c))
 				{
@@ -373,12 +373,12 @@ namespace ExtraHives.GenStuff
 						visited[x] = true;
 						group.Add(x);
 					});
-					Log.Message("TrySpawnCave at " + allCell + "containing " + group.Count + " cells");
+				//	Log.Message("TrySpawnCave at " + allCell + "containing " + group.Count + " cells");
 					Trim(group, map);
 					RemoveSmallDisconnectedSubGroups(group, map);
 					if (group.Count >= 30)
 					{
-						Log.Message("TrySpawnCave starting tunnel at " + allCell + "containing "+ group.Count + " cells");
+					//	Log.Message("TrySpawnCave starting tunnel at " + allCell + "containing "+ group.Count + " cells");
 						DoOpenTunnels(group, map);
 						DoClosedTunnels(group, map);
 						CaveCells.AddRange(group);
@@ -390,7 +390,7 @@ namespace ExtraHives.GenStuff
 		private void TrySpawnCave2(IntVec3 c, List<IntVec3> cells, float dist, out List<IntVec3> CaveCells)
 		{
 			CaveCells = new List<IntVec3>();
-			Log.Message("checking " + cells.Count + " cells for tunnels"); ;
+		//	Log.Message("checking " + cells.Count + " cells for tunnels"); ;
 			MapGenFloatGrid elevation = MapGenerator.Elevation;
 			Map map = BaseGen.globalSettings.map;
 			BoolGrid visited = new BoolGrid(map);
@@ -416,11 +416,11 @@ namespace ExtraHives.GenStuff
 					//	Log.Message("found " + group.Count + " cells for tunnel group");
 					Trim(group, map);
 					RemoveSmallDisconnectedSubGroups(group, map);
-						Log.Message("RemoveSmallDisconnectedSubGroups from group " + group.Count + " cells left");
+					//	Log.Message("RemoveSmallDisconnectedSubGroups from group " + group.Count + " cells left");
 
 					if (group.Count >= 300)
 					{
-						Log.Message("making " + group.Count + " tunnels");
+					//	Log.Message("making " + group.Count + " tunnels");
 						DoOpenTunnels(group, map);
 						DoClosedTunnels(group, map);
 						CaveCells.AddRange(group);
@@ -433,7 +433,7 @@ namespace ExtraHives.GenStuff
 				if (!CaveCells.Contains(allCell) && visited[allCell])
 				{
 					CaveCells.Add(allCell);
-					Log.Message("adding " + allCell + "co CaveCells, now contains " + CaveCells.Count);
+				//	Log.Message("adding " + allCell + "co CaveCells, now contains " + CaveCells.Count);
 				}
 			}
 		}
@@ -606,7 +606,7 @@ namespace ExtraHives.GenStuff
 				SetCaveAround(intVec, width, map, visited, out bool hitAnotherTunnel);
 				if (hitAnotherTunnel)
 				{
-					Log.Message(intVec + " hitAnotherTunnel");
+				//	Log.Message(intVec + " hitAnotherTunnel");
 					break;
 				}
 				while (vect.ToIntVec3() == intVec)
@@ -617,7 +617,7 @@ namespace ExtraHives.GenStuff
 				
 				if (!tmpGroupSet.Contains(vect.ToIntVec3()))
 				{
-					Log.Message(vect.ToIntVec3() + " not in group");
+				//	Log.Message(vect.ToIntVec3() + " not in group");
 					break;
 				}
 				IntVec3 intVec3 = new IntVec3(intVec.x, 0, vect.ToIntVec3().z);
@@ -630,11 +630,11 @@ namespace ExtraHives.GenStuff
 			//	Log.Message(intVec + " added to cavecells, currently: "+ cavecells.Count);
 				intVec = vect.ToIntVec3();
 				/*
-				Log.Message(intVec + " added to cavecells, currently: " + cavecells.Count);
-				Log.Message("Randomize angel Original: "+ dir);
-				Log.Message("Randomize angel num: " + num);
-				Log.Message("Randomize angel start.x: " + start.x);
-				Log.Message("Randomize angel start.z: " + start.z);
+			//	Log.Message(intVec + " added to cavecells, currently: " + cavecells.Count);
+			//	Log.Message("Randomize angel Original: "+ dir);
+			//	Log.Message("Randomize angel num: " + num);
+			//	Log.Message("Randomize angel start.x: " + start.x);
+			//	Log.Message("Randomize angel start.z: " + start.z);
 				*/
 				if (directionNoise == null)
 				{
@@ -652,7 +652,7 @@ namespace ExtraHives.GenStuff
 				distcovered = start.DistanceTo(intVec);
 				break;
 			}
-			Log.Message("Tunneling from "+ start + " heading: " + dir +" Distance: " + distcovered + " complete");
+		//	Log.Message("Tunneling from "+ start + " heading: " + dir +" Distance: " + distcovered + " complete");
 		}
 
 		private void DigInBestDirection(IntVec3 curIntVec, float curDir, FloatRange dirOffset, float width, List<IntVec3> group, Map map, bool closed, HashSet<IntVec3> visited = null)

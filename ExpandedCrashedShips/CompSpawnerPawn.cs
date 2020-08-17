@@ -18,6 +18,7 @@ namespace CrashedShipsExtension
 			this.compClass = typeof(CompSpawnerPawn);
 		}
 
+		public PawnGroupKindDef factionGroupKindDef = PawnGroupKindDefOf.Combat;
 		// Token: 0x0400306B RID: 12395
 		public List<PawnGenOption> spawnablePawnKinds = new List<PawnGenOption>();
 		public List<PawnKindDef> AlwaysSpawnWith = new List<PawnKindDef>();
@@ -224,16 +225,16 @@ namespace CrashedShipsExtension
 		// Token: 0x06005739 RID: 22329 RVA: 0x001D315C File Offset: 0x001D135C
 		public static Lord CreateNewLord(Thing byThing, bool aggressive, float defendRadius, Type lordJobType)
 		{
-			Log.Message("CreateNewLord 0");
+		//	Log.Message("CreateNewLord 0");
 			IntVec3 invalid;
-			Log.Message("CreateNewLord 1");
+		//	Log.Message("CreateNewLord 1");
 			if (!CellFinder.TryFindRandomCellNear(byThing.Position, byThing.Map, 5, (IntVec3 c) => c.Standable(byThing.Map) && byThing.Map.reachability.CanReach(c, byThing, PathEndMode.Touch, TraverseParms.For(TraverseMode.PassDoors, Danger.Deadly, false)), out invalid, -1))
 			{
 				Log.Error("Found no place for pawns to defend " + byThing, false);
 				invalid = IntVec3.Invalid;
 			}
-			Log.Message("CreateNewLord 2");
-			Log.Message(byThing.Faction + ", " + aggressive + ", " + defendRadius + ", " + lordJobType);
+		//	Log.Message("CreateNewLord 2");
+		//	Log.Message(byThing.Faction + ", " + aggressive + ", " + defendRadius + ", " + lordJobType);
 			return LordMaker.MakeNewLord(byThing.Faction, Activator.CreateInstance(lordJobType, new object[]
 			{
 				new SpawnedPawnParams
@@ -317,7 +318,28 @@ namespace CrashedShipsExtension
 		{
 			float curPoints = this.SpawnedPawnsPoints;
 
-			IEnumerable<PawnGenOption> source = this.Props.spawnablePawnKinds;
+			if (spawnablePawnKinds.NullOrEmpty())
+			{
+				if (!this.Props.spawnablePawnKinds.NullOrEmpty())
+				{
+					spawnablePawnKinds = this.Props.spawnablePawnKinds;
+				}
+				else
+				{
+					if (parent.Faction != null)
+					{
+						if (parent.Faction.def.pawnGroupMakers.Any(x => x.kindDef == this.Props.factionGroupKindDef))
+						{
+							spawnablePawnKinds = parent.Faction.def.pawnGroupMakers.Where(x => x.kindDef == this.Props.factionGroupKindDef).RandomElementByWeight(x => x.commonality).options;
+						}
+						else
+						{
+							spawnablePawnKinds = parent.Faction.def.pawnGroupMakers.Where(x => x.kindDef == RimWorld.PawnGroupKindDefOf.Combat || x.kindDef == RimWorld.PawnGroupKindDefOf.Settlement).RandomElementByWeight(x => x.commonality).options;
+						}
+					}
+				}
+			}
+			IEnumerable<PawnGenOption> source = spawnablePawnKinds;
 			if (this.Props.maxSpawnedPawnsPoints > -1f)
 			{
 				source = from x in source
@@ -385,7 +407,7 @@ namespace CrashedShipsExtension
 		{
 			base.PostPostMake();
 			initialSpawnDelay = Props.initialSpawnDelay;
-			Log.Message("SpawnInitialPawns delay " + initialSpawnDelay);
+		//	Log.Message("SpawnInitialPawns delay " + initialSpawnDelay);
 		}
 
 		// Token: 0x06005742 RID: 22338 RVA: 0x001D358C File Offset: 0x001D178C
@@ -507,6 +529,7 @@ namespace CrashedShipsExtension
 
 		// Token: 0x0400307F RID: 12415
 		public List<Pawn> spawnedPawns = new List<Pawn>();
+		public List<PawnGenOption> spawnablePawnKinds = new List<PawnGenOption>();
 
 		// Token: 0x04003080 RID: 12416
 		public bool aggressive = true;

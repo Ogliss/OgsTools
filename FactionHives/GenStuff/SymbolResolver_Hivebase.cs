@@ -46,7 +46,7 @@ namespace ExtraHives.GenStuff
 		//	BaseGen.symbolStack.Push("basePart_outdoors", resolveParams4, null);
 		//	BaseGen.symbolStack.Push("basePart_outdoors", resolveParams4, null);
 			BaseGen.globalSettings.minEmptyNodes = ((num < 1f) ? 0 : GenMath.RoundRandom(num));
-			Lord singlePawnLord = rp.singlePawnLord ?? LordMaker.MakeNewLord(parentFaction, new LordJob_DefendBase(parentFaction, rp.rect.CenterCell), map, null);
+			Lord singlePawnLord = rp.singlePawnLord ?? LordMaker.MakeNewLord(parentFaction, new LordJob_DefendBase(parentFaction, GenRadial.RadialCellsAround(rp.rect.CenterCell,5,true).Where(x=>x.Walkable(map)).RandomElement()), map, null);
 			TraverseParms traverseParms = TraverseParms.For(TraverseMode.PassDoors, Danger.Deadly, false);
 			ResolveParams resolveParams = rp;
 			resolveParams.rect = rp.rect;
@@ -63,7 +63,7 @@ namespace ExtraHives.GenStuff
 				resolveParams.pawnGroupMakerParams.inhabitants = true;
 				resolveParams.pawnGroupMakerParams.seed = rp.settlementPawnGroupSeed;
 			}
-		//	BaseGen.symbolStack.Push("pawnGroup", resolveParams, null);
+			BaseGen.symbolStack.Push("pawnGroup", resolveParams, null);
 		//	BaseGen.symbolStack.Push("BETABaseLightning", rp, null);
 			PawnGenerationRequest value = new PawnGenerationRequest(parentFaction.def.pawnGroupMakers.Where(x=> x.kindDef == PawnGroupKindDefOf.Hive_ExtraHives|| x.kindDef == RimWorld.PawnGroupKindDefOf.Combat).RandomElement().options.RandomElementByWeight(x=> x.Cost).kind, parentFaction, PawnGenerationContext.NonPlayer, -1, false, false, false, false, true, false, 1f, false, true, true, true, false, false, false, false, 0f, null, 1f, null, null, null, null, null, null, null, null, null, null, null, null);
 			ResolveParams resolveParams2 = rp;

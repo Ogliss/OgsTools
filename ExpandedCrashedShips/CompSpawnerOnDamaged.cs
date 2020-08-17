@@ -19,6 +19,7 @@ namespace CrashedShipsExtension
         {
             this.compClass = typeof(CompSpawnerOnDamaged);
         }
+        public PawnGroupKindDef factionGroupKindDef = PawnGroupKindDefOf.Combat;
         public FactionDef Faction;
         public Faction faction;
         public List<PawnGenOption> allowedKinddefs = new List<PawnGenOption>();
@@ -195,12 +196,12 @@ namespace CrashedShipsExtension
                 if (parent.Faction == null)
                 {
                     parent.SetFaction(OfFaction);
-                    Log.Message("set parent faction to "+ this.parent.Faction);
+                //    Log.Message("set parent faction to "+ this.parent.Faction);
                 }
                 if (this.pointsLeft == 0f)
                 {
                     this.pointsLeft = Mathf.Max(Props.defaultPoints * 0.9f, Props.minPoints);
-                    Log.Message("set pointsLeft to " + this.pointsLeft);
+                //    Log.Message("set pointsLeft to " + this.pointsLeft);
                 }
             }
         }
@@ -208,6 +209,29 @@ namespace CrashedShipsExtension
         // Token: 0x060029EE RID: 10734 RVA: 0x0013DA2C File Offset: 0x0013BE2C
         private void TrySpawnPawns()
         {
+
+            if (spawnablePawnKinds.NullOrEmpty())
+            {
+                if (!this.Props.allowedKinddefs.NullOrEmpty())
+                {
+                    spawnablePawnKinds = this.Props.allowedKinddefs;
+                }
+                else
+                {
+                    if (parent.Faction != null)
+                    {
+                        if (parent.Faction.def.pawnGroupMakers.Any(x => x.kindDef == this.Props.factionGroupKindDef))
+                        {
+                            spawnablePawnKinds = parent.Faction.def.pawnGroupMakers.Where(x => x.kindDef == this.Props.factionGroupKindDef).RandomElementByWeight(x => x.commonality).options;
+                        }
+                        else
+                        {
+                            spawnablePawnKinds = parent.Faction.def.pawnGroupMakers.Where(x => x.kindDef == RimWorld.PawnGroupKindDefOf.Combat || x.kindDef == RimWorld.PawnGroupKindDefOf.Settlement).RandomElementByWeight(x => x.commonality).options;
+                        }
+                    }
+                }
+            }
+            IEnumerable<PawnGenOption> source = spawnablePawnKinds;
             if (this.pointsLeft <= 0f)
             {
                 return;
@@ -230,10 +254,7 @@ namespace CrashedShipsExtension
             {
                 while (this.pointsLeft > 0f)
                 {
-                    if (!(from def in Props.allowedKinddefs
-                          where ((def.kind.defaultFactionType == faction.def && def.kind.defaultFactionType != null) || (def.kind.defaultFactionType == null && faction.def.pawnGroupMakers.Any(pgm => pgm.options.Any(opt => opt.kind == def.kind) && pgm.kindDef != PawnGroupKindDefOf.Trader && pgm.kindDef != PawnGroupKindDefOf.Peaceful))) && def.kind.isFighter && def.kind.combatPower <= this.pointsLeft
-                          //where ((def.defaultFactionType == faction.def && def.defaultFactionType != null) || (!faction.def.pawnGroupMakers.All(pgm => pgm.options.Any(opt => opt.kind == def)) && def.defaultFactionType == null)) && def.isFighter && def.combatPower <= this.pointsLeft
-                          select def).TryRandomElementByWeight( x=> x.selectionWeight, out PawnGenOption kind))
+                    if (!(from def in source select def).TryRandomElementByWeight( x=> x.selectionWeight, out PawnGenOption kind))
                     {
                         //    Log.Message(string.Format("kindDef: {0}", kind));
                         break;
@@ -283,5 +304,6 @@ namespace CrashedShipsExtension
 
         // Token: 0x04000FB7 RID: 4023
         private List<Faction> allFactions = new List<Faction>();
+        public List<PawnGenOption> spawnablePawnKinds = new List<PawnGenOption>();
     }
 }

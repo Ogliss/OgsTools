@@ -6,10 +6,11 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
 using Verse;
+using static AlienRace.AlienPartGenerator;
 
 namespace HediffCompRaceChanger
 {
-    public class ExtendedTraitEntry : TraitEntry
+    public class ExtendedTraitEntry
     {
         public TraitDef def = null;
         public int degree = 0;
@@ -25,12 +26,19 @@ namespace HediffCompRaceChanger
             this.compClass = typeof(HediffComp_ChangeRace);
         }
 
+        public bool PermenantEffect = true;
+        public bool onRemovedEffect = true;
+        public bool onAddedEffect = true;
+
         public bool colourSkin = true;
         public bool colourSkinTwo = true;
         public bool colourHair = false;
         public bool colourHairTwo = false;
         public bool removeHair = true;
         public ThingDef raceDef = null;
+        public bool changeHead = true;
+        public string crownType = string.Empty;
+        public bool changeBody = true;
         public BodyTypeDef bodyTypeDef = null;
         public List<ExtendedTraitEntry> traitsToAdd = new List<ExtendedTraitEntry>();
         public List<ExtendedTraitEntry> traitsToRemove = new List<ExtendedTraitEntry>();
@@ -88,75 +96,74 @@ namespace HediffCompRaceChanger
             base.CompPostPostRemoved();
         }
 
+        public AlienRace.AlienPartGenerator.AlienComp compAlien => Pawn.TryGetComp<AlienRace.AlienPartGenerator.AlienComp>();
+        public AlienRace.ThingDef_AlienRace alienRace => (AlienRace.ThingDef_AlienRace)Props.raceDef ?? null;
         private void TransformPawn(bool changeDef = true, bool keep = false)
         {
             //sets position, faction and map
-            IntVec3 intv = parent.pawn.Position;
-            Faction faction = parent.pawn.Faction;
-            Map map = parent.pawn.Map;
-            RegionListersUpdater.DeregisterInRegions(parent.pawn, map);
+            IntVec3 intv = Pawn.Position;
+            Faction faction = Pawn.Faction;
+            Map map = Pawn.Map;
+            RegionListersUpdater.DeregisterInRegions(Pawn, map);
 
             //Change Race to Props.raceDef
-            var thingDef = Props.raceDef ?? null;
-            if (changeDef && thingDef != null && thingDef != parent.pawn.def)
+            if (changeDef && alienRace != null && alienRace != Pawn.def)
             {
-                parent.pawn.def = thingDef;
+                Pawn.def = alienRace;
                 long ageB = Pawn.ageTracker.AgeBiologicalTicks;
                 long ageC = Pawn.ageTracker.AgeChronologicalTicks;
                 Pawn.ageTracker = new Pawn_AgeTracker(Pawn);
                 Pawn.ageTracker.AgeBiologicalTicks = ageB;
                 Pawn.ageTracker.AgeChronologicalTicks = ageC;
-                AlienRace.ThingDef_AlienRace alienRace = (AlienRace.ThingDef_AlienRace)thingDef;
-                AlienRace.AlienPartGenerator.AlienComp alien = parent.pawn.TryGetComp<AlienRace.AlienPartGenerator.AlienComp>();
-               
-                if (Props.colourSkinTwo || Props.colourSkin)
+                if (!Pawn.RaceProps.hasGenders)
                 {
-                    if (Props.colourSkin)
-                    {
-                        if (alien != null)
-                        {
-                            alien.skinColor = alienRace.alienRace.generalSettings.alienPartGenerator.SkinColor(parent.pawn);
-                        }
-                    }
-                    if (Props.colourSkinTwo)
-                    {
-                        if (alien != null)
-                        {
-                            alien.skinColorSecond = alienRace.alienRace.generalSettings.alienPartGenerator.SkinColor(parent.pawn, false);
-                        }
-                    }
-                    parent.pawn.Notify_ColorChanged();
+                    Pawn.gender = Gender.None;
                 }
                 if (Props.removeHair)
                 {
-                    parent.pawn.story.hairDef = PawnHairChooser.RandomHairDefFor(Pawn, noHairFaction);
+                    //    Pawn.story.hairDef = DefDatabase<HairDef>.GetNamed("Shaved", true);
+                    Pawn.story.hairDef = PawnHairChooser.RandomHairDefFor(Pawn, noHairFaction);
+                    //   Pawn.Drawer.renderer.graphics.hairGraphic;
                 }
                 else
                 {
                     if (Props.colourHairTwo || Props.colourHair)
                     {
 
-                        if (Props.colourHair)
+                        if (compAlien != null)
                         {
-                            if (alien != null)
+                            ColorChannelGenerator Alienhair = alienRace.alienRace.generalSettings.alienPartGenerator.colorChannels.Find(x => x.name == "hair");
+                            AlienPartGenerator.ExposableValueTuple<UnityEngine.Color, UnityEngine.Color> hair;
+                            if (compAlien.ColorChannels.TryGetValue("hair", out hair))
                             {
-                                Pawn.story.hairColor = alienRace.alienRace.generalSettings.alienPartGenerator.alienhaircolorgen.NewRandomizedColor(); ;
+                                if (Props.colourHair && Alienhair?.first != null)
+                                {
+                                    hair.first = Alienhair.first.NewRandomizedColor();
+                                }
+                                if (Props.colourHairTwo && Alienhair?.second != null)
+                                {
+                                    hair.second = Alienhair.second.NewRandomizedColor();
+                                }
+                                compAlien.ColorChannels.SetOrAdd("hair", hair);
                             }
+                            Pawn.Notify_ColorChanged();
                         }
-                        if (Props.colourHairTwo)
-                        {
-                            if (alien != null)
-                            {
-                                alien.hairColorSecond = alienRace.alienRace.generalSettings.alienPartGenerator.alienhaircolorgen.NewRandomizedColor();
-                            }
-                        }
-                        parent.pawn.Notify_ColorChanged();
                     }
                 }
+                //Change BodyType to Props.bodyTypeDef
+                if (Props.changeBody)
+                {
 
-                string head = alienRace.alienRace.graphicPaths.GetCurrentGraphicPath(Pawn.ageTracker.CurLifeStageRace.def).head;
-                Traverse.Create(Pawn.story).Field("headGraphicPath").SetValue(alienRace.alienRace.generalSettings.alienPartGenerator.RandomAlienHead(head, Pawn));
+                    if (Props.bodyTypeDef != null)
+                    {
+                        ChangeBodyType(Pawn, Props.bodyTypeDef);
+                    }
+                    else
+                    {
+                        ChangeBodyType(Pawn, alienRace.alienRace.generalSettings.alienPartGenerator.alienbodytypes[Rand.Range(0, alienRace.alienRace.generalSettings.alienPartGenerator.alienbodytypes.Count)]);
+                    }
 
+                }
             }
             //Remove Disallowed Traits
             int maxTraits;
@@ -165,71 +172,68 @@ namespace HediffCompRaceChanger
                 maxTraits = max;
             }
             else { maxTraits = 4; }
-            if (parent.pawn.story.traits.allTraits.Any(x => Props.traitsToRemove.Any(y => y.def == x.def)))
+            if (!Props.traitsToRemove.NullOrEmpty())
             {
-                foreach (ExtendedTraitEntry item in Props.traitsToRemove)
+                if (Pawn.story.traits.allTraits.Any(x => Props.traitsToRemove.Any(y => y.def == x.def)))
                 {
-                    if (parent.pawn.story.traits.HasTrait(item.def))
+                    foreach (ExtendedTraitEntry item in Props.traitsToRemove)
                     {
-                        Rand.PushState();
-                        if (Rand.Chance(item.Chance))
+                        if (Pawn.story.traits.HasTrait(item.def))
                         {
-                            parent.pawn.story.traits.allTraits.Remove(parent.pawn.story.traits.allTraits.Find(x => x.def == item.def));
-                        }
-                        Rand.PopState();
-                    }
-                }
-
-            }
-            if (Props.traitsToAdd.Any(x => !parent.pawn.story.traits.HasTrait(x.def)))
-            {
-
-                foreach (ExtendedTraitEntry item in Props.traitsToAdd)
-                {
-                    if (!parent.pawn.story.traits.HasTrait(item.def))
-                    {
-                        Rand.PushState();
-                        if (Rand.Chance(item.Chance))
-                        {
-                            bool replace = false;
-                            int countTraits = parent.pawn.story.traits.allTraits.Count;
-                            if (countTraits >= maxTraits)
+                            Rand.PushState();
+                            if (Rand.Chance(item.Chance))
                             {
-                                replace = true;
+                                Pawn.story.traits.allTraits.Remove(Pawn.story.traits.allTraits.Find(x => x.def == item.def));
                             }
-                            //   Log.Message(string.Format("i have {0} of a max of {1} traits", countTraits, maxTraits));
-                            Trait replacedTrait = parent.pawn.story.traits.allTraits.Where(x => Props.traitsToAdd.Any(y => y.def != x.def)).RandomElement();
-                            if (replace)
-                            {
-                                parent.pawn.story.traits.allTraits.Remove(replacedTrait);
-                            }
-                            parent.pawn.story.traits.allTraits.Add(new Trait(item.def, item.degree));
+                            Rand.PopState();
                         }
-                        Rand.PopState();
                     }
+
                 }
             }
-            RegionListersUpdater.RegisterInRegions(parent.pawn, map);
-            map.mapPawns.UpdateRegistryForPawn(parent.pawn);
-            //Change BodyType to Props.bodyTypeDef
-            if (!Pawn.RaceProps.hasGenders)
+            if (!Props.traitsToAdd.NullOrEmpty())
             {
-                Pawn.gender = Gender.None;
+                if (Props.traitsToAdd.Any(x => !Pawn.story.traits.HasTrait(x.def)))
+                {
+
+                    foreach (ExtendedTraitEntry item in Props.traitsToAdd)
+                    {
+                        if (!Pawn.story.traits.HasTrait(item.def))
+                        {
+                            Rand.PushState();
+                            if (Rand.Chance(item.Chance))
+                            {
+                                bool replace = false;
+                                int countTraits = Pawn.story.traits.allTraits.Count;
+                                if (countTraits >= maxTraits)
+                                {
+                                    replace = true;
+                                }
+                                //   Log.Message(string.Format("i have {0} of a max of {1} traits", countTraits, maxTraits));
+                                Trait replacedTrait = Pawn.story.traits.allTraits.Where(x => Props.traitsToAdd.Any(y => y.def != x.def)).RandomElement();
+                                if (replace)
+                                {
+                                    Pawn.story.traits.allTraits.Remove(replacedTrait);
+                                }
+                                Pawn.story.traits.allTraits.Add(new Trait(item.def, item.degree));
+                            }
+                            Rand.PopState();
+                        }
+                    }
+                }
             }
-            if (Props.bodyTypeDef != null)
-            {
-                ChangeBodyType(parent.pawn, Props.bodyTypeDef);
-            }
+            RegionListersUpdater.RegisterInRegions(Pawn, map);
+            map.mapPawns.UpdateRegistryForPawn(Pawn);
 
             //decache graphics
-            parent.pawn.Drawer.renderer.graphics.ResolveAllGraphics();
+            Pawn.Drawer.renderer.graphics.ResolveAllGraphics();
             Find.ColonistBar.drawer.Notify_RecachedEntries();
 
             //save the pawn
-            parent.pawn.ExposeData();
-            if (parent.pawn.Faction != faction)
+            Pawn.ExposeData();
+            if (Pawn.Faction != faction)
             {
-                parent.pawn.SetFaction(faction);
+                Pawn.SetFaction(faction);
             }
             //    pawn.Position = intv;
             
@@ -237,13 +241,59 @@ namespace HediffCompRaceChanger
 
         private void ChangeBodyType(Pawn pawn, BodyTypeDef bt)
         {
+            AlienPartGenerator alienPartGenerator = alienRace.alienRace.generalSettings.alienPartGenerator;
             var storyTrv = Traverse.Create(pawn.story);
             var newStory = new Pawn_StoryTracker(pawn);
             var newStoryTrv = Traverse.Create(newStory);
             AccessTools.GetFieldNames(typeof(Pawn_StoryTracker))
                     .ForEach(f => newStoryTrv.Field(f).SetValue(storyTrv.Field(f).GetValue()));
             newStory.bodyType = bt;
+            if (Props.colourSkinTwo || Props.colourSkin)
+            {
+                if (compAlien != null)
+                {
+                    ColorChannelGenerator Alienskin = alienRace.alienRace.generalSettings.alienPartGenerator.colorChannels.Find(x => x.name == "skin");
+                    AlienPartGenerator.ExposableValueTuple<UnityEngine.Color, UnityEngine.Color> skin;
+                    if (compAlien.ColorChannels.TryGetValue("skin", out skin))
+                    {
+                        if (Props.colourSkin && Alienskin?.first != null)
+                        {
+                            skin.first = Alienskin.first.NewRandomizedColor();
+                        }
+                        if (Props.colourSkinTwo && Alienskin?.second != null)
+                        {
+                            skin.second = Alienskin.second.NewRandomizedColor();
+                        }
+                        compAlien.ColorChannels.SetOrAdd("skin", skin);
+                    }
+                    Traverse.Create(newStory).Field("SkinColor").SetValue(skin.first);
+                    Pawn.Notify_ColorChanged();
+                }
+            }
+            if (Props.changeHead)
+            {
+                List<string> heads = new List<string>();
+                if (!Props.crownType.NullOrEmpty())
+                {
+                    heads.Add(Props.crownType);
+                }
+                else
+                {
+                    heads.AddRange(alienPartGenerator.aliencrowntypes);
+                }
+                compAlien.crownType = null;
+
+                if (Pawn.story.HeadGraphicPath.Contains("Average"))
+                {
+                    newStory.crownType = CrownType.Average;
+                }
+                else if (Pawn.story.HeadGraphicPath.Contains("Narrow"))
+                {
+                    newStory.crownType = CrownType.Narrow;
+                }
+            }
             pawn.story = newStory;
+            Traverse.Create(newStory).Field("headGraphicPath").SetValue(alienRace.alienRace.graphicPaths.GetCurrentGraphicPath(pawn.ageTracker.CurLifeStage).head.NullOrEmpty() ? "" : alienPartGenerator.RandomAlienHead(alienRace.alienRace.graphicPaths.GetCurrentGraphicPath(pawn.ageTracker.CurLifeStage).head, Pawn));
             pawn.Drawer.renderer.graphics.ResolveAllGraphics();
             Find.ColonistBar.drawer.Notify_RecachedEntries();
         }

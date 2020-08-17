@@ -48,7 +48,7 @@ namespace ExtraHives
 			}
 			List<Thing> list = new List<Thing>();
 
-			Log.Message("TunnelRaidSpawner");
+		//	Log.Message("TunnelRaidSpawner");
 			TunnelRaidSpawner tunnelHiveSpawner = (TunnelRaidSpawner)ThingMaker.MakeThing(ThingDefOf.Tunneler_ExtraHives, null);
 			tunnelHiveSpawner.spawnHive = false;
 			tunnelHiveSpawner.initialPoints = Mathf.Max(parms.points * Rand.Range(0.3f, 0.6f), 200f);
@@ -62,7 +62,7 @@ namespace ExtraHives
 					tunnelHiveSpawner.Faction = Find.FactionManager.FirstFactionOfDef(hive.Faction);
 				}
 			}
-			Log.Message("TunnelRaidSpawner "+ tunnelHiveSpawner.Faction);
+		//	Log.Message("TunnelRaidSpawner "+ tunnelHiveSpawner.Faction);
 			list.Add(tunnelHiveSpawner);
 			List<Thing> outThings;
 			Generate(out outThings);

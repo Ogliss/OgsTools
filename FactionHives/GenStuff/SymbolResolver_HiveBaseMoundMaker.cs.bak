@@ -45,7 +45,7 @@ namespace ExtraHives.GenStuff
 
 				if (this.NorthQuad(cell, CenterCell))
 				{
-					Log.Message("North Quad");
+				//	Log.Message("North Quad");
 
 					for (int i2 = 0; i2 < Rand.RangeInclusive(10, 20); i2++)
 					{
@@ -60,7 +60,7 @@ namespace ExtraHives.GenStuff
 				}
 				if (this.SouthQuad(cell, CenterCell))
 				{
-					Log.Message("South Quad");
+				//	Log.Message("South Quad");
 					for (int i2 = 0; i2 < Rand.RangeInclusive(10, 20); i2++)
 					{
 						float dist3 = Rand.RangeInclusive(3, 6);
@@ -74,7 +74,7 @@ namespace ExtraHives.GenStuff
 				}
 				if (this.EastQuad(cell, CenterCell))
 				{
-					Log.Message("East Quad");
+				//	Log.Message("East Quad");
 					for (int i2 = 0; i2 < Rand.RangeInclusive(10, 20); i2++)
 					{
 						float dist3 = Rand.RangeInclusive(3, 6);
@@ -88,7 +88,7 @@ namespace ExtraHives.GenStuff
 				}
 				if (this.WestQuad(cell, CenterCell))
 				{
-					Log.Message("West Quad");
+				//	Log.Message("West Quad");
 					for (int i2 = 0; i2 < Rand.RangeInclusive(10, 20); i2++)
 					{
 						float dist3 = Rand.RangeInclusive(3, 6);
@@ -107,7 +107,7 @@ namespace ExtraHives.GenStuff
 			cavecells.AddRange(cavecells2);
 			//	cavecells.AddRange(GenRadial.RadialCellsAround(rp.rect.CenterCell, 10, true));
 			//
-			Log.Message("cavecells contains " + cavecells.Count);
+		//	Log.Message("cavecells contains " + cavecells.Count);
 			foreach (IntVec3 c in cavecells)
 			{
 				Thing b = c.GetFirstThing<Thing>(map);
@@ -238,11 +238,11 @@ namespace ExtraHives.GenStuff
 			{
 				if (visited[allCell])
 				{
-					Log.Message("been to "+ allCell + " already");
+				//	Log.Message("been to "+ allCell + " already");
 				}
 				if (!IsRock(allCell, elevation, map))
 				{
-					Log.Message(allCell + " is not rock");
+				//	Log.Message(allCell + " is not rock");
 				}
 				if (!visited[allCell] && IsRock(allCell, elevation, map))
 				{
@@ -256,12 +256,12 @@ namespace ExtraHives.GenStuff
 						visited[x] = true;
 						group.Add(x);
 					});
-					Log.Message("TrySpawnCave at " + allCell + "containing " + group.Count + " cells");
+				//	Log.Message("TrySpawnCave at " + allCell + "containing " + group.Count + " cells");
 					Trim(group, map);
 					RemoveSmallDisconnectedSubGroups(group, map);
 					if (group.Count >= 30)
 					{
-						Log.Message("TrySpawnCave starting tunnel at " + allCell + "containing "+ group.Count + " cells");
+					//	Log.Message("TrySpawnCave starting tunnel at " + allCell + "containing "+ group.Count + " cells");
 						DoOpenTunnels(group, map);
 						DoClosedTunnels(group, map);
 						CaveCells.AddRange(group);
@@ -273,7 +273,7 @@ namespace ExtraHives.GenStuff
 		private void TrySpawnCave2(IntVec3 c, List<IntVec3> cells, float dist, out List<IntVec3> CaveCells)
 		{
 			CaveCells = new List<IntVec3>();
-			Log.Message("checking " + cells.Count + " cells for tunnels"); ;
+		//	Log.Message("checking " + cells.Count + " cells for tunnels"); ;
 			MapGenFloatGrid elevation = MapGenerator.Elevation;
 			Map map = BaseGen.globalSettings.map;
 			BoolGrid visited = new BoolGrid(map);
@@ -299,11 +299,11 @@ namespace ExtraHives.GenStuff
 					//	Log.Message("found " + group.Count + " cells for tunnel group");
 					Trim(group, map);
 					RemoveSmallDisconnectedSubGroups(group, map);
-						Log.Message("RemoveSmallDisconnectedSubGroups from group " + group.Count + " cells left");
+					//	Log.Message("RemoveSmallDisconnectedSubGroups from group " + group.Count + " cells left");
 
 					if (group.Count >= 300)
 					{
-						Log.Message("making " + group.Count + " tunnels");
+					//	Log.Message("making " + group.Count + " tunnels");
 						DoOpenTunnels(group, map);
 						DoClosedTunnels(group, map);
 						CaveCells.AddRange(group);
@@ -316,7 +316,7 @@ namespace ExtraHives.GenStuff
 				if (!CaveCells.Contains(allCell) && visited[allCell])
 				{
 					CaveCells.Add(allCell);
-					Log.Message("adding " + allCell + "co CaveCells, now contains " + CaveCells.Count);
+				//	Log.Message("adding " + allCell + "co CaveCells, now contains " + CaveCells.Count);
 				}
 			}
 		}

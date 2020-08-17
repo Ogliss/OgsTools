@@ -19,7 +19,7 @@ namespace ExtraHives.HarmonyInstance
 		// Token: 0x06000088 RID: 136 RVA: 0x00004224 File Offset: 0x00002424
 		public static void Postfix()
 		{
-			Log.Message("GenerateImpliedDefs_PreResolve");
+		//	Log.Message("GenerateImpliedDefs_PreResolve");
 
 			PawnGroupKindDef pawnGroupKindDef = new PawnGroupKindDef();
 			pawnGroupKindDef.defName = "Hive_ExtraHives";

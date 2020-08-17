@@ -32,7 +32,7 @@ namespace ExtraHives.ExtensionMethods
             {
                 defs = Main.HiveDefs.FindAll(x => x.GetModExtension<ExtraHives.HiveDefExtension>().Faction == factionDef);
             }
-            Log.Message(defs.Count + " Hives loaded for " + factionDef);
+        //    Log.Message(defs.Count + " Hives loaded for " + factionDef);
             return defs;
 
         }

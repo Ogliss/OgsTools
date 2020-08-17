@@ -23,7 +23,7 @@ namespace ExtraHives.GenStuff
 		// Token: 0x0600650D RID: 25869 RVA: 0x00233CF0 File Offset: 0x00231EF0
 		private void TrySpawnCave(IntVec3 c, List<IntVec3> cells, ResolveParams rp)
 		{
-			Log.Message("checking " + cells.Count + " cells for tunnels");
+		//	Log.Message("checking " + cells.Count + " cells for tunnels");
 			Map map = BaseGen.globalSettings.map;
 			directionNoise = new Perlin(0.0020500000100582838, 2.0, 0.5, 4, Rand.Int, QualityMode.Medium);
 			MapGenFloatGrid elevation = MapGenerator.Elevation;
@@ -33,23 +33,23 @@ namespace ExtraHives.GenStuff
 			{
 				if (!visited[allCell] && allCell.Filled(map))
 				{
-					Log.Message("checking " + allCell + " cells for tunnel");
+				//	Log.Message("checking " + allCell + " cells for tunnel");
 					group.Clear();
 					map.floodFiller.FloodFill(allCell, (IntVec3 x) => x.Filled(map), delegate (IntVec3 x)
 					{
 						visited[x] = true;
 						group.Add(x);
 					});
-					Log.Message("found " + group.Count + " cells for tunnel group");
+				//	Log.Message("found " + group.Count + " cells for tunnel group");
 					/*	
 						Trim(group, map);
-						Log.Message("Trim group " + group.Count + " cells left");
+					//	Log.Message("Trim group " + group.Count + " cells left");
 						RemoveSmallDisconnectedSubGroups(group, map);
-						Log.Message("RemoveSmallDisconnectedSubGroups from group " + group.Count + " cells left");
+					//	Log.Message("RemoveSmallDisconnectedSubGroups from group " + group.Count + " cells left");
 					*/
 					if (group.Count >= 10)
 					{
-						Log.Message("making " + group.Count + " tunnels");
+					//	Log.Message("making " + group.Count + " tunnels");
 						DoOpenTunnels(group, map);
 						DoClosedTunnels(group, map);
 					}
@@ -82,7 +82,7 @@ namespace ExtraHives.GenStuff
 			{
 				a = Rand.RangeInclusive(1, a);
 			}
-			Log.Message("DoOpenTunnels Dig " + group.Count + " tunnels attempts " + a);
+		//	Log.Message("DoOpenTunnels Dig " + group.Count + " tunnels attempts " + a);
 			float num = TunnelsWidthPerRockCount.Evaluate(group.Count);
 			for (int i = 0; i < a; i++)
 			{
@@ -105,7 +105,7 @@ namespace ExtraHives.GenStuff
 					}
 				}
 				float width = Rand.Range(num * 0.8f, num);
-				Log.Message("DoOpenTunnels Dig " + group.Count + " tunnels");
+			//	Log.Message("DoOpenTunnels Dig " + group.Count + " tunnels");
 				Dig(start, dir, width, group, map, closed: false);
 			}
 		}
@@ -118,7 +118,7 @@ namespace ExtraHives.GenStuff
 			{
 				a = Rand.RangeInclusive(0, a);
 			}
-			Log.Message("DoClosedTunnels " + group.Count + " tunnels attempts " + a);
+		//	Log.Message("DoClosedTunnels " + group.Count + " tunnels attempts " + a);
 			float num = TunnelsWidthPerRockCount.Evaluate(group.Count);
 			for (int i = 0; i < a; i++)
 			{
@@ -135,7 +135,7 @@ namespace ExtraHives.GenStuff
 					}
 				}
 				float width = Rand.Range(num * 0.8f, num);
-				Log.Message("DoClosedTunnels Dig " + group.Count + " tunnels");
+			//	Log.Message("DoClosedTunnels Dig " + group.Count + " tunnels");
 				Dig(start, Rand.Range(0f, 360f), width, group, map, closed: true);
 			}
 		}
@@ -187,7 +187,7 @@ namespace ExtraHives.GenStuff
 
 		private void Dig(IntVec3 start, float dir, float width, List<IntVec3> group, Map map, bool closed, HashSet<IntVec3> visited = null)
 		{
-			Log.Message("Dig ");
+		//	Log.Message("Dig ");
 			Vector3 vect = start.ToVector3Shifted();
 			IntVec3 intVec = start;
 			float num = 0f;
@@ -205,36 +205,36 @@ namespace ExtraHives.GenStuff
 			{
 				if (closed)
 				{
-					Log.Message("Closed ");
+				//	Log.Message("Closed ");
 					int num3 = GenRadial.NumCellsInRadius(width / 2f + 1.5f);
 					for (int i = 0; i < num3; i++)
 					{
 						IntVec3 intVec2 = intVec + GenRadial.RadialPattern[i];
 						if (!visited.Contains(intVec2) && (!tmpGroupSet.Contains(intVec2) || caves[intVec2] > 0f))
 						{
-							Log.Message("closed failed");
+						//	Log.Message("closed failed");
 							return;
 						}
 					}
 				}
 				if (num2 >= 15 && width > 1.4f + BranchedTunnelWidthOffset.max)
 				{
-					Log.Message("Dig Can Branch");
+				//	Log.Message("Dig Can Branch");
 					if (!flag && Rand.Chance(0.1f))
 					{
-						Log.Message("Branch DigInBestDirection("+intVec + ", " + dir + ", FloatRange(40f, 90f), "+ (width - BranchedTunnelWidthOffset.RandomInRange) + ", "+ group + ", "+ map + ", "+ closed + ", " + visited+")");
+					//	Log.Message("Branch DigInBestDirection("+intVec + ", " + dir + ", FloatRange(40f, 90f), "+ (width - BranchedTunnelWidthOffset.RandomInRange) + ", "+ group + ", "+ map + ", "+ closed + ", " + visited+")");
 						DigInBestDirection(intVec, dir, new FloatRange(40f, 90f), width - BranchedTunnelWidthOffset.RandomInRange, group, map, closed, visited);
 						flag = true;
 					}
 					if (!flag2 && Rand.Chance(0.1f))
 					{
-						Log.Message("Branch DigInBestDirection(" + intVec + ", " + dir + ", FloatRange(-90f, -40f), " + (width - BranchedTunnelWidthOffset.RandomInRange) + ", " + group + ", " + map + ", " + closed + ", " + visited + ")");
+					//	Log.Message("Branch DigInBestDirection(" + intVec + ", " + dir + ", FloatRange(-90f, -40f), " + (width - BranchedTunnelWidthOffset.RandomInRange) + ", " + group + ", " + map + ", " + closed + ", " + visited + ")");
 						DigInBestDirection(intVec, dir, new FloatRange(-90f, -40f), width - BranchedTunnelWidthOffset.RandomInRange, group, map, closed, visited);
 						flag2 = true;
 					}
 				}
 				SetCaveAround(intVec, width, map, visited, out bool hitAnotherTunnel);
-				Log.Message("Dig SetCaveAround(" + intVec + ", " + width + ", " + visited + ", Out HitAnotherTunnel " + hitAnotherTunnel);
+			//	Log.Message("Dig SetCaveAround(" + intVec + ", " + width + ", " + visited + ", Out HitAnotherTunnel " + hitAnotherTunnel);
 				if (hitAnotherTunnel)
 				{
 					break;
@@ -294,13 +294,13 @@ namespace ExtraHives.GenStuff
 			for (int i = 0; i < num; i++)
 			{
 				IntVec3 intVec = around + GenRadial.RadialPattern[i];
-				Log.Message("SetCaveAround checking " + intVec);
+			//	Log.Message("SetCaveAround checking " + intVec);
 				if (IsRock(intVec, map))
 				{
-					Log.Message("SetCaveAround using " + intVec);
+				//	Log.Message("SetCaveAround using " + intVec);
 					if (caves[intVec] > 0f && !visited.Contains(intVec))
 					{
-						Log.Message("SetCaveAround hitAnotherTunnel");
+					//	Log.Message("SetCaveAround hitAnotherTunnel");
 						hitAnotherTunnel = true;
 					}
 					caves[intVec] = Mathf.Max(caves[intVec], tunnelWidth);

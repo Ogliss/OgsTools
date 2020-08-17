@@ -94,13 +94,13 @@ namespace OgsCompOversizedWeapon
             compOversized.drawScale = s;
             if (HarmonyCompOversizedWeapon.enabled_rooloDualWield)
             {
-                
+                /*
                 if (pawn.Rotation == Rot4.East)
                 {
                     flag4 = !flag4;
 
                 }
-                
+                */
                 Graphics.DrawMesh((!flag4) ? MeshPool.plane10 : MeshPool.plane10Flip, matrix, mat, layer);
             }
             else

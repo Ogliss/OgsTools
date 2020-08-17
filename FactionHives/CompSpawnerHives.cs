@@ -242,10 +242,10 @@ namespace ExtraHives
 		// Token: 0x06005335 RID: 21301 RVA: 0x001BD318 File Offset: 0x001BB518
 		private static bool CanSpawnHiveAt(IntVec3 c, Map map, IntVec3 parentPos, ThingDef parentDef, float minDist, bool ignoreRoofedRequirement)
 		{
-			Log.Message("Checking "+ c + " for " + parentDef + " minDist "+minDist+ " need roofed: " + !ignoreRoofedRequirement);
+		//	Log.Message("Checking "+ c + " for " + parentDef + " minDist "+minDist+ " need roofed: " + !ignoreRoofedRequirement);
 			if ((!ignoreRoofedRequirement && !c.Roofed(map)) || (!c.Walkable(map) || (minDist != 0f && (float)c.DistanceToSquared(parentPos) < minDist * minDist)) || c.GetFirstThing(map, RimWorld.ThingDefOf.InsectJelly) != null || c.GetFirstThing(map, RimWorld.ThingDefOf.GlowPod) != null)
 			{
-				Log.Message(c+" failed due to lacking roof!!");
+			//	Log.Message(c+" failed due to lacking roof!!");
 				return false;
 			}
 			for (int i = 0; i < 9; i++)

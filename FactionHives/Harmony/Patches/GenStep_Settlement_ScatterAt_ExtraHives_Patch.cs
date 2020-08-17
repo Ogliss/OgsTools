@@ -73,7 +73,7 @@ namespace ExtraHives.HarmonyInstance
 			}
 			catch (Exception ex)
 			{
-				Log.Message(ex.Message, false);
+			//	Log.Message(ex.Message, false);
 				result = true;
 			}
 			return result;
