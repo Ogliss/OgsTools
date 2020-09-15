@@ -18,61 +18,35 @@ namespace CrashedShipsExtension
 			this.compClass = typeof(CompSpawnerPawn);
 		}
 
-		public PawnGroupKindDef factionGroupKindDef = PawnGroupKindDefOf.Combat;
-		// Token: 0x0400306B RID: 12395
 		public List<PawnGenOption> spawnablePawnKinds = new List<PawnGenOption>();
 		public List<PawnKindDef> AlwaysSpawnWith = new List<PawnKindDef>();
-
-		// Token: 0x0400306C RID: 12396
 		public SoundDef spawnSound;
-
-		// Token: 0x0400306D RID: 12397
 		public string spawnMessageKey;
-
-		// Token: 0x0400306E RID: 12398
 		public string noPawnsLeftToSpawnKey;
-
-		// Token: 0x0400306F RID: 12399
 		public string pawnsLeftToSpawnKey;
-
-		// Token: 0x04003070 RID: 12400
 		public bool showNextSpawnInInspect;
-
-		// Token: 0x04003071 RID: 12401
 		public bool shouldJoinParentLord;
-
-		// Token: 0x04003072 RID: 12402
 		public Type lordJob;
-
-		// Token: 0x04003073 RID: 12403
 		public float defendRadius = 21f;
-
 		public int initialSpawnDelay = 120;
 		public int initialPawnsCount;
-
-		// Token: 0x04003075 RID: 12405
 		public float initialPawnsPoints;
-
-		// Token: 0x04003076 RID: 12406
 		public float maxSpawnedPawnsPoints = -1f;
-
-		// Token: 0x04003077 RID: 12407
 		public FloatRange pawnSpawnIntervalDays = new FloatRange(0.85f, 1.15f);
-
-		// Token: 0x04003078 RID: 12408
 		public int pawnSpawnRadius = 2;
-
-		// Token: 0x04003079 RID: 12409
 		public IntRange maxPawnsToSpawn = IntRange.zero;
-
-		// Token: 0x0400307A RID: 12410
 		public bool chooseSingleTypeToSpawn;
-
-		// Token: 0x0400307B RID: 12411
 		public string nextSpawnInspectStringKey;
-
-		// Token: 0x0400307C RID: 12412
 		public string nextSpawnInspectStringKeyDormant;
+		public PawnGroupKindDef factionGroupKindDef;
+		public override void ResolveReferences(ThingDef parentDef)
+		{
+			base.ResolveReferences(parentDef);
+			if (factionGroupKindDef == null)
+			{
+				factionGroupKindDef = PawnGroupKindDefOf.Combat;
+			}
+		}
 	}
 	// Token: 0x02000DE8 RID: 3560
 	public class CompSpawnerPawn : ThingComp
@@ -399,7 +373,7 @@ namespace CrashedShipsExtension
 			base.PostSpawnSetup(respawningAfterLoad);
 			if (!respawningAfterLoad && this.Active && this.nextPawnSpawnTick == -1)
 			{
-				initialSpawnDelay = Props.initialSpawnDelay;
+			//	initialSpawnDelay = Props.initialSpawnDelay;
 				//	this.SpawnInitialPawns();
 			}
 		}

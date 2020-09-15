@@ -20,6 +20,7 @@ namespace CompToggleFireMode
     public class CompToggleFireMode : ThingComp
     {
         public CompProperties_ToggleFireMode Props => (CompProperties_ToggleFireMode)props;
+
         protected virtual Pawn GetUser
         {
             get
@@ -35,28 +36,32 @@ namespace CompToggleFireMode
             }
         }
 
-        protected virtual bool IsWorn => (GetUser != null);
-        public CompEquippable Equippable => parent.TryGetComp<CompEquippable>();
-        public Pawn lastWearer;
+        protected virtual bool IsHeld => (GetUser != null);
+        public CompEquippable equippable;
+        public CompEquippable Equippable => equippable ??= parent.TryGetComp<CompEquippable>();
+        public Pawn lastUser;
         public bool GizmosOnEquip = true;
-        public bool Toggled = false;
         public int fireMode = 0;
-
+        public override void PostExposeData()
+        {
+            base.PostExposeData();
+            Scribe_Values.Look(ref this.fireMode, "fireMode", 0);
+        }
         public void SwitchFireMode(int x)
         {
             fireMode = x;
             if (Props.switchStartsCooldown)
             {
-                this.GetUser.stances.SetStance(new Stance_Cooldown(this.Active.AdjustedCooldownTicks(this.Equippable.PrimaryVerb, this.GetUser), this.Equippable.PrimaryVerb.CurrentTarget, this.Equippable.PrimaryVerb));
+                this.GetUser.stances.SetStance(new Stance_Cooldown(this.Active.AdjustedCooldownTicks(this.Equippable.PrimaryVerb, this.GetUser), null, this.Equippable.PrimaryVerb));
             }
         }
 
         public override void CompTick()
         {
             base.CompTick();
-            if (GetUser != lastWearer)
+            if (GetUser != lastUser)
             {
-                lastWearer = GetUser;
+                lastUser = GetUser;
             }
         }
         public VerbProperties Active
@@ -92,7 +97,7 @@ namespace CompToggleFireMode
         }
         public virtual IEnumerable<Gizmo> EquippedGizmos()
         {
-            ThingWithComps owner = IsWorn ? GetUser : parent;
+            ThingWithComps owner = IsHeld ? GetUser : parent;
             bool flag = Find.Selector.SingleSelectedThing == GetUser;
             if (flag && GetUser.Drafted)
             {
@@ -116,7 +121,7 @@ namespace CompToggleFireMode
                 }
                 else if (GetUser.stances.curStance.StanceBusy && !Props.canSwitchWhileBusy)
                 {
-                    command_Action.Disable("Is Busy");
+                    command_Action.Disable(GetUser.Name + " can't switch now (Busy)");
                 }
                 yield return command_Action;
             }

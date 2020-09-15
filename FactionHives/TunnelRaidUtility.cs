@@ -20,11 +20,19 @@ namespace ExtraHives
         }
 
         // Token: 0x06002762 RID: 10082 RVA: 0x0012C458 File Offset: 0x0012A858
-        public static void MakeTunnelAt(IntVec3 c, Map map, ActiveDropPodInfo info)
+        public static void MakeTunnelAt(IntVec3 c, Map map, ActiveDropPodInfo info, Faction faction = null)
         {
             ThingDef TunnelDef = ThingDefOf.Tunneler_ExtraHives;
             //    Log.Message(string.Format("making tunnelSpawner: {0}, @: {1}, {2}, {3}", TunnelDef, c, map, info.innerContainer.ContentsString));
             TunnelRaidSpawner tunnelSpawner = (TunnelRaidSpawner)ThingMaker.MakeThing(TunnelDef, null);
+            if (tunnelSpawner.SpawnedFaction == null)
+            {
+                tunnelSpawner.SpawnedFaction = faction;
+                if (tunnelSpawner.SpawnedFaction != null)
+                {
+                    Log.Message("tunnelSpawner.Faction set " + tunnelSpawner.SpawnedFaction.Name);
+                }
+            }
             foreach (Thing item in info.innerContainer)
             {
                 tunnelSpawner.GetDirectlyHeldThings().TryAddOrTransfer(item, false);
@@ -33,7 +41,7 @@ namespace ExtraHives
         }
 
         // Token: 0x06002763 RID: 10083 RVA: 0x0012C48C File Offset: 0x0012A88C
-        public static void DropThingsNear(IntVec3 dropCenter, Map map, IEnumerable<Thing> things, int openDelay = 110, bool canInstaDropDuringInit = false, bool leaveSlag = false, bool canRoofPunch = true)
+        public static void DropThingsNear(IntVec3 dropCenter, Map map, IEnumerable<Thing> things, int openDelay = 110, bool canInstaDropDuringInit = false, bool leaveSlag = false, bool canRoofPunch = true, Faction faction = null)
         {
             TunnelRaidUtility.tempList.Clear();
             foreach (Thing item in things)
@@ -44,12 +52,12 @@ namespace ExtraHives
                 };
                 TunnelRaidUtility.tempList.Add(list);
             }
-            TunnelRaidUtility.DropThingGroupsNear(dropCenter, map, TunnelRaidUtility.tempList, openDelay, canInstaDropDuringInit, leaveSlag, canRoofPunch);
+            TunnelRaidUtility.DropThingGroupsNear(dropCenter, map, TunnelRaidUtility.tempList, openDelay, canInstaDropDuringInit, leaveSlag, canRoofPunch, faction);
             TunnelRaidUtility.tempList.Clear();
         }
 
         // Token: 0x06002764 RID: 10084 RVA: 0x0012C518 File Offset: 0x0012A918
-        public static void DropThingGroupsNear(IntVec3 dropCenter, Map map, List<List<Thing>> thingsGroups, int openDelay = 110, bool instaDrop = false, bool leaveSlag = false, bool canRoofPunch = true)
+        public static void DropThingGroupsNear(IntVec3 dropCenter, Map map, List<List<Thing>> thingsGroups, int openDelay = 110, bool instaDrop = false, bool leaveSlag = false, bool canRoofPunch = true, Faction faction = null)
         {
             foreach (List<Thing> list in thingsGroups)
             {
@@ -88,7 +96,7 @@ namespace ExtraHives
                     activeDropPodInfo.openDelay = openDelay;
                     activeDropPodInfo.leaveSlag = leaveSlag;
 
-                    TunnelRaidUtility.MakeTunnelAt(intVec, map, activeDropPodInfo);
+                    TunnelRaidUtility.MakeTunnelAt(intVec, map, activeDropPodInfo, faction);
                 }
             }
         }

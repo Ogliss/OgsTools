@@ -23,7 +23,7 @@ namespace ExtraHives
 		public float minMountainouseness = 0.17f;
 		public float? minTemp = null;
 		public float? maxTemp = null;
-		public float? bonusTempScore = null;
+		public float bonusTempScore = 0f;
 		public float? bonusAboveTemp = null;
 		public float? bonusBelowTemp = null;
 	}

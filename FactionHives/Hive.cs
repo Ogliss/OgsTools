@@ -11,7 +11,7 @@ using Verse.AI.Group;
 namespace ExtraHives
 {
 	// Token: 0x02000CA1 RID: 3233
-	public class Hive : ThingWithComps, IAttackTarget, ILoadReferenceable
+	public class Hive : Building, IAttackTarget, ILoadReferenceable
 	{
 		public HiveDefExtension Ext => this.def.HasModExtension<HiveDefExtension>() ? this.def.GetModExtension<HiveDefExtension>() : null;
 

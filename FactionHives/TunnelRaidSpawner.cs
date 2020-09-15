@@ -94,48 +94,81 @@ namespace ExtraHives
                 if (this.secondarySpawnTick <= Find.TickManager.TicksGame)
                 {
                     this.sustainer.End();
-                    Map map = base.Map;
-                    IntVec3 position = base.Position;
                     List<Pawn> list = new List<Pawn>();
-                    // iif initalPoints > 0 spawn until all points are used
-                    if ((initialPoints > 0f))
-                    {
-                        initialPoints = Mathf.Max(initialPoints, this.spawnablePawnKinds.Min((PawnGenOption x) => x.Cost));
-                        float pointsLeft = initialPoints;
-                        int num = 0;
-                        PawnGenOption result2;
-                        for (; pointsLeft > 0f; pointsLeft -= result2.Cost)
-                        {
-                            num++;
-                            if (num > 1000)
-                            {
-                                Log.Error("Too many iterations.");
-                                break;
-                            }
-                            if (!this.spawnablePawnKinds.Where((PawnGenOption x) => x.Cost <= pointsLeft).TryRandomElementByWeight(x => x.selectionWeight, out result2))
-                            {
-                                break;
-                            }
-                            Pawn pawn = PawnGenerator.GeneratePawn(result2.kind, Faction);
-                            GenSpawn.Spawn(pawn, CellFinder.RandomClosewalkCellNear(position, map, 2), map);
-                            pawn.mindState.spawnedByInfestationThingComp = spawnedByInfestationThingComp;
-                            list.Add(pawn);
-                        }
-                    }
-                    if (list.Any())
-                    {
-                        LordJob lordJob = new LordJob_AssaultColony(Faction, false, false, false, false, false);
-                        LordMaker.MakeNewLord(Faction, lordJob, map, list);
-                    }
-                    if (!this.innerContainer.NullOrEmpty())
-                    {
-                        this.innerContainer.TryDropAll(position, map, ThingPlaceMode.Near, null, x=> x.Walkable(map) && position.DistanceTo(x)>2);
-                    }
+                    SpawnThings(out list);
                     this.Destroy(DestroyMode.Vanish);
                 }
             }
         }
 
+        public virtual void SpawnThings(out List<Pawn> list)
+        {
+            list = new List<Pawn>();
+            Map map = base.Map;
+            IntVec3 position = base.Position;
+            // iif initalPoints > 0 spawn until all points are used
+            if ((initialPoints > 0f) && !this.spawnablePawnKinds.NullOrEmpty())
+            {
+                Log.Message("generating pawns");
+                initialPoints = Mathf.Max(initialPoints, this.spawnablePawnKinds.Min((PawnGenOption x) => x.Cost));
+                float pointsLeft = initialPoints;
+                int num = 0;
+                PawnGenOption result2;
+                for (; pointsLeft > 0f; pointsLeft -= result2.Cost)
+                {
+                    num++;
+                    if (num > 1000)
+                    {
+                        Log.Error("Too many iterations.");
+                        break;
+                    }
+                    if (!this.spawnablePawnKinds.Where((PawnGenOption x) => x.Cost <= pointsLeft).TryRandomElementByWeight(x => x.selectionWeight, out result2))
+                    {
+                        break;
+                    }
+                    Pawn pawn = PawnGenerator.GeneratePawn(result2.kind, SpawnedFaction);
+                    GenSpawn.Spawn(pawn, CellFinder.RandomClosewalkCellNear(position, map, 2), map);
+                    pawn.mindState.spawnedByInfestationThingComp = spawnedByInfestationThingComp;
+                    list.Add(pawn);
+                }
+            }
+            if (!this.innerContainer.NullOrEmpty())
+            {
+                /*
+                if (this.innerContainer.Any(x => x is Pawn))
+                {
+                    foreach (var item in this.innerContainer.Where(x => x is Pawn))
+                    {
+                        list.Add(item as Pawn);
+                    }
+                }
+                */
+
+                this.innerContainer.TryDropAll(position, map, ThingPlaceMode.Near, null, x => x.Walkable(map) && position.DistanceTo(x) > 2);
+            }
+            if (list.Any())
+            {
+                MakeLord(lordJobType, list);
+            }
+        }
+        
+        public virtual void MakeLord(Type lordJobType, List<Pawn> list)
+        {
+
+            Map map = base.Map;
+            IntVec3 position = base.Position;
+            if (list.Any())
+            {
+                LordMaker.MakeNewLord(SpawnedFaction, Activator.CreateInstance(lordJobType, new object[]
+               {
+                   SpawnedFaction, false, false, false, false, false
+               }) as LordJob, map, null);
+                /*
+                LordJob lordJob = new LordJob_AssaultColony(Faction, false, false, false, false, false);
+                LordMaker.MakeNewLord(Faction, lordJob, map, list);
+                */
+            }
+        }
 
         // Token: 0x06002629 RID: 9769 RVA: 0x001225E4 File Offset: 0x001209E4
         public override void Draw()
@@ -182,7 +215,7 @@ namespace ExtraHives
                 secondarySpawnTick = value;
             }
         }
-        public new Faction Faction
+        public Faction SpawnedFaction
         {
             get
             {
@@ -231,10 +264,9 @@ namespace ExtraHives
         // Token: 0x0400157D RID: 5501
         [TweakValue("Gameplay", 0f, 10f)]
         private static float FilthSpawnRadius = 3f;
-
+        public Type lordJobType = typeof(LordJob_AssaultColony);
         // Token: 0x0400157E RID: 5502
         private static readonly Material TunnelMaterial = MaterialPool.MatFrom("Things/Filth/Grainy/GrainyA", ShaderDatabase.Transparent);
-
         public List<PawnGenOption> spawnablePawnKinds = new List<PawnGenOption>();
         // Token: 0x0400157F RID: 5503
         private static List<ThingDef> filthTypes = new List<ThingDef>();

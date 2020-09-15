@@ -19,7 +19,6 @@ namespace CrashedShipsExtension
         {
             this.compClass = typeof(CompSpawnerOnDamaged);
         }
-        public PawnGroupKindDef factionGroupKindDef = PawnGroupKindDefOf.Combat;
         public FactionDef Faction;
         public Faction faction;
         public List<PawnGenOption> allowedKinddefs = new List<PawnGenOption>();
@@ -33,6 +32,16 @@ namespace CrashedShipsExtension
         public ThingDef skyFaller;
         public float defaultPoints = 550f;
         public float minPoints = 300f;
+
+        public PawnGroupKindDef factionGroupKindDef;
+        public override void ResolveReferences(ThingDef parentDef)
+        {
+            base.ResolveReferences(parentDef);
+            if (factionGroupKindDef == null)
+            {
+                factionGroupKindDef = PawnGroupKindDefOf.Combat;
+            }
+        }
     }
 
     // Token: 0x02000769 RID: 1897
@@ -57,10 +66,6 @@ namespace CrashedShipsExtension
                             factions.Remove(i);
                         }
                     }
-                }
-                foreach (var i in factions)
-                {
-                    //    Log.Message(string.Format("{0}", i.Name));
                 }
                 return factions;
             }
@@ -112,6 +117,11 @@ namespace CrashedShipsExtension
             {
                 if (faction == null)
                 {
+                    if (parent.Faction != null)
+                    {
+                        faction = parent.Faction;
+                    }
+                    else
                     if (Props.Faction != null)
                     {
                         //    Log.Message(string.Format("Loading Faction Def from CompProps"));
@@ -119,16 +129,15 @@ namespace CrashedShipsExtension
                         faction = Find.FactionManager.FirstFactionOfDef(factionDef);
                         Props.faction = faction;
                         //    Log.Message(string.Format("Owner: {0} Def of:{1}", Find.FactionManager.FirstFactionOfDef(factionDef), factionDef));
-                        return faction;
                     }
-                    else if (Props.Factions.Count > 0)
+                    else
+                    if (Props.Factions.Count > 0)
                     {
                         //    Log.Message(string.Format("Loading Faction List from CompProps"));
                         factionDef = Props.Factions.RandomElement<FactionDef>();
                         Props.faction = faction;
                         faction = Find.FactionManager.FirstFactionOfDef(factionDef);
                         //    Log.Message(string.Format("Owner: {0} Def of:{1}", Find.FactionManager.FirstFactionOfDef(factionDef), factionDef));
-                        return faction;
                     }
                     else
                     {
@@ -137,13 +146,13 @@ namespace CrashedShipsExtension
                         factionDef = faction.def;
                         Props.faction = faction;
                         //    Log.Message(string.Format("Owner: {0} Def of:{1}", faction.Name, factionDef));
-                        return faction;
                     }
                 }
-                else
-                {
-                    return faction;
-                }
+                return faction;
+            }
+            set
+            {
+                faction = value;
             }
         }
 
@@ -177,15 +186,6 @@ namespace CrashedShipsExtension
                 }
             }
             absorbed = false;
-        }
-
-        // Token: 0x060029ED RID: 10733 RVA: 0x0013DA14 File Offset: 0x0013BE14
-        public void Notify_BlueprintReplacedWithSolidThingNearby(Pawn by)
-        {
-            if (by.Faction != OfFaction)
-            {
-                this.TrySpawnPawns();
-            }
         }
 
         public override void PostSpawnSetup(bool respawningAfterLoad)

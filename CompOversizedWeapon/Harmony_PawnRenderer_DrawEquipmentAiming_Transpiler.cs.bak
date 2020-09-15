@@ -1,0 +1,313 @@
+﻿using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Text;
+using RimWorld;
+using Verse;
+using Verse.AI;
+using Verse.AI.Group;
+using HarmonyLib;
+using Verse.Sound;
+using System.Reflection.Emit;
+using UnityEngine;
+using System.Reflection;
+
+namespace OgsCompOversizedWeapon
+{
+	//    [HarmonyPatch(typeof(PawnRenderer), "DrawEquipmentAiming")]
+	// Token: 0x020000FB RID: 251
+	[HarmonyPatch(typeof(PawnRenderer), "DrawEquipmentAiming")]
+	internal static class Harmony_PawnRenderer_DrawEquipmentAiming_Transpiler
+	{
+		// Token: 0x060004A1 RID: 1185 RVA: 0x0002500C File Offset: 0x0002320C
+		internal static IEnumerable<CodeInstruction> Transpiler(IEnumerable<CodeInstruction> instructions)
+		{
+			List<CodeInstruction> list = instructions.ToList<CodeInstruction>();
+
+            list[list.Count - 2].operand = AccessTools.Method(typeof(Harmony_PawnRenderer_DrawEquipmentAiming_Transpiler), "DrawMeshModified", null, null);
+			list.InsertRange(list.Count - 2, new CodeInstruction[]
+			{
+				new CodeInstruction(OpCodes.Ldarg_1, null),
+				new CodeInstruction(OpCodes.Ldarg_3, null)
+            });
+			return list;
+		}
+
+        // Token: 0x060004A0 RID: 1184 RVA: 0x00024F4C File Offset: 0x0002314C
+        private static void DrawMeshModified(Mesh mesh, Vector3 position, Quaternion rotation, Material mat, int layer, Thing eq, float aimAngle)
+        {
+            CompOversizedWeapon compOversized = eq.TryGetComp<CompOversizedWeapon>();
+            CompEquippable equippable = eq.TryGetComp<CompEquippable>();
+            Pawn pawn = equippable.PrimaryVerb.CasterPawn; 
+            if (pawn == null) return;
+            if (compOversized == null || (compOversized != null && compOversized.CompDeflectorIsAnimatingNow) || pawn == null)
+            {
+                Graphics.DrawMesh(mesh, position, rotation, mat, layer);
+                return;
+            }
+            if (eq is ThingWithComps thingWithComps && thingWithComps.GetComp<CompOversizedWeapon>() is CompOversizedWeapon compOversizedWeapon)
+            {
+                //If the deflector is animating now, deflector handles drawing (and already has the drawSize fix).
+                if (compOversizedWeapon.CompDeflectorIsAnimatingNow) return;
+
+                var flip = false;
+                var num = aimAngle - 90f;
+
+                if (aimAngle > 20f && aimAngle < 160f)
+                {
+                    num += eq.def.equippedAngleOffset;
+                }
+                else if (aimAngle > 200f && aimAngle < 340f)
+                {
+                    flip = true;
+                    num -= 180f;
+                    num -= eq.def.equippedAngleOffset;
+                }
+                else
+                {
+                    num = AdjustOffsetAtPeace(eq, pawn, compOversizedWeapon, num);
+                }
+
+                if (!pawn.IsFighting())
+                {
+                    if (compOversizedWeapon.Props != null && compOversizedWeapon.Props.verticalFlipNorth && pawn.Rotation == Rot4.North)
+                    {
+                        num += 180f;
+                    }
+                    num = AdjustNonCombatRotation(pawn, num, compOversizedWeapon);
+                }
+                num %= 360f;
+
+                var graphic_StackCount = eq.Graphic as Graphic_StackCount;
+                Material matSingle;
+                if (graphic_StackCount != null)
+                    matSingle = graphic_StackCount.SubGraphicForStackCount(1, eq.def).MatSingle;
+                else
+                    matSingle = eq.Graphic.MatSingle;
+
+                var s = new Vector3(eq.def.graphicData.drawSize.x, 1f, eq.def.graphicData.drawSize.y);
+                var matrix = default(Matrix4x4);
+
+                Vector3 curOffset = AdjustRenderOffsetFromDir(pawn, compOversizedWeapon);
+                matrix.SetTRS(position + curOffset, Quaternion.AngleAxis(num, Vector3.up), s);
+
+                draw(!flip ? MeshPool.plane10 : MeshPool.plane10Flip, matrix, matSingle, 0);
+                if (compOversizedWeapon.Props != null && compOversizedWeapon.Props.isDualWeapon)
+                {
+                    curOffset = new Vector3(-1f * curOffset.x, curOffset.y, curOffset.z);
+                    Mesh curPool;
+                    if (pawn.Rotation == Rot4.North || pawn.Rotation == Rot4.South)
+                    {
+                        num += eq.def.IsRangedWeapon ? 180f : 135f;
+                        num %= 360f;
+                        curPool = !flip ? MeshPool.plane10Flip : MeshPool.plane10;
+                    }
+                    else
+                    {
+                        curOffset = new Vector3(curOffset.x, curOffset.y - 0.1f, curOffset.z + 0.15f);
+                        curPool = !flip ? MeshPool.plane10 : MeshPool.plane10Flip;
+                    }
+                    matrix.SetTRS(position + curOffset, Quaternion.AngleAxis(num, Vector3.up), s);
+                    draw(curPool, matrix, matSingle, 0);
+                }
+            }
+        }
+        
+        private static void draw(Mesh mesh, Matrix4x4 matrix, Material mat, int layer)
+        {
+            Graphics.DrawMesh(mesh, matrix, mat, layer);
+        }
+        private static bool CurrentlyAiming(Stance_Busy stance)
+        {
+            return (stance != null && !stance.neverAimWeapon && stance.focusTarg.IsValid);
+        }
+        private static float GetAimingRotation(Pawn pawn, LocalTargetInfo focusTarg)
+        {
+            Vector3 a;
+            if (focusTarg.HasThing)
+            {
+                a = focusTarg.Thing.DrawPos;
+            }
+            else
+            {
+                a =focusTarg.Cell.ToVector3Shifted();
+            }
+            float num = 0f;
+            if ((a - pawn.DrawPos).MagnitudeHorizontalSquared() > 0.001f)
+            {
+                num = (a - pawn.DrawPos).AngleFlat();
+            }
+
+            return num;
+        }
+        // Token: 0x060004A0 RID: 1184 RVA: 0x00024F4C File Offset: 0x0002314C
+        private static void DrawMeshModifiedOld(Mesh mesh, Vector3 position, Quaternion rotation, Material mat, int layer, Thing eq, float aimAngle)
+        {
+            CompOversizedWeapon compOversized = eq.TryGetComp<CompOversizedWeapon>();
+            CompEquippable equippable = eq.TryGetComp<CompEquippable>();
+            Pawn pawn = equippable.PrimaryVerb.CasterPawn;
+            if (compOversized == null || (compOversized != null && compOversized.CompDeflectorIsAnimatingNow) || pawn == null)
+            {
+                Graphics.DrawMesh(mesh, position, rotation, mat, layer);
+                return;
+            }
+            bool flag4 = false;
+            float num = aimAngle - 90f;
+
+            if (aimAngle > 20f && aimAngle < 160f)
+            {
+            }
+            else if (aimAngle > 200f && aimAngle < 340f)
+            {
+                flag4 = true;
+            }
+            else
+            {
+                rotation = Quaternion.AngleAxis(AdjustOffsetAtPeace(eq, pawn, compOversized, rotation.eulerAngles.y), Vector3.up);
+            }
+
+            if (compOversized.Props != null && !PawnUtility.IsFighting(pawn) && compOversized.Props.verticalFlipNorth && pawn.Rotation == Rot4.North)
+            {
+                rotation = Quaternion.AngleAxis(rotation.eulerAngles.y + 180f, Vector3.up);
+                //    num += 180f;
+            }
+            if (!PawnUtility.IsFighting(pawn) || pawn.TargetCurrentlyAimingAt == null)
+            {
+                rotation = Quaternion.AngleAxis(rotation.eulerAngles.y + AdjustNonCombatRotation(pawn, 0, compOversized), Vector3.up);
+            }
+            num %= 360f;
+            Vector3 s;
+            if (pawn.RaceProps.Humanlike)
+            {
+                if (HarmonyCompOversizedWeapon.enabled_AlienRaces)
+                {
+                    Vector2 v = AlienRacesPatch(pawn);
+                    s = new Vector3(eq.def.graphicData.drawSize.x * v.x, 1f, eq.def.graphicData.drawSize.y * v.y);
+                }
+                else
+                {
+                    s = new Vector3(eq.def.graphicData.drawSize.x, 1f, eq.def.graphicData.drawSize.y);
+                }
+            }
+            else
+            {
+                Vector2 v = pawn.ageTracker.CurKindLifeStage.bodyGraphicData.drawSize;
+                s = new Vector3(eq.def.graphicData.drawSize.x + v.x/10, 1f, eq.def.graphicData.drawSize.y + v.y/10);
+            }
+            Vector3 offset = AdjustRenderOffsetFromDir(pawn, compOversized);
+            //    vector = Vector3Utility.RotatedBy(vector, rotation.eulerAngles.y);
+            Matrix4x4 matrix = default(Matrix4x4);
+            matrix.SetTRS(position + offset, rotation, s);
+            compOversized.renderAngle = rotation;
+            compOversized.renderPos = offset;
+            compOversized.drawScale = s;
+            if (HarmonyCompOversizedWeapon.enabled_rooloDualWield)
+            {
+                /*
+                if (pawn.Rotation == Rot4.East)
+                {
+                    flag4 = !flag4;
+
+                }
+                */
+                Graphics.DrawMesh((!flag4) ? MeshPool.plane10 : MeshPool.plane10Flip, matrix, mat, layer);
+            }
+            else
+                Graphics.DrawMesh((!flag4) ? MeshPool.plane10 : MeshPool.plane10Flip, matrix, mat, layer);
+            if (compOversized.Props != null && compOversized.Props.isDualWeapon)
+            {
+                if (pawn.Rotation == Rot4.North || pawn.Rotation == Rot4.South)
+                {
+                    offset = new Vector3(-1f * offset.x, offset.y, offset.z);
+                    rotation = Quaternion.AngleAxis((rotation.eulerAngles.y - ((eq.def.equippedAngleOffset + AdjustNonCombatRotation(pawn, 0, compOversized)) * 2  + 90)) % 360, Vector3.up);
+                    /*
+                    rotation = Quaternion.AngleAxis(rotation.eulerAngles.y + 135f, Vector3.up);
+                    rotation = Quaternion.AngleAxis(rotation.eulerAngles.y % 360f, Vector3.up);
+                    */
+                    mesh = ((!flag4) ? MeshPool.plane10Flip : MeshPool.plane10);
+                }
+                else
+                {
+                    offset = new Vector3(offset.x-0.1f, offset.y - 0.1f, offset.z + 0.15f);
+                    mesh = ((!flag4) ? MeshPool.plane10 : MeshPool.plane10Flip);
+                }
+                compOversized.renderAngleDual = rotation;
+                compOversized.renderPosDual = offset;
+                matrix.SetTRS(position + offset, rotation, s);
+                Graphics.DrawMesh(mesh, matrix, mat, layer);
+            }
+        }
+
+        public static Vector2 AlienRacesPatch(Pawn pawn)
+        {
+            AlienRace.ThingDef_AlienRace alienDef = pawn.def as AlienRace.ThingDef_AlienRace;
+            Vector2 s = alienDef.alienRace.generalSettings.alienPartGenerator.customDrawSize;
+            return s;
+        }
+
+        private static float AdjustOffsetAtPeace(Thing eq, Pawn pawn, CompOversizedWeapon compOversizedWeapon, float num)
+        {
+            Mesh mesh;
+            mesh = MeshPool.plane10;
+            var offsetAtPeace = eq.def.equippedAngleOffset;
+            if (compOversizedWeapon.Props != null && (!pawn.IsFighting() && compOversizedWeapon.Props.verticalFlipOutsideCombat))
+            {
+                offsetAtPeace += 180f;
+            }
+            num += offsetAtPeace;
+            return num;
+        }
+
+        private static float AdjustNonCombatRotation(Pawn pawn, float num, CompOversizedWeapon compOversizedWeapon)
+        {
+            if (compOversizedWeapon.Props != null)
+            {
+                if (pawn.Rotation == Rot4.North)
+                {
+                    num += compOversizedWeapon.Props.angleAdjustmentNorth;
+                }
+                else if (pawn.Rotation == Rot4.East)
+                {
+                    num += compOversizedWeapon.Props.angleAdjustmentEast;
+                }
+                else if (pawn.Rotation == Rot4.West)
+                {
+                    num += compOversizedWeapon.Props.angleAdjustmentWest;
+                }
+                else if (pawn.Rotation == Rot4.South)
+                {
+                    num += compOversizedWeapon.Props.angleAdjustmentSouth;
+                }
+            }
+            return num;
+        }
+
+        private static Vector3 AdjustRenderOffsetFromDir(Pawn pawn, CompOversizedWeapon compOversizedWeapon)
+        {
+            var curDir = pawn.Rotation;
+
+            Vector3 curOffset = Vector3.zero;
+
+            if (compOversizedWeapon.Props != null)
+            {
+
+                curOffset = compOversizedWeapon.Props.northOffset;
+                if (curDir == Rot4.East)
+                {
+                    curOffset = compOversizedWeapon.Props.eastOffset;
+                }
+                else if (curDir == Rot4.South)
+                {
+                    curOffset = compOversizedWeapon.Props.southOffset;
+                }
+                else if (curDir == Rot4.West)
+                {
+                    curOffset = compOversizedWeapon.Props.westOffset;
+                }
+            }
+
+            return curOffset;
+        }
+
+    }
+}

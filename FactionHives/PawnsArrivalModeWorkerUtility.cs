@@ -15,7 +15,7 @@ namespace ExtraHives
 		{
 			Map map = (Map)parms.target;
 			bool flag = parms.faction != null && parms.faction.HostileTo(Faction.OfPlayer);
-			TunnelRaidUtility.DropThingsNear(parms.spawnCenter, map, pawns.Cast<Thing>(), parms.podOpenDelay, false, true, flag || parms.raidArrivalModeForQuickMilitaryAid);
+			TunnelRaidUtility.DropThingsNear(parms.spawnCenter, map, pawns.Cast<Thing>(), parms.podOpenDelay, false, true, flag || parms.raidArrivalModeForQuickMilitaryAid, parms.faction);
 		}
 
 		// Token: 0x060045ED RID: 17901 RVA: 0x00178868 File Offset: 0x00176A68

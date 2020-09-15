@@ -58,7 +58,7 @@ namespace ExtraHives
 					hiveSpawner.faction = faction;
 				}
 			}
-			if (hiveSpawner.Faction != null)
+			if (hiveSpawner.SpawnedFaction != null)
 			{
 			//	Log.Message(hiveSpawner.Faction.def.defName + ": " + hiveSpawner.faction);
 			}
@@ -77,7 +77,7 @@ namespace ExtraHives
 							hiveSpawner.faction = faction;
 						}
 					}
-					if (hiveSpawner.Faction!=null)
+					if (hiveSpawner.SpawnedFaction!=null)
 					{
 					//	Log.Message(hiveSpawner.Faction.def.defName+": "+ hiveSpawner.faction);
 					}
@@ -105,7 +105,7 @@ namespace ExtraHives
 					hiveSpawner.faction = faction;
 				}
 			}
-			if (hiveSpawner.Faction != null)
+			if (hiveSpawner.SpawnedFaction != null)
 			{
 			//	Log.Message(hiveSpawner.Faction.def.defName + ": " + hiveSpawner.faction);
 			}
@@ -129,7 +129,7 @@ namespace ExtraHives
 							hiveSpawner.faction = faction;
 						}
 					}
-					if (hiveSpawner.Faction != null)
+					if (hiveSpawner.SpawnedFaction != null)
 					{
 					//	Log.Message(hiveSpawner.Faction.def.defName + ": " + hiveSpawner.faction);
 					}

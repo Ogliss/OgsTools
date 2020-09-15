@@ -31,15 +31,26 @@
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
   <ItemGroup>
+    <Compile Include="Class1.cs" />
+    <Compile Include="Harmony\Patches\Def_get_LabelCap_Patch.cs" />
+    <Compile Include="Harmony\Patches\Faction_get_Name_Patch.cs" />
+    <Compile Include="HiveBaseComp.cs" />
+    <Compile Include="Harmony\Patches\PawnGroupMakerUtility_TryGetRandomPawnGroupMaker_Patch.cs" />
+    <Compile Include="Harmony\Patches\IncidentWorker_Infestation_TryExecuteWorker_Patch.cs" />
+    <Compile Include="Harmony\Patches\IncidentWorker_RaidEnemy_TryExecuteWorker_Patch.cs" />
+    <Compile Include="Harmony\Patches\SymbolResolver_Hivebase_Resolve_HiveStage_Patch.cs" />
+    <Compile Include="Harmony\Patches\SymbolResolver_PawnHiveGroup_Resolve_HiveStage_Patch.cs" />
+    <Compile Include="HiveFactionEvolutionTracker.cs" />
+    <Compile Include="LordJob_DefendHiveBase.cs" />
+    <Compile Include="CompSpawnerOnDamaged.cs" />
     <Compile Include="FactionExtensions.cs" />
-    <None Include="GenStuff\SymbolResolver_HiveBaseMoundMaker.cs.bak" />
-    <Compile Include="GenStuff\SymbolResolver_SinglePawn.cs" />
+    <Compile Include="GenStuff\SymbolResolver_SingleHivePawn.cs" />
     <Compile Include="GenStuff\SymbolResolver_HiveInternals.cs" />
     <Compile Include="GenStuff\SymbolResolver_ClearChamber.cs" />
     <Compile Include="GenStuff\SymbolResolver_HiveBaseMoundMaker.cs" />
     <Compile Include="GenStuff\SymbolResolver_Hivebase.cs" />
     <Compile Include="GenStuff\SymbolResolver_OutdoorLightingHivebase.cs" />
-    <Compile Include="GenStuff\SymbolResolver_PawnGroup.cs" />
+    <Compile Include="GenStuff\SymbolResolver_PawnHiveGroup.cs" />
     <Compile Include="GenStuff\SymbolResolver_RandomCorpse.cs" />
     <Compile Include="GenStuff\SymbolResolver_RandomDamage.cs" />
     <Compile Include="GenStuff\SymbolResolver_RandomHives.cs" />
@@ -93,7 +104,7 @@
   </ItemGroup>
   <ItemGroup>
     <PackageReference Include="Krafs.Rimworld.Ref">
-      <Version>1.2.2719</Version>
+      <Version>1.2.2753</Version>
     </PackageReference>
     <PackageReference Include="Lib.Harmony">
       <Version>2.0.2</Version>

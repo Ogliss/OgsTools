@@ -1,4 +1,5 @@
 ﻿using RimWorld;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
@@ -39,9 +40,10 @@ namespace ExtraHives
 
 		private static List<ThingDef> filthTypes = new List<ThingDef>();
 
+		public Type lordJobType = typeof(LordJob_AssaultColony);
 		public Faction faction = null;
 		public FactionDef factiondef = null;
-		public new Faction Faction
+		public Faction SpawnedFaction
 		{
 			get
 			{
@@ -131,7 +133,7 @@ namespace ExtraHives
 			if (spawnHive)
 			{
 				obj = (Hive)GenSpawn.Spawn(ThingMaker.MakeThing(this.Ext.HiveDef), position, map);
-				obj.SetFaction(Faction);
+				obj.SetFaction(SpawnedFaction);
 				obj.questTags = questTags;
 				foreach (CompSpawner comp in obj.GetComps<CompSpawner>())
 				{
@@ -161,7 +163,7 @@ namespace ExtraHives
 					{
 						break;
 					}
-					Pawn pawn = PawnGenerator.GeneratePawn(result2.kind, Faction);
+					Pawn pawn = PawnGenerator.GeneratePawn(result2.kind, SpawnedFaction);
 					GenSpawn.Spawn(pawn, CellFinder.RandomClosewalkCellNear(position, map, 2), map);
 					pawn.mindState.spawnedByInfestationThingComp = spawnedByInfestationThingComp;
 					list.Add(pawn);
@@ -169,10 +171,12 @@ namespace ExtraHives
 			}
 			if (list.Any())
 			{
+				
 
-
+					this.MakeLord(lordJobType, list);
+			/*
 			//	Log.Message("make new lord of " + Faction + " for " + obj);
-				LordMaker.MakeNewLord(Faction, new LordJob_AssaultColony(new SpawnedPawnParams
+				LordMaker.MakeNewLord(SpawnedFaction, new LordJob_AssaultColony(new SpawnedPawnParams
 				{
 					aggressive = false,
 					defendRadius = 50,
@@ -180,8 +184,50 @@ namespace ExtraHives
 					spawnerThing = (Thing)obj ?? this
 				}), map, list);
 			//	Log.Message("made attacking lord");
+			*/
+			}
+			else
+			{
+				Log.Message("list it empty");
 			}
 		}
+
+		public virtual void MakeLord(Type lordJobType, List<Pawn> list)
+		{
+
+			Map map = base.Map;
+			IntVec3 position = base.Position;
+			if (list.Any())
+			{
+				LordMaker.MakeNewLord(SpawnedFaction, Activator.CreateInstance(lordJobType, new object[]
+				{
+				   SpawnedFaction, false, false, false, false, false
+				}) as LordJob, map, null);
+
+				/*
+				if (lordJobType is LordJob_AssaultColony)
+				{
+				}
+				else
+				{
+					//	Log.Message("make new lord of " + Faction + " for " + obj);
+					LordMaker.MakeNewLord(SpawnedFaction, new LordJob_AssaultColony(new SpawnedPawnParams
+					{
+						aggressive = false,
+						defendRadius = 50,
+						defSpot = position,
+						spawnerThing = this
+					}), map, list);
+					//	Log.Message("made attacking lord");
+				}
+				*/
+				/*
+                LordJob lordJob = new LordJob_AssaultColony(Faction, false, false, false, false, false);
+                LordMaker.MakeNewLord(Faction, lordJob, map, list);
+                */
+			}
+		}
+
 
 		public override void Draw()
 		{

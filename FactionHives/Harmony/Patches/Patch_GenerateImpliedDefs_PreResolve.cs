@@ -127,7 +127,7 @@ namespace ExtraHives.HarmonyInstance
 			thingDef.altitudeLayer = AltitudeLayer.Skyfaller;
 			thingDef.drawerType = DrawerType.RealtimeOnly;
 			thingDef.label = "tunnel (incoming)";
-			thingDef.size = new IntVec2(3,3);
+			thingDef.size = new IntVec2(1,1);
 			DefGenerator.AddImpliedDef<ThingDef>(thingDef);
 
 
@@ -208,6 +208,20 @@ namespace ExtraHives.HarmonyInstance
 			ruleDef.symbol = "ExtraHives_HiveRandomHives";
 			ruleDef.resolvers = new List<SymbolResolver>();
 			ruleDef.resolvers.Add(new ExtraHives.GenStuff.SymbolResolver_RandomHives());
+			DefGenerator.AddImpliedDef<RuleDef>(ruleDef);
+			
+			ruleDef = new RuleDef();
+			ruleDef.defName = "ExtraHives_PawnGroup";
+			ruleDef.symbol = "ExtraHives_PawnGroup";
+			ruleDef.resolvers = new List<SymbolResolver>();
+			ruleDef.resolvers.Add(new ExtraHives.GenStuff.SymbolResolver_PawnHiveGroup());
+			DefGenerator.AddImpliedDef<RuleDef>(ruleDef);
+			
+			ruleDef = new RuleDef();
+			ruleDef.defName = "ExtraHives_Pawn";
+			ruleDef.symbol = "ExtraHives_Pawn";
+			ruleDef.resolvers = new List<SymbolResolver>();
+			ruleDef.resolvers.Add(new ExtraHives.GenStuff.SymbolResolver_SingleHivePawn());
 			DefGenerator.AddImpliedDef<RuleDef>(ruleDef);
 
 		}

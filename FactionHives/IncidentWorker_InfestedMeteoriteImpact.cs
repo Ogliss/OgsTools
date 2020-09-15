@@ -1,6 +1,7 @@
 ﻿using RimWorld;
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using UnityEngine;
 using Verse;
 
@@ -42,6 +43,31 @@ namespace ExtraHives
 			}
 			ThingDef hiveDef = def.mechClusterBuilding;
 			HiveDefExtension hive = hiveDef.GetModExtension<HiveDefExtension>();
+			Faction faction = null;
+			if (parms.faction!=null)
+			{
+				faction = parms.faction;
+			}
+			else
+			{
+				if (hive.Faction != null)
+				{
+					IEnumerable<Faction> factions = CandidateFactions(map, hive.Faction.defName);
+					if (!factions.EnumerableNullOrEmpty())
+					{
+						faction = factions.RandomElement();
+					}
+					else
+					{
+						faction = Find.FactionManager.FirstFactionOfDef(hive.Faction);
+					}
+				}
+				else
+				{
+					return false;
+				}
+
+			}
 			if (!this.TryFindCell(out intVec, map))
 			{
 				return false;
@@ -54,12 +80,13 @@ namespace ExtraHives
 			tunnelHiveSpawner.initialPoints = Mathf.Max(parms.points * Rand.Range(0.3f, 0.6f), 200f);
 			tunnelHiveSpawner.spawnedByInfestationThingComp = true;
 			tunnelHiveSpawner.ResultSpawnDelay = new FloatRange(0.1f,0.5f);
-			tunnelHiveSpawner.spawnablePawnKinds = hiveDef.GetCompProperties<CompProperties_SpawnerPawn>().spawnablePawnKinds;
-			if (tunnelHiveSpawner.Faction == null)
+			tunnelHiveSpawner.spawnablePawnKinds = faction.def.pawnGroupMakers.Where(x=> x.kindDef == RimWorld.PawnGroupKindDefOf.Combat || x.kindDef == PawnGroupKindDefOf.Tunneler_ExtraHives).RandomElement().options;
+			if (tunnelHiveSpawner.SpawnedFaction == null)
 			{
-				if (hive.Faction != null)
+				if (faction != null)
 				{
-					tunnelHiveSpawner.Faction = Find.FactionManager.FirstFactionOfDef(hive.Faction);
+				//	Log.Message(faction.Name);
+					tunnelHiveSpawner.SpawnedFaction = faction;
 				}
 			}
 		//	Log.Message("TunnelRaidSpawner "+ tunnelHiveSpawner.Faction);
@@ -104,6 +131,19 @@ namespace ExtraHives
 				}
 				return num2 >= maxMineables;
 			});
+		}
+
+		protected IEnumerable<Faction> CandidateFactions(Map map, string Contains, bool desperate = false)
+		{
+			return from f in Find.FactionManager.AllFactions
+				   where this.FactionCanBeGroupSource(f, map, desperate) && (Contains.NullOrEmpty() || (f.def.defName.Contains(Contains)))
+				   select f;
+		}
+		protected virtual bool FactionCanBeGroupSource(Faction f, Map map, bool desperate = false)
+		{
+			bool result = !f.IsPlayer && !f.defeated && !f.temporary && (desperate || (f.def.allowedArrivalTemperatureRange.Includes(map.mapTemperature.OutdoorTemp) && f.def.allowedArrivalTemperatureRange.Includes(map.mapTemperature.SeasonalTemp) && (float)GenDate.DaysPassed >= f.def.earliestRaidDays));
+		//	Log.Message(f.Name+" Allow: "+result);
+			return result;
 		}
 	}
 }

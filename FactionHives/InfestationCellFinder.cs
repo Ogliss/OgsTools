@@ -119,15 +119,15 @@ namespace ExtraHives
 				return 0f;
 			}
 			float temperatureBonus = 0f;
-			if (HiveExt.bonusTempScore.HasValue)
+			if (HiveExt.bonusTempScore!=0)
 			{
 				if (HiveExt.bonusAboveTemp.HasValue && temperature > HiveExt.bonusAboveTemp.Value)
 				{
-					temperatureBonus = HiveExt.bonusTempScore.Value;
+					temperatureBonus = HiveExt.bonusTempScore;
 				}
 				if (HiveExt.bonusBelowTemp.HasValue && temperature < HiveExt.bonusBelowTemp.Value)
 				{
-					temperatureBonus = HiveExt.bonusTempScore.Value;
+					temperatureBonus = HiveExt.bonusTempScore;
 				}
 			}
 			float mountainousnessScoreAt = GetMountainousnessScoreAt(cell, map);

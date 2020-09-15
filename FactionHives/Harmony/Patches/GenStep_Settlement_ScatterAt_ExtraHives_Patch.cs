@@ -19,6 +19,7 @@ namespace ExtraHives.HarmonyInstance
     [HarmonyPatch(typeof(GenStep_Settlement), "ScatterAt")]
 	public static class GenStep_Settlement_ScatterAt_ExtraHives_Patch
     {
+		[HarmonyPrefix, HarmonyPriority(Priority.Last)]
         public static bool Prefix(IntVec3 c, Map map, GenStepParams parms, int stackCount = 1)
 		{
 			bool result;
@@ -40,8 +41,10 @@ namespace ExtraHives.HarmonyInstance
 						resolveParams.rect = rect;
 						resolveParams.faction = map.ParentFaction;
 						resolveParams.cultivatedPlantDef = HFExt.cultivatedPlantDef ?? RimWorld.ThingDefOf.Plant_Grass;
+						/*
 						resolveParams.pathwayFloorDef = DefDatabase<TerrainDef>.AllDefsListForReading.FindAll((TerrainDef t) => t.terrainAffordanceNeeded == TerrainAffordanceDefOf.Medium && t.costStuffCount < 6).RandomElement<TerrainDef>();
 						resolveParams.wallStuff = DefDatabase<ThingDef>.AllDefsListForReading.FindAll((ThingDef t) => t.stuffProps != null && (t.terrainAffordanceNeeded == TerrainAffordanceDefOf.Light || t.terrainAffordanceNeeded == TerrainAffordanceDefOf.Medium || t.terrainAffordanceNeeded == TerrainAffordanceDefOf.Heavy) && t.BaseMarketValue < 6f).RandomElement<ThingDef>();
+						*/
 						BaseGen.globalSettings.map = map;
 						BaseGen.globalSettings.minBuildings = 8;
 						BaseGen.globalSettings.minBarracks = 2;

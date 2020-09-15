@@ -11,13 +11,14 @@ namespace CompApparelVerbGiver
 		CompProperties_ApparelVerbGiver()
 		{
 			this.compClass = typeof(CompApparelVerbGiver);
-			
 		}
+		public List<Tool> tools;
+		public List<VerbProperties> verbs;
 	}
 
 	public class CompApparelVerbGiver : ThingComp, IVerbOwner
 	{
-		// Token: 0x170004C5 RID: 1221
+		CompProperties_ApparelVerbGiver Props => this.props as CompProperties_ApparelVerbGiver;
 		// (get) Token: 0x06001708 RID: 5896 RVA: 0x00083DCC File Offset: 0x00081FCC
 		private Pawn Wearer
 		{
@@ -93,7 +94,7 @@ namespace CompApparelVerbGiver
 		{
 			get
 			{
-				return ImplementOwnerTypeDefOf.NativeVerb;
+				return ImplementOwnerTypeDefOf.Weapon;
 			}
 		}
 
@@ -169,15 +170,18 @@ namespace CompApparelVerbGiver
 
 		public override string CompInspectStringExtra()
 		{
-			string str = "Special Rules:";
+			string str = "OG_ApparelTool".Translate();
 
 			return str;
 		}
 		public override string GetDescriptionPart()
 		{
 
-			string str = string.Empty;
-
+			string str = "OG_ApparelToolDesc".Translate();
+			for (int i = 0; i < Tools.Count; i++)
+			{
+				str += "\n"+Tools[i].LabelCap + " Power: " + Tools[i].power + " Cooldown: " + Tools[i].cooldownTime;
+			}
 			return str;
 		}
 		// Token: 0x04000E81 RID: 3713

@@ -12,77 +12,170 @@ namespace ExtraHives.GenStuff
 	// Token: 0x020010B0 RID: 4272 ExtraHives.GenStuff.SymbolResolver_HiveInterals
 	public class SymbolResolver_HiveInternals : SymbolResolver
 	{
+		List<IntVec3> cells = new List<IntVec3>();
+		List<IntVec3> cavecells = new List<IntVec3>();
+		List<IntVec3> bigCaveCenters = new List<IntVec3>();
+		List<IntVec3> smallCaveCenters = new List<IntVec3>();
+		List<IntVec3> cellforbigcave = new List<IntVec3>();
+		List<IntVec3> cellforlittlecave = new List<IntVec3>();
+		List<IntVec3> entranceCaveCenters = new List<IntVec3>();
+		Faction Faction = null;
 		// Token: 0x0600650C RID: 25868 RVA: 0x00233C80 File Offset: 0x00231E80
 		public override void Resolve(ResolveParams rp)
 		{
-			float dist = Math.Min(rp.rect.TopRight.DistanceTo(rp.rect.BottomLeft), GenRadial.MaxRadialPatternRadius - 2);
-			List<IntVec3> cells = GenRadial.RadialCellsAround(rp.rect.CenterCell, dist, true).ToList();
-			TrySpawnCave(rp.rect.CenterCell, cells, rp);
-		}
-
-		// Token: 0x0600650D RID: 25869 RVA: 0x00233CF0 File Offset: 0x00231EF0
-		private void TrySpawnCave(IntVec3 c, List<IntVec3> cells, ResolveParams rp)
-		{
-		//	Log.Message("checking " + cells.Count + " cells for tunnels");
+			Faction = rp.faction;
+			HiveFactionExtension hiveFaction = Faction.def.GetModExtension<HiveFactionExtension>();
+			cells.Clear();
+			cavecells.Clear();
+			bigCaveCenters.Clear();
+			smallCaveCenters.Clear();
+			cellforbigcave.Clear();
+			cellforlittlecave.Clear();
+			entranceCaveCenters.Clear();
 			Map map = BaseGen.globalSettings.map;
-			directionNoise = new Perlin(0.0020500000100582838, 2.0, 0.5, 4, Rand.Int, QualityMode.Medium);
-			MapGenFloatGrid elevation = MapGenerator.Elevation;
-			BoolGrid visited = new BoolGrid(map);
-			List<IntVec3> group = new List<IntVec3>();
-			foreach (IntVec3 allCell in cells)
+			IntVec3 CenterCell = rp.rect.CenterCell;
+			cavecells.AddRange(GenRadial.RadialCellsAround(CenterCell, 10, true));
+			float dist = rp.rect.TopRight.DistanceTo(rp.rect.BottomLeft);
+			cells = map.AllCells.Where(x => x.DistanceTo(CenterCell) <= dist).ToList();
+			//	int cavecountBig = Rand.RangeInclusive(1, 4);
+			List<IntVec3> cellst = cells.Where(x => x.DistanceTo(CenterCell) > 15 && x.DistanceTo(CenterCell) < dist - 10).ToList();
+			cellforbigcave = cellst.Where(x => x.DistanceTo(CenterCell) > 15 && x.DistanceTo(CenterCell) < dist / 2).ToList();
+			cellforlittlecave = cellst.Where(x => x.DistanceTo(CenterCell) > dist / 2 && x.DistanceTo(CenterCell) < dist - 10).ToList();
+			float entranceChance = 1f;
+
+			this.GenerateQuad(CenterCell, Rot4.North, cells.Where(x => x.DistanceTo(CenterCell) <= dist && this.NorthQuad(x, CenterCell)).ToList(), entranceChance, dist, hiveFaction.ActiveStage);
+			this.GenerateQuad(CenterCell, Rot4.South, cells.Where(x => x.DistanceTo(CenterCell) <= dist && this.SouthQuad(x, CenterCell)).ToList(), entranceChance, dist, hiveFaction.ActiveStage);
+			this.GenerateQuad(CenterCell, Rot4.East, cells.Where(x => x.DistanceTo(CenterCell) <= dist && this.EastQuad(x, CenterCell)).ToList(), entranceChance, dist, hiveFaction.ActiveStage);
+			this.GenerateQuad(CenterCell, Rot4.West, cells.Where(x => x.DistanceTo(CenterCell) <= dist && this.WestQuad(x, CenterCell)).ToList(), entranceChance, dist, hiveFaction.ActiveStage);
+
+			//	Log.Message("cavecells contains " + cavecells.Count);
+			foreach (IntVec3 c in cavecells)
 			{
-				if (!visited[allCell] && allCell.Filled(map))
+				List<Thing> things = c.GetThingList(map);
+				for (int i = 0; i < things.Count; i++)
 				{
-				//	Log.Message("checking " + allCell + " cells for tunnel");
-					group.Clear();
-					map.floodFiller.FloodFill(allCell, (IntVec3 x) => x.Filled(map), delegate (IntVec3 x)
+					Thing b = things[i];
+					if (b != null) b.Destroy();
+				}
+			}
+			if (hiveFaction != null)
+			{
+				if (hiveFaction.centerCaveHive != null)
+				{
+				//	Log.Message("CenterCell " + CenterCell);
+					Thing thing = GenSpawn.Spawn(ThingMaker.MakeThing(hiveFaction.centerCaveHive), CenterCell, map, WipeMode.Vanish);
+					thing.SetFaction(Faction);
+				}
+				if (hiveFaction.smallCaveHive != null)
+				{
+					foreach (IntVec3 c in smallCaveCenters)
 					{
-						visited[x] = true;
-						group.Add(x);
-					});
-				//	Log.Message("found " + group.Count + " cells for tunnel group");
-					/*	
-						Trim(group, map);
-					//	Log.Message("Trim group " + group.Count + " cells left");
-						RemoveSmallDisconnectedSubGroups(group, map);
-					//	Log.Message("RemoveSmallDisconnectedSubGroups from group " + group.Count + " cells left");
-					*/
-					if (group.Count >= 10)
+					//	Log.Message("smallCaveHive " + c);
+						Thing thing = GenSpawn.Spawn(ThingMaker.MakeThing(hiveFaction.smallCaveHive), c, map, WipeMode.Vanish);
+						thing.SetFaction(Faction);
+					}
+				}
+				if (hiveFaction.largeCaveHive != null)
+				{
+					foreach (IntVec3 c in bigCaveCenters)
 					{
-					//	Log.Message("making " + group.Count + " tunnels");
-						DoOpenTunnels(group, map);
-						DoClosedTunnels(group, map);
+					//	Log.Message("largeCaveHive " + c);
+						Thing thing = GenSpawn.Spawn(ThingMaker.MakeThing(hiveFaction.largeCaveHive), c, map, WipeMode.Vanish);
+						thing.SetFaction(Faction);
 					}
 				}
 			}
-			foreach (IntVec3 allCell in cells)
+		}
+
+		public void GenerateQuad(IntVec3 CenterCell, Rot4 rot, List<IntVec3> QuadCells, float entranceChance, float radius, int minCaves)
+		{
+			Map map = BaseGen.globalSettings.map;
+			List<IntVec3> nodes = new List<IntVec3>();
+			nodes.Add(CenterCell);
+
+			//	Log.Message("Generatirng " + rot.ToStringHuman().CapitalizeFirst() + " Quad Small Chambers");
+			float dist2 = Rand.RangeInclusive(7, 10);
+			IntVec3 BigCaveCenter = cellforbigcave.Where(x => !bigCaveCenters.Any(y => x.DistanceTo(y) < 20)).RandomElement();
+			nodes.Add(BigCaveCenter);
+
+			bigCaveCenters.Add(BigCaveCenter);
+			List<IntVec3> BigCavecells = GenRadial.RadialCellsAround(BigCaveCenter, dist2, true).ToList();
+
+			cavecells.AddRange(BigCavecells);
+
+			//	Log.Message("Generatirng "+rot.ToStringHuman().CapitalizeFirst()+ " Quad Small Chambers");
+			int cavecountSmall = Rand.RangeInclusive(minCaves, (int)radius / 10);
+			for (int i2 = 0; i2 < cavecountSmall; i2++)
 			{
-
+				float dist = Rand.RangeInclusive(3, 6);
+				IntVec3 cell = cellforlittlecave.Where(x=> !smallCaveCenters.Any(y=> y.DistanceTo(x) < dist) ).RandomElement();
+				nodes.Add(cell);
+				smallCaveCenters.Add(cell);
+				List<IntVec3> ccells = GenRadial.RadialCellsAround(cell, dist, true).ToList();
+				cavecells.AddRange(ccells);
 			}
-		}
-		private void Trim(List<IntVec3> group, Map map)
-		{
-			GenMorphology.Open(group, 6, map);
-		}
 
-		private bool IsRock(IntVec3 c, Map map)
-		{
-			if (c.InBounds(map))
+			if (Rand.Chance(entranceChance))
 			{
-				return c.Filled(map);
-			}
-			return false;
-		}
+				//	Log.Message("Generatirng " + rot.ToStringHuman().CapitalizeFirst() + " Quad Entrance");
+				entranceChance -= 0.0f;
+				float dist = Rand.RangeInclusive(3, 10);
+				List<IntVec3> ecells = new List<IntVec3>();
+				ecells.AddRange(cells.Where(x => InQuad(x, CenterCell, rot) && GenRadial.RadialCellsAround(x, dist, true).Any(z => map.reachability.CanReachMapEdge(z, TraverseParms.For(TraverseMode.ByPawn))) && GenRadial.RadialCellsAround(x, dist, true).Any(z => QuadCells.Contains(z))));
+				IntVec3 cell = ecells.NullOrEmpty() ? IntVec3.Invalid : ecells.RandomElement();
 
-		private void DoOpenTunnels(List<IntVec3> group, Map map)
+				if (cell != IntVec3.Invalid)
+				{
+				//	nodes.Add(cell);
+					List<IntVec3> ccells = GenRadial.RadialCellsAround(cell, dist, true).ToList();
+					cavecells.AddRange(ccells);
+					entranceCaveCenters.Add(cell);
+					List<IntVec3> tcells = nodes;
+					/*
+					List<IntVec3> tcells = new List<IntVec3>();
+					tcells.AddRange(smallCaveCenters);
+					tcells.AddRange(bigCaveCenters);
+					*/
+					List<IntVec3> ncells = new List<IntVec3>();
+				//	ncells = tcells.Where(x => x.DistanceTo(CenterCell) < radius - 5 && !cell.WithinRegions(x, map, 10, TraverseParms.For(TraverseMode.ByPawn), RegionType.Set_Passable)).OrderBy(x => x.DistanceTo(cell)).ToList();
+					//	Log.Message("Generatirng " + rot.ToStringHuman().CapitalizeFirst() + " Quad path " + ncells.Count + " Nodes located");
+					IntVec3 prevnode = cell;
+					nodes.OrderByDescending(x=> x.DistanceTo(prevnode));
+					for (int i = 0; i < nodes.Count; i++)
+					{
+						IntVec3 node = nodes[i];
+						IntVec3 offset = prevnode - node;
+						float num = 0f;
+						if ((prevnode.ToVector3() - node.ToVector3()).MagnitudeHorizontalSquared() > 0.001f)
+						{
+							num = (prevnode.ToVector3() - node.ToVector3()).AngleFlat();
+						}
+						num += 90f;
+						int trX = prevnode.x < node.x ? prevnode.x : node.x;
+						int trY = prevnode.z < node.z ? prevnode.z : node.z;
+						CellRect rect = new CellRect(trX, trY, (int)node.DistanceTo(prevnode), (int)node.DistanceTo(prevnode));
+
+						//	Log.Message((i == 0 ? "Entrance at " : "Prevous node at ") + prevnode + " next node at " + node + " distance: " + node.DistanceTo(prevnode) + " Angele: " + num + " Bottom Left: " + rect.BottomLeft + " Top Right: " + rect.TopRight);
+						Dig(prevnode, num, 3, rect.ToList(), map, closed: false);
+						prevnode = node;
+					}
+				}
+				else
+				{
+					Log.Warning("Generatirng " + rot.ToStringHuman().CapitalizeFirst() + " Quad Entrance, no suitable cell found out of " + ecells.Count + " potential targets");
+				}
+			}
+			cellforlittlecave.RemoveAll(x => QuadCells.Contains(x));
+			cellforbigcave.RemoveAll(x => QuadCells.Contains(x));
+		}
+		private void GeneratePathToCenter(List<IntVec3> group, Map map)
 		{
-			int a = GenMath.RoundRandom((float)group.Count * Rand.Range(0.9f, 1.1f) * 5.8f / 100f);
+			int a = GenMath.RoundRandom((float)group.Count * Rand.Range(0.9f, 1.1f) * 5.8f / 10000f);
 			a = Mathf.Min(a, 3);
 			if (a > 0)
 			{
 				a = Rand.RangeInclusive(1, a);
 			}
-		//	Log.Message("DoOpenTunnels Dig " + group.Count + " tunnels attempts " + a);
 			float num = TunnelsWidthPerRockCount.Evaluate(group.Count);
 			for (int i = 0; i < a; i++)
 			{
@@ -105,20 +198,227 @@ namespace ExtraHives.GenStuff
 					}
 				}
 				float width = Rand.Range(num * 0.8f, num);
-			//	Log.Message("DoOpenTunnels Dig " + group.Count + " tunnels");
+				Dig(start, dir, width, group, map, closed: false);
+			}
+		}
+
+		public bool InQuad(IntVec3 cell, IntVec3 CenterCell, Rot4 rot)
+		{
+			if (rot == Rot4.North)
+			{
+				return NorthQuad(cell, CenterCell);
+			}
+			if (rot == Rot4.South)
+			{
+				return SouthQuad(cell, CenterCell);
+			}
+			if (rot == Rot4.East)
+			{
+				return EastQuad(cell, CenterCell);
+			}
+			if (rot == Rot4.West)
+			{
+				return WestQuad(cell, CenterCell);
+			}
+			return false;
+		}
+
+		public bool EastQuad(IntVec3 cell, IntVec3 CenterCell)
+		{
+
+			IntVec3 offset = CenterCell - cell;
+			if (offset.x < (offset.z > 0 ? offset.z - (offset.z * 2) : offset.z))
+			{
+				return true;
+			}
+			return false;
+		}
+
+		public bool WestQuad(IntVec3 cell, IntVec3 CenterCell)
+		{
+
+			IntVec3 offset = CenterCell - cell;
+			if (offset.x > (offset.z < 0 ? offset.z - (offset.z * 2) : offset.z))
+			{
+				return true;
+			}
+			return false;
+		}
+
+		public bool SouthQuad(IntVec3 cell, IntVec3 CenterCell)
+		{
+
+			IntVec3 offset = CenterCell - cell;
+			if (offset.z > (offset.x < 0 ? offset.x - (offset.x * 2) : offset.x))
+			{
+				return true;
+			}
+			return false;
+		}
+
+		public bool NorthQuad(IntVec3 cell, IntVec3 CenterCell)
+		{
+
+			IntVec3 offset = CenterCell - cell;
+			if (offset.z < (offset.x > 0 ? offset.x - (offset.x * 2) : offset.x))
+			{
+				return true;
+			}
+			return false;
+		}
+
+
+		public void TrySpawnCave(IntVec3 c, List<IntVec3> cells, float dist, out List<IntVec3> CaveCells)
+		{
+			CaveCells = new List<IntVec3>();
+			Map map = BaseGen.globalSettings.map;
+			directionNoise = new Perlin(0.0020500000100582838, 2.0, 0.5, 4, Rand.Int, QualityMode.Medium);
+			BoolGrid visited = new BoolGrid(map);
+			MapGenFloatGrid elevation = new MapGenFloatGrid(map);
+			List<IntVec3> group = new List<IntVec3>();
+			foreach (IntVec3 allCell in CaveCells)
+			{
+				if (visited[allCell])
+				{
+					//	Log.Message("been to "+ allCell + " already");
+				}
+				if (!IsRock(allCell, elevation, map))
+				{
+					//	Log.Message(allCell + " is not rock");
+				}
+				if (allCell.DistanceTo(c) < dist && cells.Contains(c))
+				{
+					elevation[allCell] = 1f;
+				}
+				if (!visited[allCell] && IsRock(allCell, elevation, map) && cells.Contains(c))
+				{
+					group.Clear();
+					map.floodFiller.FloodFill(allCell, (IntVec3 x) => IsRock(x, elevation, map), delegate (IntVec3 x)
+					{
+						visited[x] = true;
+						group.Add(x);
+					});
+					//	Log.Message("TrySpawnCave at " + allCell + "containing " + group.Count + " cells");
+					Trim(group, map);
+					RemoveSmallDisconnectedSubGroups(group, map);
+					if (group.Count >= 30)
+					{
+						//	Log.Message("TrySpawnCave starting tunnel at " + allCell + "containing "+ group.Count + " cells");
+						DoOpenTunnels(group, map);
+						DoClosedTunnels(group, map);
+						CaveCells.AddRange(group);
+					}
+				}
+			}
+		}
+
+		private void TrySpawnCave2(IntVec3 c, List<IntVec3> cells, float dist, out List<IntVec3> CaveCells)
+		{
+			CaveCells = new List<IntVec3>();
+			//	Log.Message("checking " + cells.Count + " cells for tunnels"); ;
+			MapGenFloatGrid elevation = MapGenerator.Elevation;
+			Map map = BaseGen.globalSettings.map;
+			BoolGrid visited = new BoolGrid(map);
+			List<IntVec3> group = new List<IntVec3>();
+			directionNoise = new Perlin(0.0020500000100582838, 2.0, 0.5, 4, Rand.Int, QualityMode.Medium);
+			//	directionNoise = new Perlin(0.0020500000100582838, 1, 1, 6, Rand.Int, QualityMode.Medium);
+			//  directionNoise = new Perlin(0.0070000002160668373, 2.0, 0.5, 6, Rand.Range(0, int.MaxValue), QualityMode.High);
+			foreach (IntVec3 allCell in cells)
+			{
+				if (allCell.DistanceTo(c) < dist)
+				{
+					elevation[allCell] = 1f;
+				}
+				if (!visited[allCell] && allCell.Filled(map))
+				{
+					//	Log.Message("checking " + allCell + " cells for tunnel");
+					group.Clear();
+					map.floodFiller.FloodFill(allCell, (IntVec3 x) => x.Filled(map), delegate (IntVec3 x)
+					{
+						visited[x] = true;
+						group.Add(x);
+					});
+					//	Log.Message("found " + group.Count + " cells for tunnel group");
+					Trim(group, map);
+					RemoveSmallDisconnectedSubGroups(group, map);
+					//	Log.Message("RemoveSmallDisconnectedSubGroups from group " + group.Count + " cells left");
+
+					if (group.Count >= 300)
+					{
+						//	Log.Message("making " + group.Count + " tunnels");
+						DoOpenTunnels(group, map);
+						DoClosedTunnels(group, map);
+						CaveCells.AddRange(group);
+					}
+				}
+			}
+
+			foreach (IntVec3 allCell in cells)
+			{
+				if (!CaveCells.Contains(allCell) && visited[allCell])
+				{
+					CaveCells.Add(allCell);
+					//	Log.Message("adding " + allCell + "co CaveCells, now contains " + CaveCells.Count);
+				}
+			}
+		}
+
+		private void Trim(List<IntVec3> group, Map map)
+		{
+			GenMorphology.Open(group, 6, map);
+		}
+
+		private bool IsRock(IntVec3 c, MapGenFloatGrid elevation, Map map)
+		{
+			if (c.InBounds(map))
+			{
+				return elevation[c] > 0.7f;
+			}
+			return false;
+		}
+
+		private void DoOpenTunnels(List<IntVec3> group, Map map)
+		{
+			int a = GenMath.RoundRandom((float)group.Count * Rand.Range(0.9f, 1.1f) * 5.8f / 10000f);
+			a = Mathf.Min(a, 3);
+			if (a > 0)
+			{
+				a = Rand.RangeInclusive(1, a);
+			}
+			float num = TunnelsWidthPerRockCount.Evaluate(group.Count);
+			for (int i = 0; i < a; i++)
+			{
+				IntVec3 start = IntVec3.Invalid;
+				float num2 = -1f;
+				float dir = -1f;
+				float num3 = -1f;
+				for (int j = 0; j < 10; j++)
+				{
+					IntVec3 intVec = FindRandomEdgeCellForTunnel(group, map);
+					float distToCave = GetDistToCave(intVec, group, map, 40f, treatOpenSpaceAsCave: false);
+					float dist;
+					float num4 = FindBestInitialDir(intVec, group, out dist);
+					if (!start.IsValid || distToCave > num2 || (distToCave == num2 && dist > num3))
+					{
+						start = intVec;
+						num2 = distToCave;
+						dir = num4;
+						num3 = dist;
+					}
+				}
+				float width = Rand.Range(num * 0.8f, num);
 				Dig(start, dir, width, group, map, closed: false);
 			}
 		}
 
 		private void DoClosedTunnels(List<IntVec3> group, Map map)
 		{
-			int a = GenMath.RoundRandom((float)group.Count * Rand.Range(0.9f, 1.1f) * 2.5f / 100f);
+			int a = GenMath.RoundRandom((float)group.Count * Rand.Range(0.9f, 1.1f) * 2.5f / 10000f);
 			a = Mathf.Min(a, 1);
 			if (a > 0)
 			{
 				a = Rand.RangeInclusive(0, a);
 			}
-		//	Log.Message("DoClosedTunnels " + group.Count + " tunnels attempts " + a);
 			float num = TunnelsWidthPerRockCount.Evaluate(group.Count);
 			for (int i = 0; i < a; i++)
 			{
@@ -135,7 +435,6 @@ namespace ExtraHives.GenStuff
 					}
 				}
 				float width = Rand.Range(num * 0.8f, num);
-			//	Log.Message("DoClosedTunnels Dig " + group.Count + " tunnels");
 				Dig(start, Rand.Range(0f, 360f), width, group, map, closed: true);
 			}
 		}
@@ -187,10 +486,11 @@ namespace ExtraHives.GenStuff
 
 		private void Dig(IntVec3 start, float dir, float width, List<IntVec3> group, Map map, bool closed, HashSet<IntVec3> visited = null)
 		{
-		//	Log.Message("Dig ");
 			Vector3 vect = start.ToVector3Shifted();
+			float distcovered = 0f;
 			IntVec3 intVec = start;
 			float num = 0f;
+			MapGenFloatGrid elevation = MapGenerator.Elevation;
 			MapGenFloatGrid caves = MapGenerator.Caves;
 			bool flag = false;
 			bool flag2 = false;
@@ -205,38 +505,33 @@ namespace ExtraHives.GenStuff
 			{
 				if (closed)
 				{
-				//	Log.Message("Closed ");
 					int num3 = GenRadial.NumCellsInRadius(width / 2f + 1.5f);
 					for (int i = 0; i < num3; i++)
 					{
 						IntVec3 intVec2 = intVec + GenRadial.RadialPattern[i];
-						if (!visited.Contains(intVec2) && (!tmpGroupSet.Contains(intVec2) || caves[intVec2] > 0f))
+						if (!visited.Contains(intVec2) && (!tmpGroupSet.Contains(intVec2)))
 						{
-						//	Log.Message("closed failed");
 							return;
 						}
 					}
 				}
-				if (num2 >= 15 && width > 1.4f + BranchedTunnelWidthOffset.max)
+				if (num2 >= 15 && width > 1.8f + BranchedTunnelWidthOffset.max)
 				{
-				//	Log.Message("Dig Can Branch");
-					if (!flag && Rand.Chance(0.1f))
+					if (!flag && Rand.Chance(0.05f))
 					{
-					//	Log.Message("Branch DigInBestDirection("+intVec + ", " + dir + ", FloatRange(40f, 90f), "+ (width - BranchedTunnelWidthOffset.RandomInRange) + ", "+ group + ", "+ map + ", "+ closed + ", " + visited+")");
 						DigInBestDirection(intVec, dir, new FloatRange(40f, 90f), width - BranchedTunnelWidthOffset.RandomInRange, group, map, closed, visited);
 						flag = true;
 					}
-					if (!flag2 && Rand.Chance(0.1f))
+					if (!flag2 && Rand.Chance(0.05f))
 					{
-					//	Log.Message("Branch DigInBestDirection(" + intVec + ", " + dir + ", FloatRange(-90f, -40f), " + (width - BranchedTunnelWidthOffset.RandomInRange) + ", " + group + ", " + map + ", " + closed + ", " + visited + ")");
 						DigInBestDirection(intVec, dir, new FloatRange(-90f, -40f), width - BranchedTunnelWidthOffset.RandomInRange, group, map, closed, visited);
 						flag2 = true;
 					}
 				}
 				SetCaveAround(intVec, width, map, visited, out bool hitAnotherTunnel);
-			//	Log.Message("Dig SetCaveAround(" + intVec + ", " + width + ", " + visited + ", Out HitAnotherTunnel " + hitAnotherTunnel);
 				if (hitAnotherTunnel)
 				{
+					//	Log.Message(intVec + " hitAnotherTunnel");
 					break;
 				}
 				while (vect.ToIntVec3() == intVec)
@@ -244,26 +539,45 @@ namespace ExtraHives.GenStuff
 					vect += Vector3Utility.FromAngleFlat(dir) * 0.5f;
 					num += 0.5f;
 				}
+
 				if (!tmpGroupSet.Contains(vect.ToIntVec3()))
 				{
+					//	Log.Message(vect.ToIntVec3() + " not in group");
 					break;
 				}
 				IntVec3 intVec3 = new IntVec3(intVec.x, 0, vect.ToIntVec3().z);
-				if (IsRock(intVec3, map))
+				if (IsRock(intVec3, elevation, map))
 				{
 					caves[intVec3] = Mathf.Max(caves[intVec3], width);
 					visited.Add(intVec3);
 				}
+				cavecells.Add(intVec);
+				//	Log.Message(intVec + " added to cavecells, currently: "+ cavecells.Count);
 				intVec = vect.ToIntVec3();
+				/*
+			//	Log.Message(intVec + " added to cavecells, currently: " + cavecells.Count);
+			//	Log.Message("Randomize angel Original: "+ dir);
+			//	Log.Message("Randomize angel num: " + num);
+			//	Log.Message("Randomize angel start.x: " + start.x);
+			//	Log.Message("Randomize angel start.z: " + start.z);
+				*/
+				if (directionNoise == null)
+				{
+					directionNoise = new Perlin(0.0020500000100582838, 2.0, 0.5, 4, Rand.Int, QualityMode.Medium);
+				}
 				dir += (float)directionNoise.GetValue(num * 60f, (float)start.x * 200f, (float)start.z * 200f) * 8f;
-				width -= 0.034f;
+				//	Log.Message("angel = "+ dir);
+				width -= 0.005f;
+				//	Log.Message("Tunneling heading: " + dir + ",  current width: " + width);
 				if (!(width < 1.4f))
 				{
 					num2++;
 					continue;
 				}
+				distcovered = start.DistanceTo(intVec);
 				break;
 			}
+			//	Log.Message("Tunneling from "+ start + " heading: " + dir +" Distance: " + distcovered + " complete");
 		}
 
 		private void DigInBestDirection(IntVec3 curIntVec, float curDir, FloatRange dirOffset, float width, List<IntVec3> group, Map map, bool closed, HashSet<IntVec3> visited = null)
@@ -290,22 +604,21 @@ namespace ExtraHives.GenStuff
 		{
 			hitAnotherTunnel = false;
 			int num = GenRadial.NumCellsInRadius(tunnelWidth / 2f);
+			MapGenFloatGrid elevation = MapGenerator.Elevation;
 			MapGenFloatGrid caves = MapGenerator.Caves;
 			for (int i = 0; i < num; i++)
 			{
 				IntVec3 intVec = around + GenRadial.RadialPattern[i];
-			//	Log.Message("SetCaveAround checking " + intVec);
-				if (IsRock(intVec, map))
+				if (IsRock(intVec, elevation, map))
 				{
-				//	Log.Message("SetCaveAround using " + intVec);
 					if (caves[intVec] > 0f && !visited.Contains(intVec))
 					{
-					//	Log.Message("SetCaveAround hitAnotherTunnel");
 						hitAnotherTunnel = true;
 					}
 					caves[intVec] = Mathf.Max(caves[intVec], tunnelWidth);
 					visited.Add(intVec);
 				}
+				cavecells.Add(intVec);
 			}
 		}
 
@@ -389,28 +702,6 @@ namespace ExtraHives.GenStuff
 		private ModuleBase directionNoise;
 
 		private static HashSet<IntVec3> tmpGroupSet = new HashSet<IntVec3>();
-
-		private const float OpenTunnelsPer10k = 5.8f;
-
-		private const float ClosedTunnelsPer10k = 2.5f;
-
-		private const int MaxOpenTunnelsPerRockGroup = 3;
-
-		private const int MaxClosedTunnelsPerRockGroup = 1;
-
-		private const float DirectionChangeSpeed = 8f;
-
-		private const float DirectionNoiseFrequency = 0.00205f;
-
-		private const int MinRocksToGenerateAnyTunnel = 300;
-
-		private const int AllowBranchingAfterThisManyCells = 15;
-
-		private const float MinTunnelWidth = 1.4f;
-
-		private const float WidthOffsetPerCell = 0.034f;
-
-		private const float BranchChance = 0.1f;
 
 		private static readonly FloatRange BranchedTunnelWidthOffset = new FloatRange(0.2f, 0.4f);
 

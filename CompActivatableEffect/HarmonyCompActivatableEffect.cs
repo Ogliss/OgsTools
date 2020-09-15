@@ -27,8 +27,16 @@ namespace OgsCompActivatableEffect
             {
                 DualWieldPatch(harmony);
             }
+            
             harmony.Patch(typeof(PawnRenderer).GetMethod("DrawEquipmentAiming"), null,
                 new HarmonyMethod(typeof(HarmonyCompActivatableEffect), nameof(DrawEquipmentAimingPostFix)));
+            harmony.Patch(typeof(OgsCompOversizedWeapon.Harmony_PawnRenderer_DrawEquipmentAiming_Transpiler).GetMethod("draw"), null,
+                new HarmonyMethod(typeof(HarmonyCompActivatableEffect), nameof(DrawMeshModified)));
+            
+            /*
+            harmony.Patch(typeof(PawnRenderer).GetMethod("DrawEquipmentAiming"), null, null,
+                new HarmonyMethod(typeof(Harmony_PawnRenderer_DrawEquipmentAiming_Transpiler).GetMethod(nameof(Harmony_PawnRenderer_DrawEquipmentAiming_Transpiler.Transpiler)), Priority.Last)) ;
+            */
             harmony.Patch(typeof(Verb).GetMethod("TryStartCastOn", new Type[] { typeof(LocalTargetInfo), typeof(LocalTargetInfo), typeof(bool), typeof(bool) }),
                 new HarmonyMethod(typeof(HarmonyCompActivatableEffect), nameof(TryStartCastOnPrefix)), null);
             /*
@@ -179,8 +187,7 @@ namespace OgsCompActivatableEffect
             var pawn = (Pawn)___pawn;
 
             var pawn_EquipmentTracker = pawn.equipment;
-            var thingWithComps =
-                pawn_EquipmentTracker?.Primary; //(ThingWithComps)AccessTools.Field(typeof(Pawn_EquipmentTracker), "primaryInt").GetValue(pawn_EquipmentTracker);
+            var thingWithComps =pawn_EquipmentTracker?.Primary; 
             if (enabled_rooloDualWield)
             {
                 if (pawn.equipment.CAETryGetOffHandEquipment(out ThingWithComps thingy))
@@ -192,6 +199,7 @@ namespace OgsCompActivatableEffect
 
             }
             OgsCompOversizedWeapon.CompOversizedWeapon compOversized = thingWithComps.TryGetComp<OgsCompOversizedWeapon.CompOversizedWeapon>();
+            if (compOversized != null) return;
             var compActivatableEffect = thingWithComps?.GetComp<OgsCompActivatableEffect.CompActivatableEffect>();
             if (compActivatableEffect?.Graphic == null) return;
             if (compActivatableEffect.CurrentState != OgsCompActivatableEffect.CompActivatableEffect.State.Activated) return;
@@ -243,7 +251,6 @@ namespace OgsCompActivatableEffect
                         offset = compOversized.Props.northOffset;
                     else if (pawn.Rotation == Rot4.South)
                         offset = compOversized.Props.southOffset;
-                    offset += compOversized.Props.offset;
                 }
                                 
                                     
@@ -403,6 +410,7 @@ namespace OgsCompActivatableEffect
                                 flag7 = (compOversizedWeapon = (thingWithComps2.AllComps.FirstOrDefault((ThingComp z) => z is OgsCompOversizedWeapon.CompOversizedWeapon) as OgsCompOversizedWeapon.CompOversizedWeapon)) != null;
                                 if (flag7)
                                 {
+                                    return true;
                                     bool flag8 = pawn.Rotation == Rot4.East;
                                     if (flag8)
                                     {
@@ -432,7 +440,6 @@ namespace OgsCompActivatableEffect
                                             }
                                         }
                                     }
-                                    vector += compOversizedWeapon.Props.offset;
                                 }
                                 ThingComp thingComp = thingWithComps2.AllComps.FirstOrDefault((ThingComp y) => y.GetType().ToString().Contains("Deflect"));
                                 bool flag12 = thingComp != null;
@@ -531,6 +538,48 @@ namespace OgsCompActivatableEffect
             return true;
         }
 
+        private static void DrawMeshModified(Mesh mesh, Matrix4x4 matrix, Material mat, int layer, Thing eq, Pawn pawn, Vector3 position, Quaternion rotation)
+        {
+        //    Log.Message("DrawMeshModified");
+            ThingWithComps thingWithComps = eq as ThingWithComps;
+            CompEquippable equippable = eq.TryGetComp<CompEquippable>();
+            OgsCompOversizedWeapon.CompOversizedWeapon compOversized = thingWithComps.TryGetComp<OgsCompOversizedWeapon.CompOversizedWeapon>();
+            var compActivatableEffect = thingWithComps?.GetComp<OgsCompActivatableEffect.CompActivatableEffect>();
+            if (compActivatableEffect?.Graphic == null) return;
+
+            var matSingle = compActivatableEffect.Graphic.MatSingle;
+            //if (mesh == null) mesh = MeshPool.GridPlane(thingWithComps.def.graphicData.drawSize);
+            Vector3 s = new Vector3(eq.def.graphicData.drawSize.x, 1f, eq.def.graphicData.drawSize.y);
+            if (compOversized != null)
+            {
+                /*
+                if (enabled_AlienRaces && pawn.RaceProps.Humanlike)
+                {
+                    Vector2 v = OgsCompOversizedWeapon.HarmonyCompOversizedWeapon.AlienRacesPatch(___pawn);
+                    s = new Vector3(eq.def.graphicData.drawSize.x * v.x, 1f, eq.def.graphicData.drawSize.y * v.y);
+                }
+                else
+                {
+                    s = new Vector3(eq.def.graphicData.drawSize.x, 1f, eq.def.graphicData.drawSize.y);
+                }
+                */
+
+                if (HarmonyCompActivatableEffect.enabled_AlienRaces && pawn.RaceProps.Humanlike)
+                {
+                    Vector2 v = OgsCompOversizedWeapon.HarmonyCompOversizedWeapon.AlienRacesPatch(pawn);
+                    s = new Vector3(eq.def.graphicData.drawSize.x * v.x, 1f, eq.def.graphicData.drawSize.y * v.y);
+                }
+                else
+                {
+                    s = new Vector3(eq.def.graphicData.drawSize.x, 1f, eq.def.graphicData.drawSize.y);
+                }
+                //    Log.Message("DrawEquipmentAimingPostFix compOversized offset: "+ offset + " Rotation: "+rotation + " size: " + s);
+            }
+            Vector3 vector3 = position;
+            vector3.y -= 0.0005f;
+            matrix.SetTRS(vector3, rotation, s);
+            Graphics.DrawMesh(mesh, matrix, matSingle, 0);
+        }
         public static float AdjustOffsetAtPeace(Thing eq, Pawn pawn, OgsCompOversizedWeapon.CompOversizedWeapon compOversizedWeapon, float num)
         {
             if (compOversizedWeapon == null)

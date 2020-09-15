@@ -11,7 +11,7 @@ namespace ExtraHives.GenStuff
 		public override void Resolve(ResolveParams rp)
 		{
 			Map map = BaseGen.globalSettings.map;
-			map.listerThings.AllThings.FindAll((Thing t1) => t1.Faction == rp.faction).ForEach(delegate (Thing t)
+			map.listerThings.AllThings.FindAll((Thing t1) => t1.Faction != rp.faction).ForEach(delegate (Thing t)
 			{
 				t.HitPoints -= t.HitPoints / Rand.RangeInclusive(3, 10);
 			});

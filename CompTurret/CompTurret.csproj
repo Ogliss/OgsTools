@@ -1,0 +1,73 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="15.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <Import Project="$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props" Condition="Exists('$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props')" />
+  <PropertyGroup>
+    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
+    <ProjectGuid>{1FDB8869-FB6D-469D-9BF7-12671B1A3F87}</ProjectGuid>
+    <OutputType>Library</OutputType>
+    <AppDesignerFolder>Properties</AppDesignerFolder>
+    <RootNamespace>CompTurret</RootNamespace>
+    <AssemblyName>CompTurret</AssemblyName>
+    <TargetFrameworkVersion>v4.7.2</TargetFrameworkVersion>
+    <FileAlignment>512</FileAlignment>
+    <Deterministic>true</Deterministic>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
+    <DebugSymbols>true</DebugSymbols>
+    <DebugType>full</DebugType>
+    <Optimize>false</Optimize>
+    <OutputPath>bin\Debug\</OutputPath>
+    <DefineConstants>DEBUG;TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
+    <DebugType>pdbonly</DebugType>
+    <Optimize>true</Optimize>
+    <OutputPath>bin\Release\</OutputPath>
+    <DefineConstants>TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+  </PropertyGroup>
+  <ItemGroup>
+    <Compile Include="CompTurret\Command_CompTurretReloadable.cs" />
+    <Compile Include="CompTurret\Command_CompTurretVerbTarget.cs" />
+    <Compile Include="CompTurret\Command_ToggleCompTurret.cs" />
+    <Compile Include="CompTurret\CompTurret.cs" />
+    <Compile Include="CompTurret\CompTurretGun.cs" />
+    <Compile Include="CompTurret\CompTurretReloadableUtility.cs" />
+    <Compile Include="CompTurret\CompTurretTop.cs" />
+    <Compile Include="CompTurret\EffecterComp.cs" />
+    <Compile Include="CompTurret\Harmony\MainHarmonyInstance.cs" />
+    <Compile Include="CompTurret\Harmony\Patches\Apparel_CheckPreAbsorbDamage_CompTurret_Patch.cs" />
+    <Compile Include="CompTurret\Harmony\Patches\Apparel_Tick_CompTurret_Patch.cs" />
+    <Compile Include="CompTurret\Harmony\Patches\FloatMenuMakerMap_AddHumanlikeOrders_CompTurret_Patch.cs" />
+    <Compile Include="CompTurret\Harmony\Patches\Pawn_DrawAt_CompTurretTop_Patch.cs" />
+    <Compile Include="CompTurret\Harmony\Patches\Pawn_DrawExtraSelectionOverlays_CompTurret_Patch.cs" />
+    <Compile Include="CompTurret\JobDefOf.cs" />
+    <Compile Include="CompTurret\JobDriver_ReloadCompTurret.cs" />
+    <Compile Include="CompTurret\JobGiver_ReloadCompTurret.cs" />
+    <Compile Include="CompTurret\MoteCompTurretAttached.cs" />
+    <Compile Include="CompTurret\SubEffecterComp.cs" />
+    <Compile Include="CompTurret\SubEffecterComp_SprayerChance.cs" />
+    <Compile Include="CompTurret\SubEffecterComp_SprayerContinuous.cs" />
+    <Compile Include="CompTurret\SubEffecterComp_SprayerTriggered.cs" />
+    <Compile Include="CompTurret\SubEffecterComp_Sustainer.cs" />
+    <Compile Include="CompTurret\SubEffecter_CompSprayer.cs" />
+    <Compile Include="CompTurret\Verb_ShootCompMounted.cs" />
+    <Compile Include="Properties\AssemblyInfo.cs" />
+  </ItemGroup>
+  <ItemGroup>
+    <Reference Include="System.Runtime.InteropServices.RuntimeInformation" />
+  </ItemGroup>
+  <ItemGroup>
+    <PackageReference Include="Krafs.Rimworld.Ref">
+      <Version>1.2.2753</Version>
+    </PackageReference>
+    <PackageReference Include="Lib.Harmony">
+      <Version>2.0.2</Version>
+    </PackageReference>
+  </ItemGroup>
+  <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
+</Project>

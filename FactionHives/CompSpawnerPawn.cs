@@ -17,64 +17,36 @@ namespace ExtraHives
 		{
 			this.compClass = typeof(CompSpawnerPawn);
 		}
-		public PawnGroupKindDef factionGroupKindDef = PawnGroupKindDefOf.Hive_ExtraHives;
-		// Token: 0x04002DFD RID: 11773
 		public List<PawnGenOption> spawnablePawnKinds = new List<PawnGenOption>();
 		public List<PawnKindDef> AlwaysSpawnWith = new List<PawnKindDef>();
-
-		// Token: 0x04002DFE RID: 11774
 		public SoundDef spawnSound;
-
-		// Token: 0x04002DFF RID: 11775
 		public string spawnMessageKey;
-
-		// Token: 0x04002E00 RID: 11776
 		public string noPawnsLeftToSpawnKey;
-
-		// Token: 0x04002E01 RID: 11777
 		public string pawnsLeftToSpawnKey;
-
-		// Token: 0x04002E02 RID: 11778
 		public bool showNextSpawnInInspect;
 		public bool assaultOnSpawn;
-
-		// Token: 0x04002E03 RID: 11779
 		public bool shouldJoinParentLord;
-
-		// Token: 0x04002E04 RID: 11780
 		public Type lordJob;
-
-		// Token: 0x04002E05 RID: 11781
 		public float defendRadius = 21f;
-
-		// Token: 0x04002E06 RID: 11782
 		public int initialSpawnDelay = 0;
-
-		public int initialPawnsCount;
-
-		// Token: 0x04002E07 RID: 11783
+		public int initialPawnsCount = 10;
 		public float initialPawnsPoints;
-
-		// Token: 0x04002E08 RID: 11784
 		public float maxSpawnedPawnsPoints = -1f;
-
-		// Token: 0x04002E09 RID: 11785
 		public FloatRange pawnSpawnIntervalDays = new FloatRange(0.85f, 1.15f);
-
-		// Token: 0x04002E0A RID: 11786
 		public int pawnSpawnRadius = 2;
-
-		// Token: 0x04002E0B RID: 11787
 		public IntRange maxPawnsToSpawn = IntRange.zero;
-
-		// Token: 0x04002E0C RID: 11788
 		public bool chooseSingleTypeToSpawn;
-
-		// Token: 0x04002E0D RID: 11789
 		public string nextSpawnInspectStringKey;
-
-		// Token: 0x04002E0E RID: 11790
 		public string nextSpawnInspectStringKeyDormant;
+		public PawnGroupKindDef factionGroupKindDef;
+		public override void ResolveReferences(ThingDef parentDef)
+		{
+			base.ResolveReferences(parentDef);
+			if (factionGroupKindDef == null)
+			{
+				factionGroupKindDef = PawnGroupKindDefOf.Hive_ExtraHives;
+			}
+		}
 	}
 	// Token: 0x02000D61 RID: 3425
 	public class CompSpawnerPawn : ThingComp
@@ -260,13 +232,15 @@ namespace ExtraHives
 		// Token: 0x06005353 RID: 21331 RVA: 0x001BDAE8 File Offset: 0x001BBCE8
 		private void SpawnInitialPawns()
 		{
-		//	Log.Message("SpawnInitialPawns");
+			Log.Message("SpawnInitialPawns");
 			int num = 0;
 			Pawn pawn;
+
 			while (num < this.Props.initialPawnsCount && this.TrySpawnPawn(out pawn))
 			{
 				num++;
 			}
+
 			this.SpawnPawnsUntilPoints(this.Props.initialPawnsPoints);
 			if (!this.Props.AlwaysSpawnWith.NullOrEmpty())
 			{
