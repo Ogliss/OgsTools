@@ -13,7 +13,7 @@ namespace CompTurret
 	[StaticConstructorOnStartup]
 	public class CompTurretGun : CompTurret
 	{
-		public bool Active
+		public virtual bool Active
 		{
 			get
 			{

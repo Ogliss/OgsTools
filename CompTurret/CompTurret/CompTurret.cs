@@ -172,7 +172,7 @@ namespace CompTurret
 
 		// Token: 0x17000F31 RID: 3889
 		// (get) Token: 0x06005655 RID: 22101 RVA: 0x001CE0BD File Offset: 0x001CC2BD
-		public bool CanBeUsed
+		public virtual bool CanBeUsed
 		{
 			get
 			{
