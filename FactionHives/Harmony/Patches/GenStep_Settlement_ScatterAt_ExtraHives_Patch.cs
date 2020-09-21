@@ -20,19 +20,17 @@ namespace ExtraHives.HarmonyInstance
 	public static class GenStep_Settlement_ScatterAt_ExtraHives_Patch
     {
 		[HarmonyPrefix, HarmonyPriority(Priority.Last)]
-        public static bool Prefix(IntVec3 c, Map map, GenStepParams parms, int stackCount = 1)
+        public static bool Prefix(IntVec3 c, Map map,ref GenStepParams parms, int stackCount = 1)
 		{
 			bool result;
 			try
 			{
-				//	bool flag = map.ParentFaction != null && map.ParentFaction.def.defName.Contains("BETA");
-				bool flag = map.ParentFaction != null && map.ParentFaction.HiveExt() != null;
-				if (flag)
+				if (map.ParentFaction != null && map.ParentFaction.HiveExt() != null)
 				{
 					HiveFactionExtension HFExt = map.ParentFaction.HiveExt();
 					if (HFExt.overrideBaseGen)
 					{
-						IntRange intRange = HFExt.sizeRange;
+						IntRange intRange = HFExt.CurStage.sizeRange;
 						int randomInRange = intRange.RandomInRange;
 						int randomInRange2 = intRange.RandomInRange;
 						CellRect rect = new CellRect(c.x - randomInRange / 2, c.z - randomInRange2 / 2, randomInRange, randomInRange2);
@@ -48,7 +46,7 @@ namespace ExtraHives.HarmonyInstance
 						BaseGen.globalSettings.map = map;
 						BaseGen.globalSettings.minBuildings = 8;
 						BaseGen.globalSettings.minBarracks = 2;
-						BaseGen.symbolStack.Push(HFExt.baseGenOrride.NullOrEmpty() ? "ExtraHives_HiveBaseMaker" : HFExt.baseGenOrride, resolveParams, null);
+						BaseGen.symbolStack.Push(HFExt.baseGenOverride.NullOrEmpty() ? "ExtraHives_HiveBaseMaker" : HFExt.baseGenOverride, resolveParams, null);
 						BaseGen.Generate();
 						if (HFExt.baseDamage)
 						{

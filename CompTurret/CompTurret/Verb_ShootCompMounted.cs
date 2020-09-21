@@ -34,18 +34,18 @@ namespace CompTurret
 					{
 						if (this.caster != a.Wearer)
 						{
-						//	Log.Message("New Wearer "+ a.Wearer);
+							//	Log.Message("New Wearer "+ a.Wearer);
 							this.caster = a.Wearer;
 						}
 					}
 					else
 					{
-					//	Log.Message("caster is Apparel Not worn");
+						//	Log.Message("caster is Apparel Not worn");
 					}
 				}
 				else
 				{
-				//	Log.Message("caster is not Apparel "+caster);
+				return this.turretGun.Operator;
 				}
 				return this.caster;
 			}
@@ -62,7 +62,6 @@ namespace CompTurret
 		{
 			get
 			{
-			//	Log.Message("Caster is Pawn ? " + (Caster is Pawn));
 				return Caster is Pawn;
 			}
 		}
@@ -77,61 +76,26 @@ namespace CompTurret
 				this.DrawHighlightFieldRadiusAroundTarget(target);
 			}
 		}
-		/*
-		public override void WarmupComplete()
-		{
-		//	Log.Message("WarmupComplete");
-			base.WarmupComplete();
-			Pawn pawn = this.currentTarget.Thing as Pawn;
-			if (pawn != null && !pawn.Downed && this.CasterIsPawn && this.CasterPawn.skills != null)
-			{
-				float num = pawn.HostileTo(this.Caster) ? 170f : 20f;
-				float num2 = this.verbProps.AdjustedFullCycleTime(this, this.CasterPawn);
-				this.CasterPawn.skills.Learn(SkillDefOf.Shooting, num * num2, false);
-			}
-		}
-		*/
 		public int warningticks = 0;
 
 		protected override bool TryCastShot()
 		{
-		//	Log.Message("TryCastShot ");
 			if (this.currentTarget.HasThing && this.currentTarget.Thing.Map != this.Caster.Map)
 			{
-			//	Log.Message("TGT Wrong Map");
 				return false;
 			}
 			ThingDef projectile = this.Projectile;
 			if (projectile == null)
 			{
-			//	Log.Message("projectile == null");
 				return false;
 			}
 			ShootLine shootLine;
 			bool flag = base.TryFindShootLineFromTo(this.Caster.Position, this.currentTarget, out shootLine);
 			if (this.verbProps.stopBurstWithoutLos && !flag)
 			{
-			//	Log.Message("stopBurstWithoutLos");
 				return false;
 			}
 			Vector3 muzzlePos;
-		//	Log.Message("TryCastShot 1");
-		/*
-			if (base.EquipmentSource != null)
-			{
-				CompChangeableProjectile comp = base.EquipmentSource.GetComp<CompChangeableProjectile>();
-				if (comp != null)
-				{
-					comp.Notify_ProjectileLaunched();
-				}
-				CompReloadable comp2 = base.EquipmentSource.GetComp<CompReloadable>();
-				if (comp2 != null)
-				{
-					comp2.UsedOnce();
-				}
-			}
-			*/
-		//	Log.Message("TryCastShot 2");
 			if (turretGun != null)
 			{
 				if (turretGun.UseAmmo)
@@ -191,67 +155,44 @@ namespace CompTurret
 				Log.Error(Caster+"'s "+this +" has no Comp_Turret");
 				return false;
 			}
-		//	Log.Message("TryCastShot 3");
 			Thing launcher = this.Caster;
 			Thing equipment = base.EquipmentSource;
-		//	Log.Message("TryCastShot 4");
 			Vector3 drawPos = this.Caster.DrawPos;
-		//	Log.Message("TryCastShot 4b");
 			Projectile projectile2 = (Projectile)GenSpawn.Spawn(projectile, shootLine.Source, this.Caster.Map, WipeMode.Vanish);
-		//	Log.Message("TryCastShot 4c");
 			if (this.verbProps.forcedMissRadius > 0.5f)
 			{
-			//	Log.Message("TryCastShot 4 1");
 				float num = VerbUtility.CalculateAdjustedForcedMiss(this.verbProps.forcedMissRadius, this.currentTarget.Cell - this.Caster.Position);
-			//	Log.Message("TryCastShot 4 2");
 				if (num > 0.5f)
 				{
-				//	Log.Message("TryCastShot 4 2 1");
 					int max = GenRadial.NumCellsInRadius(num);
 					int num2 = Rand.Range(0, max);
-				//	Log.Message("TryCastShot 4 2 2");
 					if (num2 > 0)
 					{
-					//	Log.Message("TryCastShot 4 2 2 1");
 						IntVec3 c = this.currentTarget.Cell + GenRadial.RadialPattern[num2];
 						this.ThrowDebugText("ToRadius");
 						this.ThrowDebugText("Rad\nDest", c);
 						ProjectileHitFlags projectileHitFlags = ProjectileHitFlags.NonTargetWorld;
-					//	Log.Message("TryCastShot 4 2 2 2");
 						if (Rand.Chance(0.5f))
 						{
 							projectileHitFlags = ProjectileHitFlags.All;
 						}
-					//	Log.Message("TryCastShot 4 2 2 3");
 						if (!this.canHitNonTargetPawnsNow)
 						{
 							projectileHitFlags &= ~ProjectileHitFlags.NonTargetPawns;
 						}
-					//	Log.Message("TryCastShot 4 2 2 4 Caster" + this.Caster);
-					//	Log.Message("TryCastShot 4 2 2 4 currentTarget " + this.currentTarget);
-					//	Log.Message("TryCastShot 4 2 2 4 offset " + offset);
 						muzzlePos = MuzzlePosition(this.Caster, this.currentTarget, offset);
-					//	Log.Message("TryCastShot 4 2 2 5");
 						projectile2.Launch(launcher, muzzlePos, c, this.currentTarget, projectileHitFlags, equipment, null);
-					//	Log.Message("TryCastShot 4 2 2 6");
 						if (this.CasterIsPawn)
 						{
 							this.CasterPawn.records.Increment(RecordDefOf.ShotsFired);
 						}
-					//	Log.Message("TryCastShot 4 2 2 7");
-						//	Log.Message("TryCastShot 1");
 						return true;
 					}
-				//	Log.Message("TryCastShot 4 2 3");
 				}
 			}
-		//	Log.Message("TryCastShot 5");
 			ShotReport shotReport = ShotReport.HitReportFor(this.Caster, this, this.currentTarget);
-		//	Log.Message("TryCastShot 5 1");
 			Thing randomCoverToMissInto = shotReport.GetRandomCoverToMissInto();
-		//	Log.Message("TryCastShot 5 2");
 			ThingDef targetCoverDef = (randomCoverToMissInto != null) ? randomCoverToMissInto.def : null;
-		//	Log.Message("TryCastShot 5 3");
 			if (!Rand.Chance(shotReport.AimOnTargetChance_IgnoringPosture))
 			{
 				shootLine.ChangeDestToMissWild(shotReport.AimOnTargetChance_StandardTarget);
@@ -262,25 +203,14 @@ namespace CompTurret
 				{
 					projectileHitFlags2 |= ProjectileHitFlags.NonTargetPawns;
 				}
-			//	Log.Message("TryCastShot 5 3 6 launcher " + launcher);
-			//	Log.Message("TryCastShot 5 3 6 Caster " + this.Caster);
-			//	Log.Message("TryCastShot 5 3 6 currentTarget " + this.currentTarget);
-			//	Log.Message("TryCastShot 5 3 6 shootLine.Dest " + shootLine.Dest);
-			//	Log.Message("TryCastShot 5 3 6 offset " + offset);
 				muzzlePos = MuzzlePosition(this.Caster, this.currentTarget, offset);
-			//	Log.Message("TryCastShot 5 3 7");
 				projectile2.Launch(launcher, muzzlePos, shootLine.Dest, this.currentTarget, projectileHitFlags2, equipment, targetCoverDef);
-
-			//	Log.Message("TryCastShot 5 3 7b");
 				if (this.CasterIsPawn)
 				{
 					this.CasterPawn.records.Increment(RecordDefOf.ShotsFired);
 				}
-			//	Log.Message("TryCastShot 5 3 8");
-				//	Log.Message("TryCastShot 2");
 				return true;
 			}
-		//	Log.Message("TryCastShot 6");
 			if (this.currentTarget.Thing != null && this.currentTarget.Thing.def.category == ThingCategory.Pawn && !Rand.Chance(shotReport.PassCoverChance))
 			{
 				this.ThrowDebugText("ToCover" + (this.canHitNonTargetPawnsNow ? "\nchntp" : ""));
@@ -298,20 +228,16 @@ namespace CompTurret
 				}
 				return true;
 			}
-		//	Log.Message("TryCastShot 7");
 			ProjectileHitFlags projectileHitFlags4 = ProjectileHitFlags.IntendedTarget;
 			if (this.canHitNonTargetPawnsNow)
 			{
 				projectileHitFlags4 |= ProjectileHitFlags.NonTargetPawns;
 			}
-		//	Log.Message("TryCastShot 8");
 			if (!this.currentTarget.HasThing || this.currentTarget.Thing.def.Fillage == FillCategory.Full)
 			{
 				projectileHitFlags4 |= ProjectileHitFlags.NonTargetWorld;
 			}
-		//	Log.Message("TryCastShot 9");
 			this.ThrowDebugText("ToHit" + (this.canHitNonTargetPawnsNow ? "\nchntp" : ""));
-		//	Log.Message("TryCastShot 10");
 			muzzlePos = MuzzlePosition(this.Caster, this.currentTarget, offset);
 			if (this.currentTarget.Thing != null)
 			{
@@ -324,26 +250,24 @@ namespace CompTurret
 				this.ThrowDebugText("Hit\nDest", shootLine.Dest);
 			}
 
-		//	Log.Message("TryCastShot 11");
 			if (this.CasterIsPawn)
 			{
 				this.CasterPawn.records.Increment(RecordDefOf.ShotsFired);
 			}
-		//	Log.Message("TryCastShot 12");
 			return true;
 		}
 
 		public override bool TryStartCastOn(LocalTargetInfo castTarg, LocalTargetInfo destTarg, bool surpriseAttack = false, bool canHitNonTargetPawns = true)
 		{
-		//	Log.Message("TryStartCastOn 0");
+		//	Log.Messageage("TryStartCastOn ");
 			if (this.Caster == null)
 			{
 				Log.Error("Verb " + this.GetUniqueLoadID() + " needs Caster to work (possibly lost during saving/loading).", false);
 				return false;
 			}
-		//	Log.Message("TryStartCastOn Bursting: "+ (this.state == VerbState.Bursting) + " Can Hit tgt: "+ (this.CanHitTarget(castTarg)));
 			if (this.state == VerbState.Bursting || !this.CanHitTarget(castTarg))
 			{
+				//	Log.Messageage("TryStartCastOn !this.CanHitTarget(castTarg): "+ !this.CanHitTarget(castTarg));
 				return false;
 			}
 			if (turretGun != null)
@@ -352,16 +276,15 @@ namespace CompTurret
 				{
 					if (turretGun.RemainingCharges<=0)
 					{
+					//	Log.Messageage("TryStartCastOn out of ammo: ");
 						return false;
 					}
 				}
 			}
-		//	Log.Message("TryStartCastOn 3");
 			if (this.CausesTimeSlowdown(castTarg))
 			{
 				Find.TickManager.slower.SignalForceNormalSpeed();
 			}
-		//	Log.Message("TryStartCastOn 4");
 			this.surpriseAttack = surpriseAttack;
 			this.canHitNonTargetPawnsNow = canHitNonTargetPawns;
 			this.currentTarget = castTarg;
@@ -370,11 +293,11 @@ namespace CompTurret
 			/*
 			if (this.CasterIsPawn && this.verbProps.warmupTime > 0f)
 			{
-				Log.Message("TryStartCastOn DoWarmup");
+			//	Log.Messageage("TryStartCastOn DoWarmup");
 				ShootLine newShootLine;
 				if (!this.TryFindShootLineFromTo(this.caster.Position, castTarg, out newShootLine))
 				{
-					Log.Message("TryStartCastOn No LOS");
+				//	Log.Messageage("TryStartCastOn No LOS");
 					return false;
 				}
 				this.CasterPawn.Drawer.Notify_WarmingCastAlongLine(newShootLine, this.caster.Position);
@@ -384,12 +307,12 @@ namespace CompTurret
 			}
 			else
 			{
-				Log.Message("TryStartCastOn WarmupComplete");
+			//	Log.Messageage("TryStartCastOn WarmupComplete");
 				this.WarmupComplete();
 			}
 			*/
 
-		//	Log.Message("TryStartCastOn WarmupComplete");
+		//	Log.Messageage("TryStartCastOn WarmupComplete");
 			this.WarmupComplete();
 		//	Log.Message("TryStartCastOn 6");
 			return true;
@@ -397,9 +320,11 @@ namespace CompTurret
 
 		protected new void TryCastNextBurstShot()
 		{
+		//	Log.Messageage("TryCastNextBurstShot ");
 			LocalTargetInfo localTargetInfo = this.currentTarget;
 			if (this.Available() && this.TryCastShot())
 			{
+			//	Log.Messageage("TryCastNextBurstShot Available TryCastShot");
 				if (this.verbProps.muzzleFlashScale > 0.01f)
 				{
 					MoteMaker.MakeStaticMote(MuzzlePosition(this.Caster, this.currentTarget, this.turretGun.Props.projectileOffset), this.caster.Map, ThingDefOf.Mote_ShotFlash, this.verbProps.muzzleFlashScale);
@@ -546,31 +471,12 @@ namespace CompTurret
 
 		public override bool CanHitTarget(LocalTargetInfo targ)
 		{
-		//	Log.Message("CanHitTarget ");
-			if (this.Caster is Apparel app)
-			{
-			//	Log.Message("CanHitTarget app");
-				if (app.Wearer != null)
-				{
-				//	Log.Message("CanHitTarget Wearer spawned: "+ app.Wearer.Spawned+" Selftarget: " + (targ == app.Wearer)+ " CanHitFrom: "+(this.CanHitTargetFrom(app.Wearer.Position, targ)));
-					return app.Wearer.Spawned && (targ == app.Wearer || this.CanHitTargetFrom(app.Wearer.Position, targ));
-				}
-
-			}
 			return this.Caster != null && this.Caster.Spawned && (targ == this.Caster || this.CanHitTargetFrom(this.Caster.Position, targ));
 		}
 
 		public override bool CanHitTargetFrom(IntVec3 root, LocalTargetInfo targ)
 		{
 			ShootLine shootLine;
-			if (this.Caster is Apparel app)
-			{
-			//	Log.Message("CanHitTargetFrom app");
-				if (app.Wearer != null)
-				{
-				}
-
-			}
 			if (targ.Thing != null && targ.Thing == this.Caster)
 			{
 				return this.targetParams.canTargetSelf;
@@ -646,7 +552,8 @@ namespace CompTurret
 			}
 			else
 			{
-				foreach (IntVec3 intVec2 in this.Caster.OccupiedRect())
+				IntVec2 size = new IntVec2(Caster.def.size.x + 1, Caster.def.size.z + 1);
+				foreach (IntVec3 intVec2 in GenAdj.OccupiedRect(Caster.Position, Caster.Rotation, size))
 				{
 					IntVec3 dest;
 					if (this.CanHitFromCellIgnoringRange(intVec2, targ, out dest))
@@ -713,6 +620,7 @@ namespace CompTurret
 			}
 			return true;
 		}
+
 		private void ThrowDebugText(string text)
 		{
 			if (DebugViewSettings.drawShooting)

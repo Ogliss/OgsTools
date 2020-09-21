@@ -25,12 +25,13 @@
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
     <DebugType>pdbonly</DebugType>
     <Optimize>true</Optimize>
-    <OutputPath>bin\Release\</OutputPath>
+    <OutputPath>bin\Debug\</OutputPath>
     <DefineConstants>TRACE</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
   <ItemGroup>
+    <Compile Include="CompTurret\AttackTargetFinder.cs" />
     <Compile Include="CompTurret\Command_CompTurretReloadable.cs" />
     <Compile Include="CompTurret\Command_CompTurretVerbTarget.cs" />
     <Compile Include="CompTurret\Command_ToggleCompTurret.cs" />
@@ -42,6 +43,7 @@
     <Compile Include="CompTurret\Harmony\MainHarmonyInstance.cs" />
     <Compile Include="CompTurret\Harmony\Patches\Apparel_CheckPreAbsorbDamage_CompTurret_Patch.cs" />
     <Compile Include="CompTurret\Harmony\Patches\Apparel_Tick_CompTurret_Patch.cs" />
+    <Compile Include="CompTurret\Harmony\Patches\Patch_GenerateImpliedDefs_PreResolve.cs" />
     <Compile Include="CompTurret\Harmony\Patches\FloatMenuMakerMap_AddHumanlikeOrders_CompTurret_Patch.cs" />
     <Compile Include="CompTurret\Harmony\Patches\Pawn_DrawAt_CompTurretTop_Patch.cs" />
     <Compile Include="CompTurret\Harmony\Patches\Pawn_DrawExtraSelectionOverlays_CompTurret_Patch.cs" />

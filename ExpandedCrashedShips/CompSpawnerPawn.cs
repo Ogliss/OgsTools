@@ -67,7 +67,11 @@ namespace CrashedShipsExtension
 		{
 			get
 			{
-				return CompSpawnerPawn.FindLordToJoin(this.parent, this.Props.lordJob, this.Props.shouldJoinParentLord, null);
+                if (lord == null)
+                {
+					lord = CompSpawnerPawn.FindLordToJoin(this.parent, this.Props.lordJob, this.Props.shouldJoinParentLord, null);
+				}
+				return lord;
 			}
 		}
 
@@ -345,8 +349,7 @@ namespace CrashedShipsExtension
 				pawn = null;
 				return false;
 			}
-			int index = this.chosenKind.lifeStages.Count - 1;
-			pawn = PawnGenerator.GeneratePawn(new PawnGenerationRequest(this.chosenKind, this.parent.Faction, PawnGenerationContext.NonPlayer, -1, false, false, false, false, true, false, 1f, false, true, true, true, false, false, false, false, 0f, null, 1f, null, null, null, null, null, new float?(this.chosenKind.race.race.lifeStageAges[index].minAge), null, null, null, null, null, null));
+			pawn = PawnGenerator.GeneratePawn(new PawnGenerationRequest(this.chosenKind, this.parent.Faction, PawnGenerationContext.NonPlayer, -1, false, false, false, false, true, false, 1f, false, true, true, true, false, false, false, false, 0f, null, 1f, null, null, null, null, null, new float?(this.chosenKind.race.race.lifeStageAges.Last().minAge), null, null, null, null, null, null));
 			this.spawnedPawns.Add(pawn);
 			GenSpawn.Spawn(pawn, this.parent.OccupiedRect().AdjacentCells.RandomElement()/*CellFinder.RandomClosewalkCellNear(this.parent.Position, this.parent.Map, this.Props.pawnSpawnRadius, null) */, this.parent.Map, WipeMode.Vanish);
 			Lord lord = this.Lord;
@@ -384,6 +387,28 @@ namespace CrashedShipsExtension
 		//	Log.Message("SpawnInitialPawns delay " + initialSpawnDelay);
 		}
 
+		private void FeedSpawnedPawns()
+		{
+			this.FilterOutUnspawnedPawns();
+			for (int i = 0; i < this.spawnedPawns.Count; i++)
+			{
+				Pawn p = this.spawnedPawns[i];
+
+				if (p.def.race.EatsFood)
+				{
+					if (p.RaceProps.Humanlike)
+					{
+						if (p.needs.food.Starving)
+						{
+						//	Log.Message("try feed " + p);
+							Thing food = ThingMaker.MakeThing(RimWorld.ThingDefOf.MealNutrientPaste);
+							food.stackCount = 3;
+							p.inventory.TryAddItemNotForSale(food);
+						}
+					}
+				}
+			}
+		}
 		// Token: 0x06005742 RID: 22338 RVA: 0x001D358C File Offset: 0x001D178C
 		public override void CompTick()
 		{
@@ -402,6 +427,10 @@ namespace CrashedShipsExtension
 			if (this.parent.Spawned && this.initialSpawnDelay == -1)
 			{
 				this.FilterOutUnspawnedPawns();
+				if (Find.TickManager.TicksGame % 30000 == 0)
+				{
+					FeedSpawnedPawns();
+				}
 				if (this.Active && Find.TickManager.TicksGame >= this.nextPawnSpawnTick)
 				{
 					Pawn pawn;
@@ -438,6 +467,18 @@ namespace CrashedShipsExtension
 						this.TrySpawnPawn(out pawn);
 					}
 				};
+				if (this.spawnedPawns.Any(x => x.def.race.Humanlike))
+				{
+					yield return new Command_Action
+					{
+						defaultLabel = "DEBUG: Feed pawns",
+						icon = TexCommand.ReleaseAnimals,
+						action = delegate ()
+						{
+							this.FeedSpawnedPawns();
+						}
+					};
+				}
 			}
 			yield break;
 		}
@@ -484,6 +525,7 @@ namespace CrashedShipsExtension
 			Scribe_Values.Look<bool>(ref this.aggressive, "aggressive", false, false);
 			Scribe_Values.Look<bool>(ref this.canSpawnPawns, "canSpawnPawns", true, false);
 			Scribe_Defs.Look<PawnKindDef>(ref this.chosenKind, "chosenKind");
+			Scribe_References.Look<Lord>(ref this.lord, "lord");
 			if (Scribe.mode == LoadSaveMode.PostLoadInit)
 			{
 				this.spawnedPawns.RemoveAll((Pawn x) => x == null);
@@ -494,6 +536,7 @@ namespace CrashedShipsExtension
 			}
 		}
 
+		private Lord lord;
 		// Token: 0x0400307D RID: 12413
 		public int nextPawnSpawnTick = -1;
 		public int initialSpawnDelay = -1;

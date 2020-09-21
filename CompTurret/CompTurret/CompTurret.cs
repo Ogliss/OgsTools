@@ -87,6 +87,8 @@ namespace CompTurret
 		public bool destroyOnEmpty;
 
 		public bool drawTurret = true;
+		public bool allowForcedTarget = true;
+		public bool allowHoldFire = true;
 
 		public int baseReloadTicks = 60;
 
@@ -104,10 +106,14 @@ namespace CompTurret
 		public SoundDef soundQuaterRemaningWarning;
 		public string messageQuaterRemaningWarning;
 
+		public string targetingLaserTexPath = string.Empty;
+		public Color targetingLaserColor = Color.white;
+
 		public bool OnByDefault = true;
 		public bool DisableInMelee = true;
 		public ThingDef TurretDef = null;
 		public string iconPath;
+		public string iconPathToggled;
 		public int gizmoID = 0;
 
 		public float barrellength = 0.75f;
@@ -134,11 +140,8 @@ namespace CompTurret
 		public int MaxCharges => Props.maxCharges;
 		public float ChargesPerUnit => 1 / Props.ammoCountPerCharge;
 
-
-		// Token: 0x04002E23 RID: 11811
 		public Mote moteStun;
 
-		// Token: 0x04002E24 RID: 11812
 		public bool showStunMote => Props.showStunMote;
 		public bool AffectedByEMP => Props.AffectedByEMP;
 		public bool stunFromEMP;
@@ -190,28 +193,39 @@ namespace CompTurret
 				return this.CurrentTarget;
 			}
 		}
-		public Apparel apparel => this.parent as Apparel;
-		public Pawn Wearer
+		public Apparel Apparel => this.parent as Apparel;
+		public Building Building => this.parent as Building;
+		public Pawn Pawn => this.parent as Pawn;
+		public Thing Operator
 		{
 			get
 			{
-				if (apparel != null)
+                if (Building !=null) return Building;
+				if (Pawn != null) return Pawn;
+				if (Apparel != null)
 				{
-					return apparel.Wearer;
+                    if (Apparel.Wearer != null) return Apparel.Wearer;
 				}
 				return null;
 			}
 		}
-		public bool isWorn => Wearer != null;
+		public Pawn OperatorPawn
+		{
+			get
+			{
+				return Operator as Pawn;
+			}
+		}
+		public bool IsOperated => OperatorPawn != null || Building != null;
 		Thing IAttackTargetSearcher.Thing
 		{
 			get
 			{
-				return Wearer;
+				return Operator;
 			}
 		}
 
-		public Verb CurrentEffectiveVerb
+		Verb IAttackTargetSearcher.CurrentEffectiveVerb
 		{
 			get
 			{
@@ -262,7 +276,7 @@ namespace CompTurret
 			}
 		}
 
-		public bool CasterIsPawn => this.isWorn;
+		public bool CasterIsPawn => this.IsOperated && this.OperatorPawn != null;
 
 		public bool IsMeleeAttack => false;
 
@@ -270,9 +284,9 @@ namespace CompTurret
 
 		public bool MultiSelect => false;
 
-		public Thing Caster => this.Wearer;
+		public Thing Caster => this.Operator;
 
-		public Pawn CasterPawn => this.Wearer;
+		public Pawn CasterPawn => this.OperatorPawn;
 
 		public Verb GetVerb => this.AttackVerb;
 
@@ -285,91 +299,23 @@ namespace CompTurret
 		public override void CompTick()
 		{
 			base.CompTick();
-			if (Wearer == null)
+			if (Operator == null)
 			{
 				return;
 			}
-			if (this.forcedTarget.HasThing && (!this.forcedTarget.Thing.Spawned || !Wearer.Spawned || this.forcedTarget.Thing.Map != Wearer.Map))
+			if (this.forcedTarget.HasThing && (!this.forcedTarget.Thing.Spawned || !Operator.Spawned || this.forcedTarget.Thing.Map != Operator.Map))
 			{
 				this.forcedTarget = LocalTargetInfo.Invalid;
 			}
 		}
 
-		// Token: 0x06005664 RID: 22116 RVA: 0x001CE200 File Offset: 0x001CC400
-		public override IEnumerable<Gizmo> CompGetWornGizmosExtra()
-		{
-			foreach (Gizmo gizmo in base.CompGetWornGizmosExtra())
-			{
-				yield return gizmo;
-			}
-			IEnumerator<Gizmo> enumerator = null;
-			bool drafted = this.Wearer.Drafted;
-			if ((drafted && !this.Props.displayGizmoWhileDrafted) || (!drafted && !this.Props.displayGizmoWhileUndrafted))
-			{
-				yield break;
-			}
-			ThingWithComps gear = this.parent;
-			/*
-			foreach (Verb verb in this.VerbTracker.AllVerbs)
-			{
-				if (verb.verbProps.hasStandardCommand)
-				{
-					yield return this.CreateVerbTargetCommand(gear, verb);
-				}
-			}
-			*/
-			List<Verb>.Enumerator enumerator2 = default(List<Verb>.Enumerator);
-			if (Prefs.DevMode)
-			{
-				yield return new Command_Action
-				{
-					defaultLabel = "Debug: Reload to full",
-					action = delegate ()
-					{
-						this.remainingCharges = this.MaxCharges;
-					}
-				};
-			}
-			yield break;
-		}
 		public override IEnumerable<FloatMenuOption> CompFloatMenuOptions(Pawn selPawn)
 		{
-			if (UseAmmo)
-			{
-				if (RemainingCharges < MaxCharges)
-				{
-
-				}
-			}
 			foreach (var item in base.CompFloatMenuOptions(selPawn))
 			{
 				yield return item;
 			}
 		}
-
-		public override void PostPostApplyDamage(DamageInfo dinfo, float totalDamageDealt)
-		{
-			base.PostPostApplyDamage(dinfo, totalDamageDealt);
-		}
-		/*
-		public override void PostPreApplyDamage(DamageInfo dinfo, out bool absorbed)
-		{
-			base.PostPreApplyDamage(dinfo, out absorbed);
-			if (absorbed)
-			{
-				return;
-			}
-			this.stunner.Notify_DamageApplied(dinfo, true);
-			absorbed = false;
-		}
-		*/
-
-		/*
-		public bool ThreatDisabled(IAttackTargetSearcher disabledFor)
-		{
-			return comp4 != null && !comp4.Initiated;
-		}
-		*/
 
 		protected void OnAttackedTarget(LocalTargetInfo target)
 		{
@@ -442,13 +388,12 @@ namespace CompTurret
 					return;
 				}
 				int num = (int)(Mathf.Clamp(MaxAmmoNeeded(true), 1, ammo.stackCount));
-			//	Log.Message("Ammo Needed: " + num + " RoundsPerUnit: " + ChargesPerUnit + " total rounds: " + num * ChargesPerUnit);
 				ammo.SplitOff(num).Destroy(DestroyMode.Vanish);
 				this.remainingCharges += (int)(num * ChargesPerUnit);
 			}
 			if (this.Props.soundReload != null)
 			{
-				this.Props.soundReload.PlayOneShot(new TargetInfo(this.Wearer.Position, this.Wearer.Map, false));
+				this.Props.soundReload.PlayOneShot(new TargetInfo(this.Operator.Position, this.Operator.Map, false));
 			}
 		}
 
@@ -511,8 +456,26 @@ namespace CompTurret
 			}
 		}
 
-		// Token: 0x04003005 RID: 12293
-		public int remainingCharges;
+        public override void PostPostApplyDamage(DamageInfo dinfo, float totalDamageDealt)
+        {
+            base.PostPostApplyDamage(dinfo, totalDamageDealt);
+
+			if (Building != null || Pawn != null)
+			{
+				if (dinfo.Def == DamageDefOf.EMP)
+				{
+					if (this.AffectedByEMP)
+					{
+						this.stunTicksLeft += Mathf.RoundToInt(dinfo.Amount * 30f);
+						this.stunFromEMP = true;
+
+					}
+				}
+			}
+		}
+
+        // Token: 0x04003005 RID: 12293
+        public int remainingCharges;
 
 		// Token: 0x04003006 RID: 12294
 		private VerbTracker verbTracker;

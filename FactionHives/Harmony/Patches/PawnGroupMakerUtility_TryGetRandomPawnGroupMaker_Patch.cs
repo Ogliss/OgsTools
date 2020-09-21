@@ -21,12 +21,12 @@ namespace ExtraHives.HarmonyInstance
         {
             Faction faction = parms.faction;
             HiveFactionEvolutionTracker evolutionTracker = Find.World.GetComponent<HiveFactionEvolutionTracker>();
-            HiveFactionExtension hive = faction.def.GetModExtension<HiveFactionExtension>();
             if (faction != null)
             {
+                HiveFactionExtension hive = faction.def.GetModExtension<HiveFactionExtension>();
                 if (evolutionTracker != null && hive != null)
                 {
-                    if (evolutionTracker.HiveFactionStages.TryGetValue(faction, out int stage))
+                    if (evolutionTracker.HiveFactionStages.TryGetValue(faction.ToString(), out int stage))
                     {
                         if (parms.seed != null)
                         {

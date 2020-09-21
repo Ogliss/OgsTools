@@ -23,9 +23,9 @@ namespace CompTurret
 					break;
 				case MoteSpawnLocType.BetweenPositions:
 					{
-						Vector3 vector2 = A.isWorn ? A.TurretPos : A.parent.DrawPos;
+						Vector3 vector2 = A.IsOperated ? A.TurretPos : A.parent.DrawPos;
 						Vector3 vector3 = B.HasThing ? B.Thing.DrawPos : B.Cell.ToVector3Shifted();
-						if (A.isWorn && !A.Wearer.Spawned)
+						if (A.IsOperated && !A.Operator.Spawned)
 						{
 							vector = vector3;
 						}
@@ -40,7 +40,7 @@ namespace CompTurret
 						break;
 					}
 				case MoteSpawnLocType.BetweenTouchingCells:
-					vector = A.Wearer.Position.ToVector3Shifted() + (B.Cell - A.Wearer.Position).ToVector3().normalized * 0.5f;
+					vector = A.Operator.Position.ToVector3Shifted() + (B.Cell - A.Operator.Position).ToVector3().normalized * 0.5f;
 					break;
 				case MoteSpawnLocType.RandomCellOnTarget:
 					{
@@ -67,8 +67,8 @@ namespace CompTurret
 				vector += Gen.RandomHorizontalVector(this.parent.def.positionRadius) + this.parent.offset;
 				Rand.PopState();
 			}
-			Map map = A.Wearer.Map ?? B.Map;
-			float num = this.def.absoluteAngle ? 0f : (B.Cell - A.Wearer.Position).AngleFlat;
+			Map map = A.Operator.Map ?? B.Map;
+			float num = this.def.absoluteAngle ? 0f : (B.Cell - A.Operator.Position).AngleFlat;
 			float num2 = (this.parent != null) ? this.parent.scale : 1f;
 			if (map != null && vector.ShouldSpawnMotesAt(map))
 			{

@@ -20,7 +20,7 @@ namespace CompTurret
 			{
 				if (this.sustainer == null)
 				{
-					SoundInfo info = SoundInfo.InMap(A.Wearer, MaintenanceType.PerTick);
+					SoundInfo info = SoundInfo.InMap(A.OperatorPawn, MaintenanceType.PerTick);
 					this.sustainer = this.def.soundDef.TrySpawnSustainer(info);
 					return;
 				}

@@ -29,7 +29,7 @@ namespace ExtraHives.HarmonyInstance
                 HiveFactionExtension hive = rp.faction.def.GetModExtension<HiveFactionExtension>();
                 if (evolutionTracker != null)
                 {
-                    if (evolutionTracker.HiveFactionStages.TryGetValue(rp.faction, out int stage))
+                    if (evolutionTracker.HiveFactionStages.TryGetValue(rp.faction.ToString(), out int stage))
                     {
                         mult = hive.CurStage.pointMultipler;
                         Log.Message("SymbolResolver_Hivebase HiveFaction Stage: " + stage + " Multiplier: " + mult + " Result: " + ((rp.settlementPawnGroupPoints ?? SymbolResolver_Settlement.DefaultPawnsPoints.RandomInRange) * mult));

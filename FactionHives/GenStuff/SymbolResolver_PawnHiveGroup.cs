@@ -38,7 +38,7 @@ namespace ExtraHives.GenStuff
 			foreach (Pawn pawn in PawnGroupMakerUtility.GeneratePawns(pawnGroupMakerParms, true))
 			{
 				list.Add(pawn.kindDef);
-				Log.Message("generating "+ pawn);
+			//	Log.Message("generating "+ pawn);
 				ResolveParams resolveParams = rp;
 				resolveParams.singlePawnToSpawn = pawn;
 				BaseGen.symbolStack.Push("ExtraHives_Pawn", resolveParams, null);

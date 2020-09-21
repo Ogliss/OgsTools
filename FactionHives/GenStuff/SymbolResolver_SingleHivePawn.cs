@@ -86,7 +86,7 @@ namespace ExtraHives.GenStuff
 			{
 				pawn.mindState.Active = false;
 			}
-			Log.Message(pawn + " spawning at" + loc +" map "+map);
+		//	Log.Message(pawn + " spawning at" + loc +" map "+map);
 			GenSpawn.Spawn(pawn, loc, map, WipeMode.Vanish);
 			if (rp.singlePawnLord != null)
 			{

@@ -8,12 +8,13 @@ using UnityEngine;
 namespace CompTurret.HarmonyInstance
 {
     [StaticConstructorOnStartup]
-    class MainHarmonyInstance
+    public class MainHarmonyInstance : Mod
     {
-        static MainHarmonyInstance()
+        public MainHarmonyInstance(ModContentPack content) : base(content)
         {
             var harmony = new Harmony("com.ogliss.rimworld.mod.CompTurret");
             harmony.PatchAll(Assembly.GetExecutingAssembly());
         }
     }
+
 }

@@ -56,7 +56,7 @@ namespace CompTurret
 			}
 		//	CompApparel_Turret comp = Gear?.AllComps.Find(x=> x is CompApparel_Turret && ((CompApparel_Turret)(x)).Props.ammoDef == Ammo.def) as CompApparel_Turret;
 			this.FailOn(() => comp == null);
-			this.FailOn(() => comp.Wearer != pawn);
+		//	this.FailOn(() => comp.OperatorPawn != pawn);
 			this.FailOn(() => !comp.NeedsReload(allowForcedReload: true));
 			this.FailOnDestroyedOrNull(TargetIndex.A);
 			this.FailOnIncapable(PawnCapacityDefOf.Manipulation);
@@ -69,6 +69,11 @@ namespace CompTurret
 			yield return Toils_JobTransforms.ExtractNextTargetFromQueue(TargetIndex.B);
 			yield return Toils_Goto.GotoThing(TargetIndex.B, PathEndMode.ClosestTouch).FailOnDespawnedNullOrForbidden(TargetIndex.B).FailOnSomeonePhysicallyInteracting(TargetIndex.B);
 			yield return Toils_Haul.StartCarryThing(TargetIndex.B, putRemainderInQueue: false, subtractNumTakenFromJobCount: true).FailOnDestroyedNullOrForbidden(TargetIndex.B);
+			if (comp.OperatorPawn == null || (comp.OperatorPawn != null && comp.OperatorPawn != pawn))
+			{
+				yield return Toils_Goto.GotoThing(TargetIndex.A, PathEndMode.Touch);
+				yield return Toils_General.Wait(240, TargetIndex.None).FailOnDestroyedNullOrForbidden(TargetIndex.B).FailOnDestroyedNullOrForbidden(TargetIndex.A).FailOnCannotTouch(TargetIndex.A, PathEndMode.Touch).WithProgressBarToilDelay(TargetIndex.A, false, -0.5f);
+			}
 			yield return Toils_Jump.JumpIf(getNextIngredient, () => !job.GetTargetQueue(TargetIndex.B).NullOrEmpty());
 			foreach (Toil item2 in ReloadAsMuchAsPossible(comp))
 			{

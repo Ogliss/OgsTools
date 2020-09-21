@@ -31,7 +31,13 @@
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
   <ItemGroup>
-    <Compile Include="Class1.cs" />
+    <Compile Include="DebugActionsMisc.cs" />
+    <Compile Include="ExtentsionMethods\FactionExtensions.cs" />
+    <Compile Include="ExtentsionMethods\Extensions.cs" />
+    <None Include="Harmony\Patches\PawnGroupMakerUtility_ChoosePawnGenOptionsByPoints_NoPawnPointCurve_Patch.cs.bak" />
+    <Compile Include="Harmony\Patches\GetOrGenerateMapUtility_GetOrGenerateMap_BETA_Patch.cs" />
+    <Compile Include="Harmony\Patches\PawnGroupMakerUtility_MaxPawnCost_Patch.cs" />
+    <Compile Include="Harmony\Patches\Settlement_Label_HiveFactionPhase_Patch.cs" />
     <Compile Include="Harmony\Patches\Def_get_LabelCap_Patch.cs" />
     <Compile Include="Harmony\Patches\Faction_get_Name_Patch.cs" />
     <Compile Include="HiveBaseComp.cs" />

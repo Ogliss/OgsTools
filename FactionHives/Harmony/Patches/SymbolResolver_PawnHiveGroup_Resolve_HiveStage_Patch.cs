@@ -18,7 +18,7 @@ namespace ExtraHives.HarmonyInstance
     [HarmonyPatch(typeof(GenStuff.SymbolResolver_PawnHiveGroup), "Resolve")]
     public static class SymbolResolver_PawnHiveGroup_Resolve_HiveStage_Patch
     {
-        public static void Prefix(ResolveParams rp)
+        public static void Prefix(ref ResolveParams rp)
         {
             if (rp.faction!=null)
             {
@@ -27,7 +27,7 @@ namespace ExtraHives.HarmonyInstance
                 HiveFactionExtension hive = faction.def.GetModExtension<HiveFactionExtension>();
                 if (evolutionTracker != null && hive != null)
                 {
-                    if (evolutionTracker.HiveFactionStages.TryGetValue(faction, out int stage))
+                    if (evolutionTracker.HiveFactionStages.TryGetValue(faction.ToString(), out int stage))
                     {
                         float mult = hive.CurStage.pointMultipler;
                         if (rp.pawnGroupMakerParams != null)

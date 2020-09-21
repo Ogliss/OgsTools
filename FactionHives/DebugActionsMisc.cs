@@ -12,8 +12,7 @@ using Verse.Sound;
 
 namespace ExtraHives
 {
-	// Token: 0x0200033C RID: 828
-	public static class DebugActionsMisc
+    public static class DebugActionsMisc
 	{
 		[DebugAction("General", "Increment time 90 day", allowedGameStates = AllowedGameStates.PlayingOnMap)]
 		private static void IncrementTime1Day()

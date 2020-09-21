@@ -13,36 +13,6 @@ namespace ExtraHives
 	public class TunnelHiveSpawner : ThingWithComps
 	{
 		public TunnelExtension Ext => this.def.HasModExtension<TunnelExtension>() ? this.def.GetModExtension<TunnelExtension>() : null;
-		private int secondarySpawnTick;
-		public bool spawnHive = true;
-		public Hive hive = null;
-
-		public float initialPoints;
-
-		public bool spawnedByInfestationThingComp;
-
-		private Sustainer sustainer;
-
-		private static MaterialPropertyBlock matPropertyBlock = new MaterialPropertyBlock();
-
-		public FloatRange ResultSpawnDelay = new FloatRange(26f, 30f);
-
-		[TweakValue("Gameplay", 0f, 1f)]
-		private static float DustMoteSpawnMTB = 0.2f;
-
-		[TweakValue("Gameplay", 0f, 1f)]
-		private static float FilthSpawnMTB = 0.3f;
-
-		[TweakValue("Gameplay", 0f, 10f)]
-		private static float FilthSpawnRadius = 3f;
-
-		private static readonly Material TunnelMaterial = MaterialPool.MatFrom("Things/Filth/Grainy/GrainyA", ShaderDatabase.Transparent);
-
-		private static List<ThingDef> filthTypes = new List<ThingDef>();
-
-		public Type lordJobType = typeof(LordJob_AssaultColony);
-		public Faction faction = null;
-		public FactionDef factiondef = null;
 		public Faction SpawnedFaction
 		{
 			get
@@ -63,54 +33,24 @@ namespace ExtraHives
 			}
 		}
 
-		public static void ResetStaticData()
-		{
-			filthTypes.Clear();
-			filthTypes.Add(RimWorld.ThingDefOf.Filth_Dirt);
-			filthTypes.Add(RimWorld.ThingDefOf.Filth_Dirt);
-			filthTypes.Add(RimWorld.ThingDefOf.Filth_Dirt);
-			filthTypes.Add(RimWorld.ThingDefOf.Filth_RubbleRock);
-		}
-
-		public override void ExposeData()
-		{
-			base.ExposeData();
-			Scribe_Values.Look(ref secondarySpawnTick, "secondarySpawnTick", 0);
-			Scribe_Values.Look(ref spawnHive, "spawnHive", defaultValue: true);
-			Scribe_Values.Look(ref initialPoints, "insectsPoints", 0f);
-			Scribe_Values.Look(ref spawnedByInfestationThingComp, "spawnedByInfestationThingComp", defaultValue: false);
-			Scribe_Defs.Look(ref factiondef, "factiondef");
-			Scribe_References.Look(ref faction, "faction");
-			Scribe_Deep.Look(ref hive, "hive", null);
-		}
-
-		public override void SpawnSetup(Map map, bool respawningAfterLoad)
-		{
-			base.SpawnSetup(map, respawningAfterLoad);
-			ResetStaticData();
-			if (!respawningAfterLoad)
-			{
-				if (Ext!=null)
-				{
-					if (Ext.spawnWavePoints>0)
-					{
-						this.initialPoints = Ext.spawnWavePoints;
-					}
-				}
-				secondarySpawnTick = Find.TickManager.TicksGame + ResultSpawnDelay.RandomInRange.SecondsToTicks();
-			}
-			CreateSustainer();
-		}
+		public float TimeRemaining
+        {
+            get
+            {
+				return Math.Max(Mathf.InverseLerp(secondarySpawnTick, spawnTick, Find.TickManager.TicksGame), 0.0001f);
+            }
+        }
 
 		public override void Tick()
 		{
-			
+
 			if (!base.Spawned)
 			{
 				return;
 			}
 			sustainer.Maintain();
 			Vector3 vector = base.Position.ToVector3Shifted();
+			TargetInfo localTarget = new TargetInfo(this);
 			if (Rand.MTBEventOccurs(FilthSpawnMTB, 1f, 1.TicksToSeconds()) && CellFinder.TryFindRandomReachableCellNear(base.Position, base.Map, FilthSpawnRadius, TraverseParms.For(TraverseMode.NoPassClosedDoors), null, null, out IntVec3 result) && !filthTypes.NullOrEmpty())
 			{
 				FilthMaker.TryMakeFilth(result, base.Map, filthTypes.RandomElement());
@@ -119,16 +59,54 @@ namespace ExtraHives
 			{
 				Vector3 loc = new Vector3(vector.x, 0f, vector.z);
 				loc.y = AltitudeLayer.MoteOverhead.AltitudeFor();
-				MoteMaker.ThrowDustPuffThick(loc, base.Map, Rand.Range(1.5f, 3f), new Color(1f, 1f, 1f, 2.5f));
+				MoteMaker.ThrowDustPuffThick(loc, base.Map, Rand.Range(1.5f, 3f), Ext.dustColor ?? new Color(1f, 1f, 1f, 2.5f));
+                if (Ext.thowSparksinDust)
+				{
+                    if (Rand.MTBEventOccurs((EMPMoteSpawnMTB * TimeRemaining), 1f, 0.25f))
+					{
+						MoteMaker.ThrowMicroSparks(loc, base.Map);
+					}
+				}
+			}
+            if (Ext.effecter != null)
+			{
+				if (Rand.MTBEventOccurs((EMPMoteSpawnMTB * TimeRemaining), 1f, 0.25f))
+				{
+					if (this.Effecter == null && Ext.effecter != null)
+					{
+						this.Effecter = new Effecter(Ext.effecter);
+					}
+					if (Effecter != null)
+					{
+						Effecter.EffectTick(localTarget, localTarget);
+					}
+					else
+					{
+						this.Effecter.EffectTick(localTarget, localTarget);
+					}
+				}
 			}
 			if (secondarySpawnTick > Find.TickManager.TicksGame)
 			{
 				return;
 			}
+            if (this.Effecter!=null)
+			{
+				this.Effecter.Cleanup();
+			}
 			sustainer.End();
 			Map map = base.Map;
 			IntVec3 position = base.Position;
 			Destroy();
+			if (Ext.strikespreexplode)
+			{
+				FireEvent(map, position);
+			}
+			if (Ext.explodesprespawn)
+			{
+				GenExplosion.DoExplosion(position, map, Ext.blastradius, Ext.damageDef, null, -1, -1f, null, null, null, null, null, 0f, 1, false, null, 0f, 1, 0f, false);
+
+			}
 			Hive obj = null;
 			if (spawnHive)
 			{
@@ -159,7 +137,7 @@ namespace ExtraHives
 						Log.Error("Too many iterations.");
 						break;
 					}
-					if (!this.Ext.HiveDef.GetCompProperties<CompProperties_SpawnerPawn>().spawnablePawnKinds.Where((PawnGenOption x) => x.Cost <= pointsLeft).TryRandomElementByWeight(x=> x.selectionWeight, out result2))
+					if (!this.Ext.HiveDef.GetCompProperties<CompProperties_SpawnerPawn>().spawnablePawnKinds.Where((PawnGenOption x) => x.Cost <= pointsLeft).TryRandomElementByWeight(x => x.selectionWeight, out result2))
 					{
 						break;
 					}
@@ -171,61 +149,31 @@ namespace ExtraHives
 			}
 			if (list.Any())
 			{
-				
-
-					this.MakeLord(lordJobType, list);
-			/*
-			//	Log.Message("make new lord of " + Faction + " for " + obj);
-				LordMaker.MakeNewLord(SpawnedFaction, new LordJob_AssaultColony(new SpawnedPawnParams
-				{
-					aggressive = false,
-					defendRadius = 50,
-					defSpot = position,
-					spawnerThing = (Thing)obj ?? this
-				}), map, list);
-			//	Log.Message("made attacking lord");
-			*/
-			}
-			else
-			{
-				Log.Message("list it empty");
+				this.MakeLord(lordJobType, list);
 			}
 		}
 
-		public virtual void MakeLord(Type lordJobType, List<Pawn> list)
+		// Token: 0x0600139E RID: 5022 RVA: 0x00096118 File Offset: 0x00094518
+		public void FireEvent(Map map, IntVec3 strikeLoc)
 		{
-
-			Map map = base.Map;
-			IntVec3 position = base.Position;
-			if (list.Any())
+			if (!strikeLoc.IsValid)
 			{
-				LordMaker.MakeNewLord(SpawnedFaction, Activator.CreateInstance(lordJobType, new object[]
-				{
-				   SpawnedFaction, false, false, false, false, false
-				}) as LordJob, map, null);
-
-				/*
-				if (lordJobType is LordJob_AssaultColony)
-				{
-				}
-				else
-				{
-					//	Log.Message("make new lord of " + Faction + " for " + obj);
-					LordMaker.MakeNewLord(SpawnedFaction, new LordJob_AssaultColony(new SpawnedPawnParams
-					{
-						aggressive = false,
-						defendRadius = 50,
-						defSpot = position,
-						spawnerThing = this
-					}), map, list);
-					//	Log.Message("made attacking lord");
-				}
-				*/
-				/*
-                LordJob lordJob = new LordJob_AssaultColony(Faction, false, false, false, false, false);
-                LordMaker.MakeNewLord(Faction, lordJob, map, list);
-                */
+				strikeLoc = CellFinderLoose.RandomCellWith((IntVec3 sq) => sq.Standable(map) && !map.roofGrid.Roofed(sq), map, 1000);
 			}
+			Mesh boltMesh = LightningBoltMeshPool.RandomBoltMesh;
+			if (!strikeLoc.Fogged(map))
+			{
+				Vector3 loc = strikeLoc.ToVector3Shifted();
+				for (int i = 0; i < 4; i++)
+				{
+					MoteMaker.ThrowSmoke(loc, map, 1.5f);
+					MoteMaker.ThrowMicroSparks(loc, map);
+					MoteMaker.ThrowLightningGlow(loc, map, 1.5f);
+				}
+			}
+			SoundInfo info = SoundInfo.InMap(new TargetInfo(strikeLoc, map, false), MaintenanceType.None);
+			SoundDefOf.Thunder_OnMap.PlayOneShot(info);
+			EventDraw(map, strikeLoc, boltMesh);
 		}
 
 
@@ -240,6 +188,12 @@ namespace ExtraHives
 			Rand.PopState();
 		}
 
+		// Token: 0x0600139F RID: 5023 RVA: 0x00096229 File Offset: 0x00094629
+		public void EventDraw(Map map, IntVec3 strikeLoc, Mesh boltMesh)
+		{
+			Graphics.DrawMesh(boltMesh, strikeLoc.ToVector3ShiftedWithAltitude(AltitudeLayer.Weather), Quaternion.identity, FadedMaterialPool.FadedVersionOf(TunnelHiveSpawnerStatic.LightningMat, 3f), 0);
+		}
+
 		private void DrawDustPart(float initialAngle, float speedMultiplier, float scale)
 		{
 			float num = (Find.TickManager.TicksGame - secondarySpawnTick).TicksToSeconds();
@@ -250,15 +204,124 @@ namespace ExtraHives
 			Matrix4x4 matrix = Matrix4x4.TRS(pos, Quaternion.Euler(0f, initialAngle + speedMultiplier * num, 0f), Vector3.one * scale);
 			Graphics.DrawMesh(MeshPool.plane10, matrix, TunnelMaterial, 0, null, 0, matPropertyBlock);
 		}
+		// Token: 0x060051F2 RID: 20978 RVA: 0x001B9E34 File Offset: 0x001B8034
+		public static void ThrowDustPuffThick(Vector3 loc, Map map, float scale, Color color)
+		{
+			if (!loc.ShouldSpawnMotesAt(map) || map.moteCounter.SaturatedLowPriority)
+			{
+				return;
+			}
+			MoteThrown moteThrown = (MoteThrown)ThingMaker.MakeThing(RimWorld.ThingDefOf.Mote_DustPuffThick, null);
+			moteThrown.Scale = scale;
+			moteThrown.rotationRate = (float)Rand.Range(-60, 60);
+			moteThrown.exactPosition = loc;
+			moteThrown.instanceColor = color;
+			moteThrown.SetVelocity((float)Rand.Range(0, 360), Rand.Range(0.6f, 0.75f));
+			GenSpawn.Spawn(moteThrown, loc.ToIntVec3(), map, WipeMode.Vanish);
+		}
+
+		public virtual void MakeLord(Type lordJobType, List<Pawn> list)
+		{
+
+			Map map = base.Map;
+			IntVec3 position = base.Position;
+			if (list.Any())
+			{
+				LordMaker.MakeNewLord(SpawnedFaction, Activator.CreateInstance(lordJobType, new object[]
+				{
+				   SpawnedFaction, false, false, false, false, false
+				}) as LordJob, map, null);
+
+			}
+		}
 
 		private void CreateSustainer()
 		{
 			LongEventHandler.ExecuteWhenFinished(delegate
 			{
-				SoundDef tunnel = SoundDefOf.Tunnel;
+				SoundDef tunnel = Ext.soundSustainer ?? SoundDefOf.Tunnel;
 				sustainer = tunnel.TrySpawnSustainer(SoundInfo.InMap(this, MaintenanceType.PerTick));
 			});
 		}
+
+		public override void SpawnSetup(Map map, bool respawningAfterLoad)
+		{
+			base.SpawnSetup(map, respawningAfterLoad);
+			ResetStaticData();
+			if (!respawningAfterLoad)
+			{
+				if (Ext != null)
+				{
+					if (Ext.spawnWavePoints > 0)
+					{
+						this.initialPoints = Ext.spawnWavePoints;
+					}
+				}
+				secondarySpawnTick = Find.TickManager.TicksGame + ResultSpawnDelay.RandomInRange.SecondsToTicks();
+				spawnTick = Find.TickManager.TicksGame;
+			}
+			CreateSustainer();
+		}
+		public static void ResetStaticData()
+		{
+			filthTypes.Clear();
+			filthTypes.Add(RimWorld.ThingDefOf.Filth_Dirt);
+			filthTypes.Add(RimWorld.ThingDefOf.Filth_Dirt);
+			filthTypes.Add(RimWorld.ThingDefOf.Filth_Dirt);
+			filthTypes.Add(RimWorld.ThingDefOf.Filth_RubbleRock);
+		}
+
+		public override void ExposeData()
+		{
+			base.ExposeData();
+			Scribe_Values.Look(ref secondarySpawnTick, "secondarySpawnTick", 0);
+			Scribe_Values.Look(ref spawnTick, "spawnTick", 0);
+			Scribe_Values.Look(ref spawnHive, "spawnHive", defaultValue: true);
+			Scribe_Values.Look(ref initialPoints, "insectsPoints", 0f);
+			Scribe_Values.Look(ref spawnedByInfestationThingComp, "spawnedByInfestationThingComp", defaultValue: false);
+			Scribe_Defs.Look(ref factiondef, "factiondef");
+			Scribe_References.Look(ref faction, "faction");
+			Scribe_Deep.Look(ref hive, "hive", null);
+		}
+
+		public Type lordJobType = typeof(LordJob_AssaultColony);
+		public Faction faction = null;
+		public FactionDef factiondef = null;
+		public FloatRange ResultSpawnDelay = new FloatRange(26f, 30f);
+		public bool spawnHive = true;
+		public Hive hive = null;
+		public float initialPoints;
+		public bool spawnedByInfestationThingComp;
+		private Sustainer sustainer;
+		private Effecter Effecter;
+		private int secondarySpawnTick;
+		private int spawnTick;
+		private static List<ThingDef> filthTypes = new List<ThingDef>();
+
+		[TweakValue("Gameplay", 0f, 1f)]
+		private static float DustMoteSpawnMTB = 0.2f;
+
+		[TweakValue("Gameplay", 0f, 1f)]
+		private static float EMPMoteSpawnMTB = 1f;
+
+		[TweakValue("Gameplay", 0f, 1f)]
+		private static float FilthSpawnMTB = 0.3f;
+
+		[TweakValue("Gameplay", 0f, 10f)]
+		private static float FilthSpawnRadius = 3f;
+
+		private static MaterialPropertyBlock matPropertyBlock = new MaterialPropertyBlock();
+		private static readonly Material TunnelMaterial = MaterialPool.MatFrom("Things/Filth/Grainy/GrainyA", ShaderDatabase.Transparent);
 	}
 
+	[StaticConstructorOnStartup]
+	public static class TunnelHiveSpawnerStatic
+	{
+		// Token: 0x04000C09 RID: 3081
+		public static readonly Material LightningMat = MatLoader.LoadMat("Weather/LightningBolt", -1);
+		// Token: 0x04001579 RID: 5497
+		public static MaterialPropertyBlock matPropertyBlock = new MaterialPropertyBlock();
+		// Token: 0x0400157E RID: 5502
+		public static readonly Material TunnelMaterial = MaterialPool.MatFrom("Things/Filth/Grainy/GrainyA", ShaderDatabase.Transparent);
+	}
 }

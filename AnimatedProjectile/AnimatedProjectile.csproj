@@ -34,6 +34,8 @@
   </PropertyGroup>
   <ItemGroup>
     <Compile Include="AnimatedProjectileExtension.cs" />
+    <Compile Include="AnimatedProjectileProperties.cs" />
+    <Compile Include="Projectile_Fire.cs" />
     <Compile Include="Projectile_Explosive_Anim.cs" />
     <Compile Include="Projectile_Anim.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />

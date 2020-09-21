@@ -10,7 +10,7 @@ namespace ExtraHives
 	public class HiveFactionEvolutionTracker : WorldComponent
 	{
 
-		public Dictionary<Faction, int> HiveFactionStages = new Dictionary<Faction, int>();
+		public Dictionary<string, int> HiveFactionStages = new Dictionary<string, int>();
 
 		private List<FactionDef> factionDefs;
 		public List<FactionDef> FactionDefs
@@ -36,12 +36,14 @@ namespace ExtraHives
 				{
 					continue;
 				}
-				Log.Message("setting inital stage for " + HiveFactions[i]);
+			//	Log.Message("setting inital stage for " + HiveFactions[i]);
 				HiveFactionStages.SetOrAdd(HiveFactions[i], 1);
 			}
 			*/
+			ticks = 0;
 		}
 
+		
 
 		private List<Faction> hiveFactions = new List<Faction>();
 		/*
@@ -68,7 +70,6 @@ namespace ExtraHives
 		public override void WorldComponentTick()
 		{
 
-			ticks--;
 			if (ticks == 0)
 			{
 				/*
@@ -87,6 +88,7 @@ namespace ExtraHives
 					Faction f = Find.FactionManager.AllFactionsListForReading[i];
 					if (f!=null)
 					{
+						
 						if (f.def.HasModExtension<HiveFactionExtension>() && !f.defeated)
 						{
 							HiveFactionExtension ext = f.def.GetModExtension<HiveFactionExtension>();
@@ -94,9 +96,9 @@ namespace ExtraHives
 							if (!ext.stages.NullOrEmpty())
 							{
 							//	Log.Message(f +" has " + ext.stages.Count + " stages");
-								Log.Message(Find.TickManager.TicksGame + " day passed " + DaysPassed + " CurrentPhase: " + ext.CurStage + " " + ext.ActiveStage);
+							//	Log.Message(Find.TickManager.TicksGame + " day passed " + DaysPassed + " CurrentPhase: " + ext.CurStage + " " + ext.ActiveStage);
 
-								if (CurrentPhase < ext.ActiveStage)
+								if (CurrentPhase < ext.ActiveStage || !this.HiveFactionStages.ContainsKey(f.ToString()))
 								{
 									UpdatePhase(f, ext.ActiveStage);
 								}
@@ -122,18 +124,19 @@ namespace ExtraHives
 				}
 				ticks = tickInterval;
 			}
+			ticks--;
 		}
 
 		public void UpdatePhase(Faction f, int phase)
 		{
-			//	Log.Message("UpdatePhase");
-			CurrentPhase = phase;
-			HiveFactionStages.SetOrAdd(f, phase);
+			//	Log.Message(f+ " UpdatePhase Keyed: "+ this.HiveFactionStages.ContainsKey(f.ToString()));
 			HiveFactionExtension hive = f.def.GetModExtension<HiveFactionExtension>();
-			if (!hive.hiveStageProgressionKey.NullOrEmpty())
+			if (!hive.hiveStageProgressionKey.NullOrEmpty() && this.HiveFactionStages.ContainsKey(f.ToString()))
 			{
 				UpdatePhaseDialogMessage(f, phase, hive.hiveStageProgressionKey);
 			}
+			CurrentPhase = phase;
+			HiveFactionStages.SetOrAdd(f.ToString(), phase);
 		}
 
 		public void UpdatePhaseDialogMessage(Faction f, int phase, string msg)
@@ -174,18 +177,18 @@ namespace ExtraHives
 		{
 			base.ExposeData();
 			Scribe_Values.Look(ref CurrentPhase, "CurrentPhase");
-			Scribe_Values.Look(ref ticks, "ticks");
+		//	Scribe_Values.Look(ref ticks, "ticks");
 			Scribe_Values.Look(ref startMsg, "startMsg");
 			Scribe_Values.Look(ref activetMsg, "activetMsg");
-			Scribe_Collections.Look<Faction, int>(ref this.HiveFactionStages, "HiveFactionStages", LookMode.Reference, LookMode.Value, ref factions, ref stages);
-			Scribe_Collections.Look<Faction>(ref this.factions, false, "factions", LookMode.Reference, new List<Faction>());
-			Scribe_Collections.Look<int>(ref this.stages, "stages", LookMode.Value, new List<int>());
+			Scribe_Collections.Look<string, int>(ref this.HiveFactionStages, "HiveFactionStages", LookMode.Value, LookMode.Value, ref factions, ref stages);
+			Scribe_Collections.Look<string>(ref this.factions, false, "Hivefactions", LookMode.Value, new List<string>());
+			Scribe_Collections.Look<int>(ref this.stages, "Hivestages", LookMode.Value, new List<int>());
 		}
 
-		private List<Faction> factions = new List<Faction>();
-		private List<int> stages = new List<int>();
+		private List<string> factions;
+		private List<int> stages;
 		public int CurrentPhase = 1;
-		private int ticks = 30000;
+		private int ticks = 0;
 		public bool startMsg = false;
 		public bool activetMsg = false;
 

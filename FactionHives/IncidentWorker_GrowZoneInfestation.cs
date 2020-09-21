@@ -59,7 +59,7 @@ namespace ExtraHives
 				try
 				{
 					parms.faction = Find.FactionManager.AllFactions.Where(x => x.def.defName.Contains(hive.Faction.defName))/*.Where(x => (float)GenDate.DaysPassed >= x.def.earliestRaidDays)*/.RandomElement();
-					Log.Message(parms.faction.def.defName);
+				//	Log.Message(parms.faction.def.defName);
 				}
 				catch (System.Exception)
 				{

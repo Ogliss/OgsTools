@@ -29,7 +29,7 @@ namespace CompTurret
 
 		public void SetRotationFromOrientation()
 		{
-			this.CurRotation = this.parentTurret.Wearer.Rotation.AsAngle;
+			this.CurRotation = this.parentTurret.Operator.Rotation.AsAngle;
 		}
 
 		public CompTurretTop(CompTurret ParentTurret)
@@ -41,14 +41,14 @@ namespace CompTurret
 			get
 			{
 				Vector3 b = new Vector3(this.parentTurret.Props.TurretDef.building.turretTopOffset.x, 1f, this.parentTurret.Props.TurretDef.building.turretTopOffset.y).RotatedBy(this.CurRotation);
-				Vector3 vector = this.parentTurret.Wearer.DrawPos;
-				if (this.parentTurret.Wearer.ParentHolder as PawnFlyer is PawnFlyer flyer)
+				Vector3 vector = this.parentTurret.Operator.DrawPos;
+				if (this.parentTurret.Operator.ParentHolder as PawnFlyer is PawnFlyer flyer)
 				{
 					vector = flyer.DrawPos;
 				}
 				Vector3 drawPos = vector + Altitudes.AltIncVect + b; 
 
-				Rot4 rot = this.parentTurret.Wearer.Rotation;
+				Rot4 rot = this.parentTurret.Operator.Rotation;
 				if (rot == Rot4.North)
 				{
 					drawPos += this.parentTurret.Props.offsetNorth;
@@ -80,7 +80,7 @@ namespace CompTurret
 					this.parentTurret.moteStun = MakeStunOverlay(this.parentTurret.Wearer);
 				}
 				*/
-				Pawn pawn = this.parentTurret.Wearer as Pawn;
+				Pawn pawn = this.parentTurret.Operator as Pawn;
 				if (pawn != null && pawn.Downed)
 				{
 					this.parentTurret.stunTicksLeft = 0;
@@ -101,12 +101,12 @@ namespace CompTurret
 					if (empEffecter != null)
 					{
 					//	Log.Message("empEffecter EffecterComp");
-						empEffecter.EffectTick(this.parentTurretGun, this.parentTurret.Wearer);
+						empEffecter.EffectTick(this.parentTurretGun, this.parentTurret.Operator);
 					}
 					else
 					{
 					//	Log.Message("empEffecter Effecter");
-						this.parentTurret.empEffecter.EffectTick(this.parentTurret.Wearer, this.parentTurret.Wearer);
+						this.parentTurret.empEffecter.EffectTick(this.parentTurret.Operator, this.parentTurret.Operator);
 					}
 					return;
 				}
@@ -126,48 +126,65 @@ namespace CompTurret
 			}
 			else
 			{
-				SetRotationFromOrientation();
-				return;
-			}
-			
-
-			float rotmax = this.parentTurret.Wearer.Rotation.AsAngle+90;
-			float rotmin = this.parentTurret.Wearer.Rotation.AsAngle-90;
-			if (this.ticksUntilIdleTurn > 0)
-			{
-				this.ticksUntilIdleTurn--;
-				if (this.ticksUntilIdleTurn == 0)
+                if (parentTurret.CasterIsPawn)
 				{
-					if (Rand.Value < 0.5f)
+					SetRotationFromOrientation();
+					return;
+				}
+                else
+                {
+
+
+					float rotmax = this.parentTurret.Operator.Rotation.AsAngle + 90;
+					float rotmin = this.parentTurret.Operator.Rotation.AsAngle - 90;
+					if (this.ticksUntilIdleTurn > 0)
 					{
-						this.idleTurnClockwise = this.CurRotation < (rotmax - 37);
+						this.ticksUntilIdleTurn--;
+						if (this.ticksUntilIdleTurn == 0)
+						{
+							if (Rand.Value < 0.5f)
+							{
+								this.idleTurnClockwise = this.CurRotation < (rotmax - 37);
+							}
+							else
+							{
+								this.idleTurnClockwise = this.CurRotation > (rotmin + 37);
+							}
+							this.idleTurnTicksLeft = 140;
+							return;
+						}
 					}
 					else
 					{
-						this.idleTurnClockwise = this.CurRotation > (rotmax + 37);
-					}
-					this.idleTurnTicksLeft = 140;
-					return;
-				}
-			}
-			else
-			{
 
-				if (this.idleTurnClockwise)
-				{
-					this.CurRotation += 0.26f;
-				}
-				else
-				{
-					this.CurRotation -= 0.26f;
-				}
-				this.idleTurnTicksLeft--;
-				if (this.idleTurnTicksLeft <= 0)
-				{
-					this.ticksUntilIdleTurn = Rand.RangeInclusive(150, 350);
+						if (this.idleTurnClockwise)
+						{
+							this.CurRotation += 0.26f;
+                            if (CurRotation > rotmax)
+                            {
+								idleTurnClockwise = !idleTurnClockwise;
+
+							}
+						}
+						else
+						{
+							this.CurRotation -= 0.26f;
+							if (CurRotation > rotmin)
+							{
+								idleTurnClockwise = !idleTurnClockwise;
+
+							}
+						}
+						this.idleTurnTicksLeft--;
+						if (this.idleTurnTicksLeft <= 0)
+						{
+							this.ticksUntilIdleTurn = Rand.RangeInclusive(150, 350);
+						}
+					}
+				//	this.CurRotation = Mathf.Clamp(this.CurRotation, rotmin, rotmax);
 				}
 			}
-			this.CurRotation = Mathf.Clamp(this.CurRotation, rotmin, rotmax);
+			
 
 
 
@@ -187,9 +204,12 @@ namespace CompTurret
 			Quaternion quart = (this.CurRotation + (float)CompTurretTop.ArtworkRotation).ToQuat();
 			matrix.SetTRS(DrawPos, quart, new Vector3(turretTopDrawSize, 1f, turretTopDrawSize));
 			Graphics.DrawMesh(MeshPool.plane10, matrix, this.parentTurret.Props.TurretDef.building.turretTopMat, 0);
-			if (this.parentTurret.TargetCurrentlyAimingAt != null && !this.parentTurret.Stunned && parentTurretGun !=null && parentTurretGun.RemainingCharges > 0)
+			if (this.parentTurret.TargetCurrentlyAimingAt != null && !this.parentTurret.Stunned && parentTurretGun !=null && parentTurretGun.HasAmmo)
 			{
-				GenDraw.DrawLineBetween(DrawPos, this.parentTurret.CurrentTarget.CenterVector3, CompTurretGun.LineMatRed);
+                if (parentTurretGun.LineMatRed != null)
+				{
+					GenDraw.DrawLineBetween(DrawPos, this.parentTurret.CurrentTarget.CenterVector3, parentTurretGun.LineMatRed);
+				}
 			}
 
 		}

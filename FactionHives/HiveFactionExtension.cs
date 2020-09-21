@@ -8,9 +8,10 @@ namespace ExtraHives
     public class HiveFactionExtension : DefModExtension
 	{
 		public bool overrideBaseGen = false;
-		public string baseGenOrride = string.Empty;
+		public string baseGenOverride = string.Empty;
 		public bool baseDamage = true;
 		public bool randomHives = false;
+		public bool noPawnPointsCurve = false;
 		public IntRange sizeRange = new IntRange(44, 60);
 
 		public ThingDef smallCaveHive = null;
@@ -68,6 +69,7 @@ namespace ExtraHives
 		public float pointMultipler = 1f;
 		public IntRange sizeRange = new IntRange(44, 60);
 
+		public SimpleCurve maxPawnCostPerTotalPointsCurve;
 		public List<PawnGroupMaker> pawnGroupMakers;
 		public ThingDef smallCaveHive = null;
 		public ThingDef largeCaveHive = null;

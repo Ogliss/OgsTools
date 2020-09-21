@@ -28,15 +28,15 @@ namespace ExtraHives.HarmonyInstance
                     HiveFactionEvolutionTracker evolutionTracker = Find.World.GetComponent<HiveFactionEvolutionTracker>();
                     HiveFactionExtension hive = parms.faction.def.GetModExtension<HiveFactionExtension>();
                     if (evolutionTracker != null)
-                    {;
-                        if (evolutionTracker.HiveFactionStages.TryGetValue(parms.faction, out stage))
+                    {
+                        if (evolutionTracker.HiveFactionStages.TryGetValue(parms.faction.ToString(), out stage))
                         {
                             mult = hive.CurStage.pointMultipler;
                         }
                         else
                         {
                             stage = hive.ActiveStage;
-                            evolutionTracker.HiveFactionStages.SetOrAdd(parms.faction, stage);
+                            evolutionTracker.HiveFactionStages.SetOrAdd(parms.faction.ToString(), stage);
                             mult = hive.CurStage.pointMultipler;
                         }
                         Log.Message("IncidentWorker_RaidEnemy HiveFaction Stage: " + stage + " Multiplier: " + mult + " Result: " + (parms.points * mult));
