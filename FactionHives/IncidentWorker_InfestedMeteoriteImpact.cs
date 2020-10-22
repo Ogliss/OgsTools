@@ -77,7 +77,9 @@ namespace ExtraHives
 		//	Log.Message("TunnelRaidSpawner");
 			TunnelRaidSpawner tunnelHiveSpawner = (TunnelRaidSpawner)ThingMaker.MakeThing(ThingDefOf.Tunneler_ExtraHives, null);
 			tunnelHiveSpawner.spawnHive = false;
+			Rand.PushState();
 			tunnelHiveSpawner.initialPoints = Mathf.Max(parms.points * Rand.Range(0.3f, 0.6f), 200f);
+			Rand.PopState();
 			tunnelHiveSpawner.spawnedByInfestationThingComp = true;
 			tunnelHiveSpawner.ResultSpawnDelay = new FloatRange(0.1f,0.5f);
 			tunnelHiveSpawner.spawnablePawnKinds = faction.def.pawnGroupMakers.Where(x=> x.kindDef == RimWorld.PawnGroupKindDefOf.Combat || x.kindDef == PawnGroupKindDefOf.Tunneler_ExtraHives).RandomElement().options;

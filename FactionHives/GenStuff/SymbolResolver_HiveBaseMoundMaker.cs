@@ -33,7 +33,9 @@ namespace ExtraHives.GenStuff
 			for (int i = 0; i < dist/5; i++)
 			{
 				IntVec3 ce = celle.RandomElement();
+				Rand.PushState();
 				float size = Rand.Range(5, 10);
+				Rand.PopState();
 				cells.RemoveAll(x=> ce.DistanceTo(x) < size);
 			}
 			foreach (IntVec3 c in cells)
@@ -70,8 +72,11 @@ namespace ExtraHives.GenStuff
 			{
 				thingList[j].Destroy(DestroyMode.Vanish);
 			}
-			
-			if (rp.chanceToSkipWallBlock != null && Rand.Chance(rp.chanceToSkipWallBlock.Value))
+
+			Rand.PushState();
+			bool f = Rand.Chance(rp.chanceToSkipWallBlock.Value);
+			Rand.PopState();
+			if (rp.chanceToSkipWallBlock != null && f)
 			{
 				return null;
 			}

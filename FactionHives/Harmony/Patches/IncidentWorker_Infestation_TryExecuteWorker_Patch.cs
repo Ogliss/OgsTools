@@ -33,7 +33,7 @@ namespace ExtraHives.HarmonyInstance
                             if (evolutionTracker.HiveFactionStages.TryGetValue(faction.ToString(), out int stage))
                             {
                                 float mult = hive.CurStage.pointMultipler;
-                                Log.Message("IncidentWorker_RaidEnemy HiveFaction Stage: " + stage + " Multiplier: " + mult + " Result: " + (parms.points * mult));
+                            //    Log.Message("IncidentWorker_RaidEnemy HiveFaction Stage: " + stage + " Multiplier: " + mult + " Result: " + (parms.points * mult));
                                 parms.points *= mult;
 
                             }

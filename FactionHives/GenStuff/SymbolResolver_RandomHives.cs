@@ -13,6 +13,7 @@ namespace ExtraHives.GenStuff
 		public override void Resolve(ResolveParams rp)
 		{
 			Map map = BaseGen.globalSettings.map;
+			Rand.PushState();
 			for (int i = 0; i < Rand.RangeInclusive(5, 20); i++)
 			{
 				Faction faction = rp.faction;
@@ -51,6 +52,7 @@ namespace ExtraHives.GenStuff
 					}
 				}
 			}
+			Rand.PopState();
 		}
 	}
 }

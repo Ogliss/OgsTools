@@ -32,7 +32,7 @@ namespace ExtraHives.HarmonyInstance
                         float mult = hive.CurStage.pointMultipler;
                         if (rp.pawnGroupMakerParams != null)
                         {
-                            Log.Message("SymbolResolver_PawnHiveGroup HiveFaction Stage: " + stage + " Multiplier: "+ mult+" Result: "+ (rp.pawnGroupMakerParams.points * mult));
+                        //    Log.Message("SymbolResolver_PawnHiveGroup HiveFaction Stage: " + stage + " Multiplier: "+ mult+" Result: "+ (rp.pawnGroupMakerParams.points * mult));
                             rp.pawnGroupMakerParams.points *= mult;
                         }
                     }

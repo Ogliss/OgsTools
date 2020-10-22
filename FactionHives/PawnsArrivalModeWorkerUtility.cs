@@ -27,7 +27,9 @@ namespace ExtraHives
 				return list;
 			}
 			int maxGroupsCount = PawnsArrivalModeWorkerUtility.GetMaxGroupsCount(pawns.Count);
+			Rand.PushState();
 			int num = (maxGroupsCount == 1) ? 1 : Rand.RangeInclusive(2, maxGroupsCount);
+			Rand.PopState();
 			for (int i = 0; i < num; i++)
 			{
 				IntVec3 second = PawnsArrivalModeWorkerUtility.FindNewMapEdgeGroupCenter(map, list, arriveInPods);

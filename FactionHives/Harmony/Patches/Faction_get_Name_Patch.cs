@@ -24,7 +24,7 @@ namespace ExtraHives.HarmonyInstance
                 HiveFactionExtension ext = __instance.def.GetModExtension<HiveFactionExtension>();
                 if (ext.HasStages)
                 {
-                    Log.Message("Faction_get_Name_Patch " + __instance);
+                //    Log.Message("Faction_get_Name_Patch " + __instance);
                     __result += " " + ext.ActiveStage;
                 }
             }

@@ -30,7 +30,7 @@ namespace ExtraHives
                 tunnelSpawner.SpawnedFaction = faction;
                 if (tunnelSpawner.SpawnedFaction != null)
                 {
-                    Log.Message("tunnelSpawner.Faction set " + tunnelSpawner.SpawnedFaction.Name);
+                //    Log.Message("tunnelSpawner.Faction set " + tunnelSpawner.SpawnedFaction.Name);
                 }
             }
             foreach (Thing item in info.innerContainer)

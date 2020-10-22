@@ -35,7 +35,7 @@ namespace ExtraHives.HarmonyInstance
                         if (!hive.CurStage.pawnGroupMakers.NullOrEmpty())
                         {
                             string li = string.Empty;
-                            Log.Message("TryGetRandomPawnGroupMaker HiveFaction using pawnGroupMaker from Stage: " + stage);
+                        //    Log.Message("TryGetRandomPawnGroupMaker HiveFaction using pawnGroupMaker from Stage: " + stage);
                         }
                         bool result = (from gm in hive.CurStage.pawnGroupMakers ?? parms.faction.def.pawnGroupMakers
                                        where gm.kindDef == parms.groupKind && gm.CanGenerateFrom(parms)
@@ -44,7 +44,7 @@ namespace ExtraHives.HarmonyInstance
                         {
                             Rand.PopState();
                         }
-                        Log.Message("TryGetRandomPawnGroupMaker HiveFaction Stage: " + stage + " pawnGroupMaker: " + pawnGroupMaker.kindDef);
+                    //    Log.Message("TryGetRandomPawnGroupMaker HiveFaction Stage: " + stage + " pawnGroupMaker: " + pawnGroupMaker.kindDef);
                     }
                 }
             }

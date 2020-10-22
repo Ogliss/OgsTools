@@ -165,17 +165,21 @@ namespace CompTurret
 				if (num > 0.5f)
 				{
 					int max = GenRadial.NumCellsInRadius(num);
+					Rand.PushState();
 					int num2 = Rand.Range(0, max);
+					Rand.PopState();
 					if (num2 > 0)
 					{
 						IntVec3 c = this.currentTarget.Cell + GenRadial.RadialPattern[num2];
 						this.ThrowDebugText("ToRadius");
 						this.ThrowDebugText("Rad\nDest", c);
 						ProjectileHitFlags projectileHitFlags = ProjectileHitFlags.NonTargetWorld;
+						Rand.PushState();
 						if (Rand.Chance(0.5f))
 						{
 							projectileHitFlags = ProjectileHitFlags.All;
 						}
+						Rand.PopState();
 						if (!this.canHitNonTargetPawnsNow)
 						{
 							projectileHitFlags &= ~ProjectileHitFlags.NonTargetPawns;
@@ -193,16 +197,21 @@ namespace CompTurret
 			ShotReport shotReport = ShotReport.HitReportFor(this.Caster, this, this.currentTarget);
 			Thing randomCoverToMissInto = shotReport.GetRandomCoverToMissInto();
 			ThingDef targetCoverDef = (randomCoverToMissInto != null) ? randomCoverToMissInto.def : null;
-			if (!Rand.Chance(shotReport.AimOnTargetChance_IgnoringPosture))
+			Rand.PushState();
+			bool f = !Rand.Chance(shotReport.AimOnTargetChance_IgnoringPosture);
+			Rand.PopState();
+			if (f)
 			{
 				shootLine.ChangeDestToMissWild(shotReport.AimOnTargetChance_StandardTarget);
 				this.ThrowDebugText("ToWild" + (this.canHitNonTargetPawnsNow ? "\nchntp" : ""));
 				this.ThrowDebugText("Wild\nDest", shootLine.Dest);
 				ProjectileHitFlags projectileHitFlags2 = ProjectileHitFlags.NonTargetWorld;
+				Rand.PushState();
 				if (Rand.Chance(0.5f) && this.canHitNonTargetPawnsNow)
 				{
 					projectileHitFlags2 |= ProjectileHitFlags.NonTargetPawns;
 				}
+				Rand.PopState();
 				muzzlePos = MuzzlePosition(this.Caster, this.currentTarget, offset);
 				projectile2.Launch(launcher, muzzlePos, shootLine.Dest, this.currentTarget, projectileHitFlags2, equipment, targetCoverDef);
 				if (this.CasterIsPawn)
@@ -211,7 +220,10 @@ namespace CompTurret
 				}
 				return true;
 			}
-			if (this.currentTarget.Thing != null && this.currentTarget.Thing.def.category == ThingCategory.Pawn && !Rand.Chance(shotReport.PassCoverChance))
+			Rand.PushState();
+			bool f2 = !Rand.Chance(shotReport.PassCoverChance);
+			Rand.PopState();
+			if (this.currentTarget.Thing != null && this.currentTarget.Thing.def.category == ThingCategory.Pawn && f2)
 			{
 				this.ThrowDebugText("ToCover" + (this.canHitNonTargetPawnsNow ? "\nchntp" : ""));
 				this.ThrowDebugText("Cover\nDest", randomCoverToMissInto.Position);

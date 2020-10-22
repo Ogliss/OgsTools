@@ -7,7 +7,7 @@ using Verse;
 namespace Recruiters
 {
 	// Token: 0x020009EA RID: 2538
-	public class IncidentWorker_OrbitalRecruiterArrival : IncidentWorker
+	public class IncidentWorker_OrbitalMercenaryArrival : IncidentWorker
 	{
 		// Token: 0x06003C5D RID: 15453 RVA: 0x0013ED05 File Offset: 0x0013CF05
 		protected override bool CanFireNowSub(IncidentParms parms)
@@ -26,7 +26,7 @@ namespace Recruiters
 		//	Log.Message("TraderKindDefs with RecruiterExt: " + DefDatabase<TraderKindDef>.AllDefs.Where(x=> x.HasModExtension<RecruiterExt>()).Count());
 			TraderKindDef traderKindDef;
 
-			if ((from x in DefDatabase<TraderKindDef>.AllDefs.Where(x => x.stockGenerators.Any(y=> y is StockGenerator_Recruits))
+			if ((from x in DefDatabase<TraderKindDef>.AllDefs.Where(x => /*x.HasModExtension<RecruiterExt>()*/  x.stockGenerators.Any(y => y is StockGenerator_Mercs))
 				 where this.CanSpawn(map, x)
 				 select x).TryRandomElement(out traderKindDef))
 			{

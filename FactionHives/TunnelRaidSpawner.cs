@@ -80,6 +80,7 @@ namespace ExtraHives
                 Vector3 vector = base.Position.ToVector3Shifted();
                 IntVec3 c;
                 // throws dust and filth 
+                Rand.PushState();
                 if (Rand.MTBEventOccurs(TunnelRaidSpawner.FilthSpawnMTB, 1f, 1.TicksToSeconds()) && CellFinder.TryFindRandomReachableCellNear(base.Position, base.Map, TunnelRaidSpawner.FilthSpawnRadius, TraverseParms.For(TraverseMode.NoPassClosedDoors, Danger.Deadly, false), null, null, out c, 999999))
                 {
                     FilthMaker.TryMakeFilth(c, base.Map, TunnelRaidSpawner.filthTypes.RandomElement<ThingDef>(), 1);
@@ -91,6 +92,7 @@ namespace ExtraHives
                         y = AltitudeLayer.MoteOverhead.AltitudeFor()
                     }, base.Map, Rand.Range(1.5f, 3f), new Color(1f, 1f, 1f, 2.5f));
                 }
+                Rand.PopState();
                 if (this.secondarySpawnTick <= Find.TickManager.TicksGame)
                 {
                     this.sustainer.End();
@@ -109,7 +111,7 @@ namespace ExtraHives
             // iif initalPoints > 0 spawn until all points are used
             if ((initialPoints > 0f) && !this.spawnablePawnKinds.NullOrEmpty())
             {
-                Log.Message("generating pawns");
+            //    Log.Message("generating pawns");
                 initialPoints = Mathf.Max(initialPoints, this.spawnablePawnKinds.Min((PawnGenOption x) => x.Cost));
                 float pointsLeft = initialPoints;
                 int num = 0;
@@ -187,7 +189,9 @@ namespace ExtraHives
         {
             float num = (Find.TickManager.TicksGame - this.secondarySpawnTick).TicksToSeconds();
             Vector3 pos = base.Position.ToVector3ShiftedWithAltitude(AltitudeLayer.Filth);
+            Rand.PushState();
             pos.y += 0.046875f * Rand.Range(0f, 1f);
+            Rand.PopState();
             Color value = new Color(0.470588237f, 0.384313732f, 0.3254902f, 0.7f);
             TunnelRaidSpawner.matPropertyBlock.SetColor(ShaderPropertyIDs.Color, value);
             Matrix4x4 matrix = Matrix4x4.TRS(pos, Quaternion.Euler(0f, initialAngle + speedMultiplier * num, 0f), Vector3.one * scale);

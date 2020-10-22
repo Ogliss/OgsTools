@@ -19,10 +19,12 @@ namespace CompTurret
 			{
 				num *= (float)(B.Thing.def.size.x * B.Thing.def.size.z);
 			}
+			Rand.PushState();
 			if (Rand.Value < num)
 			{
 				base.MakeMote(A, B);
 			}
+			Rand.PopState();
 		}
 	}
 }

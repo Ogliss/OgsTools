@@ -373,7 +373,10 @@ namespace CompTurret
 			Faction faction = attackTargetSearcher.Thing?.Faction ?? this.parent.Faction;
 			float range = this.AttackVerb.verbProps.range;
 			Building t;
-			if (Rand.Value < 0.5f && this.AttackVerb.ProjectileFliesOverhead() && faction.HostileTo(Faction.OfPlayer) && Operator.Map.listerBuildings.allBuildingsColonist.Where(delegate (Building x)
+			Rand.PushState();
+			float tgtt = Rand.Value;
+			Rand.PopState();
+			if (tgtt < 0.5f && this.AttackVerb.ProjectileFliesOverhead() && faction.HostileTo(Faction.OfPlayer) && Operator.Map.listerBuildings.allBuildingsColonist.Where(delegate (Building x)
 			{
 				float num = this.AttackVerb.verbProps.EffectiveMinRange(x, Operator);
 				float num2 = (float)x.Position.DistanceToSquared(Operator.Position);

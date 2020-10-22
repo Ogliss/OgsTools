@@ -32,7 +32,7 @@ namespace ExtraHives.HarmonyInstance
                     if (evolutionTracker.HiveFactionStages.TryGetValue(rp.faction.ToString(), out int stage))
                     {
                         mult = hive.CurStage.pointMultipler;
-                        Log.Message("SymbolResolver_Hivebase HiveFaction Stage: " + stage + " Multiplier: " + mult + " Result: " + ((rp.settlementPawnGroupPoints ?? SymbolResolver_Settlement.DefaultPawnsPoints.RandomInRange) * mult));
+                    //    Log.Message("SymbolResolver_Hivebase HiveFaction Stage: " + stage + " Multiplier: " + mult + " Result: " + ((rp.settlementPawnGroupPoints ?? SymbolResolver_Settlement.DefaultPawnsPoints.RandomInRange) * mult));
                     }
                 }
                 /*

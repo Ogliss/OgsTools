@@ -77,7 +77,9 @@ namespace ExtraHives
 			}
 			TunnelHiveSpawner tunnelHiveSpawner = (TunnelHiveSpawner)ThingMaker.MakeThing(tunnelDef, null);
 			tunnelHiveSpawner.spawnHive = false;
+			Rand.PushState();
 			tunnelHiveSpawner.initialPoints = Mathf.Clamp(parms.points * Rand.Range(0.3f, 0.6f), 200f, 1000f);
+			Rand.PopState();
 			tunnelHiveSpawner.spawnedByInfestationThingComp = true;
 			GenSpawn.Spawn(tunnelHiveSpawner, intVec, map, WipeMode.FullRefund);
 			deepDrill.TryGetComp<CompCreatesInfestations>().Notify_CreatedInfestation();

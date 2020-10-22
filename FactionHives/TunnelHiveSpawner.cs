@@ -51,6 +51,7 @@ namespace ExtraHives
 			sustainer.Maintain();
 			Vector3 vector = base.Position.ToVector3Shifted();
 			TargetInfo localTarget = new TargetInfo(this);
+			Rand.PushState();
 			if (Rand.MTBEventOccurs(FilthSpawnMTB, 1f, 1.TicksToSeconds()) && CellFinder.TryFindRandomReachableCellNear(base.Position, base.Map, FilthSpawnRadius, TraverseParms.For(TraverseMode.NoPassClosedDoors), null, null, out IntVec3 result) && !filthTypes.NullOrEmpty())
 			{
 				FilthMaker.TryMakeFilth(result, base.Map, filthTypes.RandomElement());
@@ -68,8 +69,10 @@ namespace ExtraHives
 					}
 				}
 			}
-            if (Ext.effecter != null)
+			Rand.PopState();
+			if (Ext.effecter != null)
 			{
+				Rand.PushState();
 				if (Rand.MTBEventOccurs((EMPMoteSpawnMTB * TimeRemaining), 1f, 0.25f))
 				{
 					if (this.Effecter == null && Ext.effecter != null)
@@ -85,6 +88,7 @@ namespace ExtraHives
 						this.Effecter.EffectTick(localTarget, localTarget);
 					}
 				}
+				Rand.PopState();
 			}
 			if (secondarySpawnTick > Find.TickManager.TicksGame)
 			{
@@ -198,7 +202,9 @@ namespace ExtraHives
 		{
 			float num = (Find.TickManager.TicksGame - secondarySpawnTick).TicksToSeconds();
 			Vector3 pos = base.Position.ToVector3ShiftedWithAltitude(AltitudeLayer.Filth);
+			Rand.PushState();
 			pos.y += 0.0454545468f * Rand.Range(0f, 1f);
+			Rand.PopState();
 			Color value = new Color(0.470588237f, 98f / 255f, 83f / 255f, 0.7f);
 			matPropertyBlock.SetColor(ShaderPropertyIDs.Color, value);
 			Matrix4x4 matrix = Matrix4x4.TRS(pos, Quaternion.Euler(0f, initialAngle + speedMultiplier * num, 0f), Vector3.one * scale);
@@ -213,10 +219,12 @@ namespace ExtraHives
 			}
 			MoteThrown moteThrown = (MoteThrown)ThingMaker.MakeThing(RimWorld.ThingDefOf.Mote_DustPuffThick, null);
 			moteThrown.Scale = scale;
+			Rand.PushState();
 			moteThrown.rotationRate = (float)Rand.Range(-60, 60);
 			moteThrown.exactPosition = loc;
 			moteThrown.instanceColor = color;
 			moteThrown.SetVelocity((float)Rand.Range(0, 360), Rand.Range(0.6f, 0.75f));
+			Rand.PopState();
 			GenSpawn.Spawn(moteThrown, loc.ToIntVec3(), map, WipeMode.Vanish);
 		}
 

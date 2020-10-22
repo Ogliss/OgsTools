@@ -23,10 +23,14 @@ namespace ExtraHives.GenStuff
 			}
 			else
 			{
+				Rand.PushState();
 				bool flag2 = rp.rect.Width >= 20 && rp.rect.Height >= 20 && (parentFaction.def.techLevel >= TechLevel.Industrial || Rand.Bool);
+				Rand.PopState();
 				if (flag2)
 				{
+					Rand.PushState();
 					dist = (Rand.Bool ? 2 : 4);
+					Rand.PopState();
 				}
 			}
 			float num = (float)rp.rect.Area / 144f * 0.17f;

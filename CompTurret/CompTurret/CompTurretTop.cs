@@ -121,7 +121,9 @@ namespace CompTurret
 			{
 				float curRotation = (currentTarget.Cell.ToVector3Shifted() - DrawPos).AngleFlat();
 				this.CurRotation = curRotation;
+				Rand.PushState();
 				this.ticksUntilIdleTurn = Rand.RangeInclusive(150, 350);
+				Rand.PopState();
 				return;
 			}
 			else
@@ -142,6 +144,7 @@ namespace CompTurret
 						this.ticksUntilIdleTurn--;
 						if (this.ticksUntilIdleTurn == 0)
 						{
+							Rand.PushState();
 							if (Rand.Value < 0.5f)
 							{
 								this.idleTurnClockwise = this.CurRotation < (rotmax - 37);
@@ -150,6 +153,7 @@ namespace CompTurret
 							{
 								this.idleTurnClockwise = this.CurRotation > (rotmin + 37);
 							}
+							Rand.PopState();
 							this.idleTurnTicksLeft = 140;
 							return;
 						}
@@ -178,7 +182,9 @@ namespace CompTurret
 						this.idleTurnTicksLeft--;
 						if (this.idleTurnTicksLeft <= 0)
 						{
+							Rand.PushState();
 							this.ticksUntilIdleTurn = Rand.RangeInclusive(150, 350);
+							Rand.PopState();
 						}
 					}
 				//	this.CurRotation = Mathf.Clamp(this.CurRotation, rotmin, rotmax);

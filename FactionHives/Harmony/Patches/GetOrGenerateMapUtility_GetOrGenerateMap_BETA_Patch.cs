@@ -38,7 +38,7 @@ namespace ExtraHives.HarmonyInstance
             if (evolutionTracker != null && hive != null)
             {
                 int sizemod = 0;
-                Log.Message("GetOrGenerateMap for " + faction + " Default: " + size.x + " Max Hive size: " + hive.CurStage.sizeRange.max);
+            //    Log.Message("GetOrGenerateMap for " + faction + " Default: " + size.x + " Max Hive size: " + hive.CurStage.sizeRange.max);
                 for (int i = 0; i < 10; i++)
                 {
                     if (hive.CurStage.sizeRange.max >= ((size.x + sizemod) / 2) * 0.75f)
@@ -54,12 +54,12 @@ namespace ExtraHives.HarmonyInstance
                 {
                     size.x += sizemod;
                     size.z += sizemod;
-                    Log.Message("GetOrGenerateMap for " + faction +" applied sizemod: "+ sizemod +" resulting: "+ size);
+                //    Log.Message("GetOrGenerateMap for " + faction +" applied sizemod: "+ sizemod +" resulting: "+ size);
                 }
             }
             else
             {
-                Log.Message("GetOrGenerateMap evolutionTracker: "+ (evolutionTracker != null) + " hiveext: " + (hive != null));
+            //    Log.Message("GetOrGenerateMap evolutionTracker: "+ (evolutionTracker != null) + " hiveext: " + (hive != null));
             }
         }
     }

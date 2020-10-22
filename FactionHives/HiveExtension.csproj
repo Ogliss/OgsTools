@@ -64,7 +64,7 @@
     <Compile Include="HiveFactionExtension.cs" />
     <Compile Include="IncidentWorker_InfestedMeteoriteImpact.cs" />
     <Compile Include="Harmony\MainHarmonyInstance.cs" />
-    <Compile Include="Harmony\Patches\Patch_GenerateImpliedDefs_PreResolve.cs" />
+    <Compile Include="Harmony\Patches\GenerateImpliedDefs_PreResolve_Patch.cs" />
     <Compile Include="ThingDefOf.cs" />
     <Compile Include="PawnGroupKindDefOf.cs" />
     <Compile Include="PawnsArrivalModeWorker_CenterTunnel.cs" />

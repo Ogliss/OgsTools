@@ -39,7 +39,7 @@ namespace ExtraHives.HarmonyInstance
                             evolutionTracker.HiveFactionStages.SetOrAdd(parms.faction.ToString(), stage);
                             mult = hive.CurStage.pointMultipler;
                         }
-                        Log.Message("IncidentWorker_RaidEnemy HiveFaction Stage: " + stage + " Multiplier: " + mult + " Result: " + (parms.points * mult));
+                    //    Log.Message("IncidentWorker_RaidEnemy HiveFaction Stage: " + stage + " Multiplier: " + mult + " Result: " + (parms.points * mult));
                     }
                     parms.points = parms.points * mult;
                 }

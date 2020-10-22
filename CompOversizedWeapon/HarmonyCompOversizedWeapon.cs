@@ -12,8 +12,10 @@ namespace OgsCompOversizedWeapon
     {
         public static bool enabled_AlienRaces;
         public static bool enabled_rooloDualWield;
+        public static bool enabled_CombatExtended;
         static HarmonyCompOversizedWeapon()
         {
+            enabled_CombatExtended = ModsConfig.ActiveModsInLoadOrder.Any((ModMetaData m) => m.PackageIdPlayerFacing == "CETeam.CombatExtended");
             enabled_AlienRaces = ModsConfig.ActiveModsInLoadOrder.Any((ModMetaData m) => m.PackageIdPlayerFacing == "erdelf.HumanoidAlienRaces"); 
             enabled_rooloDualWield = ModsConfig.ActiveModsInLoadOrder.Any((ModMetaData m) => m.PackageIdPlayerFacing == "Roolo.DualWield");
             var harmony = new Harmony("rimworld.Ogliss.comps.oversized");
@@ -32,9 +34,35 @@ namespace OgsCompOversizedWeapon
                     new HarmonyMethod(typeof(HarmonyCompOversizedWeapon), nameof(DrawEquipmentAimingPreFix)), null);
                 */
             }
-
+            if (enabled_CombatExtended)
+            {
+            //    CEPatch(harmony);
+            }
             harmony.Patch(AccessTools.Method(typeof(Thing), "get_DefaultGraphic"), null,
                 new HarmonyMethod(typeof(HarmonyCompOversizedWeapon), nameof(get_DefaultGraphic_PostFix)));
+        }
+
+        public static void CEPatch(Harmony harmony)
+        {
+            MethodInfo method = AccessTools.TypeByName("CombatExtended.HarmonyCE.Harmony_PawnRenderer_DrawEquipmentAiming").GetMethod("DrawMeshModified");
+            MethodInfo patch = typeof(Harmony_PawnRenderer_DrawEquipmentAiming_Transpiler).GetMethod("DrawMeshModifiedCE");
+
+            if (patch == null)
+            {
+                Log.Error("patch Prefix is null", false);
+            }
+            if (method == null)
+            {
+                Log.Error("method is null", false);
+            }
+            if (harmony.Patch(method, new HarmonyMethod(patch)) == null)
+            {
+                Log.Error("PawnRenderer_DrawEquipmentAiming_Transpiler_Patch_CE failed.", false);
+            }
+            else
+            {
+                Log.Message("PawnRenderer_DrawEquipmentAiming_Transpiler_Patch_CE patched", false);
+            }
         }
 
         public static void DualWieldPatch(Harmony harmony)

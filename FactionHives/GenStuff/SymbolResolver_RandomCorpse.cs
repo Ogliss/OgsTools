@@ -13,6 +13,7 @@ namespace ExtraHives.GenStuff
 		public override void Resolve(ResolveParams rp)
 		{
 			Map map = BaseGen.globalSettings.map;
+			Rand.PushState();
 			for (int i = 0; i < Rand.RangeInclusive(10, 25); i++)
 			{
 				IntVec3 randomCell = rp.rect.RandomCell;
@@ -32,6 +33,7 @@ namespace ExtraHives.GenStuff
 					}
 				}
 			}
+			Rand.PopState();
 		}
 	}
 }

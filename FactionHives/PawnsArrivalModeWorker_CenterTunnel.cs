@@ -39,6 +39,7 @@ namespace ExtraHives
 			{
 				bool flag = parms.faction == Faction.OfMechanoids;
 				bool flag2 = parms.faction != null && parms.faction.HostileTo(Faction.OfPlayer);
+				Rand.PushState();
 				if (Rand.Chance(0.4f) && !flag && map.listerBuildings.ColonistsHaveBuildingWithPowerOn(RimWorld.ThingDefOf.OrbitalTradeBeacon))
 				{
 					parms.spawnCenter = DropCellFinder.TradeDropSpot(map);
@@ -49,6 +50,7 @@ namespace ExtraHives
 					parms.raidArrivalMode = Rand.Chance(0.75f) ? PawnsArrivalModeDefOf.EdgeTunnelIn_ExtraHives : PawnsArrivalModeDefOf.EdgeTunnelInGroups_ExtraHives;
 					return parms.raidArrivalMode.Worker.TryResolveRaidSpawnCenter(parms);
 				}
+				Rand.PopState();
 			}
 			return true;
 		}

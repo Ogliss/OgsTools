@@ -31,10 +31,13 @@
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
   <ItemGroup>
+    <Compile Include="StockGenerator_BuyWeapon.cs" />
+    <Compile Include="StockGenerator_BuyArmor.cs" />
     <Compile Include="Harmony\Recruiter_Caravan_GiveSoldThingToPlayer_Patch.cs" />
     <Compile Include="Harmony\Recruiter_Pawn_GiveSoldThingToPlayer_Patch.cs" />
     <Compile Include="Harmony\Recruiter_TradeShip_GiveSoldThingToPlayer_Patch.cs" />
     <Compile Include="Harmony\Patches.cs" />
+    <Compile Include="IncidentWorker_OrbitalMercenaryArrival.cs" />
     <Compile Include="StockGenerator_Mercs.cs" />
     <Compile Include="StockGenerator_Recruits.cs" />
     <Compile Include="IncidentWorker_OrbitalRecruiterArrival.cs" />
