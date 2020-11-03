@@ -31,13 +31,18 @@
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
   <ItemGroup>
-    <Compile Include="Harmony\AG_ApparelGraphicRecordGetter_TryGetGraphicApparel_AdvancedGraphics_Patch.cs" />
+    <Compile Include="Graphic_SingleRandomized.cs" />
+    <Compile Include="Graphic_SingleQaulity.cs" />
+    <Compile Include="Harmony\Patches\AG_ApparelGraphicRecordGetter_TryGetGraphicApparel_AdvancedGraphics_Patch.cs" />
     <Compile Include="Graphic_AdvancedMulti.cs" />
     <None Include="Graphic_AdvancedMulti.cs.bak" />
-    <Compile Include="Harmony\AG_Thing_get_DefaultGraphic_CompAdvancedGraphic_Patch.cs" />
+    <Compile Include="Harmony\Patches\AG_Thing_get_DefaultGraphic_CompAdvancedGraphic_Patch.cs" />
+    <None Include="Harmony\Patches\Verb_get_UIIcon_ColouredWeapons_Patch.cs.bak" />
     <Compile Include="Harmony\Main.cs" />
     <Compile Include="Graphic_AdvancedSingle.cs" />
     <Compile Include="CompAdvancedGraphic.cs" />
+    <Compile Include="Harmony\Patches\VerbTracker_CreateVerbTargetCommand_CompAdvancedGraphic_Patch.cs" />
+    <Compile Include="Harmony\Patches\Verb_get_UIIcon_ColouredWeapons_Patch.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>
@@ -45,7 +50,7 @@
       <Version>1.2.2753</Version>
     </PackageReference>
     <PackageReference Include="Lib.Harmony">
-      <Version>2.0.2</Version>
+      <Version>2.0.3</Version>
     </PackageReference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />

@@ -22,6 +22,7 @@ namespace AdvancedGraphics
         public bool quality = false;
         public string tagged = string.Empty;
         public QualityCategory minQuality = QualityCategory.Masterwork;
+        public List<QualityGraphic> qualityGraphics = new List<QualityGraphic>();
     }
     // Token: 0x02000C69 RID: 3177
     [StaticConstructorOnStartup]
@@ -35,6 +36,7 @@ namespace AdvancedGraphics
                 return (CompProperties_AdvancedGraphic)this.props;
             }
         }
+        public List<QualityGraphic> qualityGraphics => Props.qualityGraphics;
         public override void PostSpawnSetup(bool respawningAfterLoad)
         {
             base.PostSpawnSetup(respawningAfterLoad);
@@ -67,10 +69,13 @@ namespace AdvancedGraphics
                     Log.Warning(string.Format("WARNING!! {0} is set to use quality graphics but has no CompQuality, using random graphic", parent.Label));
                     i = Randomized;
                 }
-                if ((int)quality.Quality >= (int)Props.minQuality)
+                else
                 {
-                    int i2 = (int)quality.Quality - (int)Props.minQuality + 1;
-                    i = Math.Min(i2, possibleTexturelist.Count - 1);
+                    if ((int)quality.Quality >= (int)Props.minQuality)
+                    {
+                        int i2 = (int)quality.Quality - (int)Props.minQuality + 1;
+                        i = Math.Min(i2, possibleTexturelist.Count - 1);
+                    }
                 }
                 initalized = true;
                 return i;
@@ -109,5 +114,11 @@ namespace AdvancedGraphics
         }
         public Graphic _graphic;
         public int gfxint = -1;
+
+    }
+    public struct QualityGraphic
+    {
+        public QualityCategory Quality;
+        public GraphicData GraphicData;
     }
 }

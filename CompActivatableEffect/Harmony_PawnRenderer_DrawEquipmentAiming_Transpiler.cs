@@ -14,9 +14,9 @@ using System.Reflection;
 
 namespace OgsCompActivatableEffect
 {
-	// Token: 0x020000FB RID: 251
-//	[HarmonyPatch(typeof(PawnRenderer), "DrawEquipmentAiming")]
-	internal static class Harmony_PawnRenderer_DrawEquipmentAiming_Transpiler
+    // Token: 0x020000FB RID: 251
+    //	[HarmonyPatch(typeof(PawnRenderer), "DrawEquipmentAiming")]
+    internal static class Harmony_PawnRenderer_DrawEquipmentAiming_Transpiler
 	{
 		// Token: 0x060004A1 RID: 1185 RVA: 0x0002500C File Offset: 0x0002320C
 		public static IEnumerable<CodeInstruction> Transpiler(IEnumerable<CodeInstruction> instructions)

@@ -23,7 +23,7 @@ namespace ExtraHives.HarmonyInstance
             else
             {
                 MapParent mapParent = Find.WorldObjects.MapParentAt(tile);
-                if (mapParent.Faction != null)
+                if (mapParent?.Faction != null)
                 {
                     faction = mapParent.Faction;
                 }

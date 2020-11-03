@@ -18,6 +18,9 @@ EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CompOversizedWeapon", "CompOversizedWeapon\CompOversizedWeapon.csproj", "{08E20D0E-4493-4DFE-9212-DEC323F26E89}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CompActivatableEffect", "CompActivatableEffect\CompActivatableEffect.csproj", "{EC1AEA45-45FE-4A6A-A835-81B289E03BC9}"
+	ProjectSection(ProjectDependencies) = postProject
+		{08E20D0E-4493-4DFE-9212-DEC323F26E89} = {08E20D0E-4493-4DFE-9212-DEC323F26E89}
+	EndProjectSection
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AnimatedProjectile", "AnimatedProjectile\AnimatedProjectile.csproj", "{EB1E8DCF-27C4-4CE3-84D2-C2C42FECE84D}"
 EndProject

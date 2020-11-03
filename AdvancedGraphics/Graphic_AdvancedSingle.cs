@@ -153,6 +153,23 @@ namespace AdvancedGraphics
 			}
 			if (advancedWeaponGraphic.gfxint == -1)
 			{
+				if (advancedWeaponGraphic.qualityGraphics.NullOrEmpty())
+				{
+
+					foreach (QualityGraphic Qc in advancedWeaponGraphic.qualityGraphics)
+                    {
+                        if (quality.Quality >= Qc.Quality)
+                        {
+							this.path = Qc.GraphicData.texPath;
+						}
+                        else
+                        {
+							break;
+                        }
+                    }
+
+				}
+				else
 				if ((int)quality.Quality >= (int)advancedWeaponGraphic.Props.minQuality)
 				{
 					int i = (int)quality.Quality - (int)advancedWeaponGraphic.Props.minQuality + 1;

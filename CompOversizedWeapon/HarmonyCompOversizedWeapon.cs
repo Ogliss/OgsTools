@@ -323,7 +323,7 @@ namespace OgsCompOversizedWeapon
             }
             float num = aimAngle - 90f;
             bool flag = false;
-            Mesh mesh;
+        //    Mesh mesh;
             if (aimAngle > 20f && aimAngle < 160f)
             {
                 num += eq.def.equippedAngleOffset;
@@ -541,6 +541,7 @@ namespace OgsCompOversizedWeapon
             var compOversizedWeapon = __instance.TryGetComp<CompOversizedWeapon>();
             if (compOversizedWeapon != null)
             {
+            //    Log.Message("am i doing anything? :" + __instance);
                 //Following commented-out section is an unnecessary "optimization" that actually hurts performance due to the reflection involved.
                 //var activatableEffect =
                 //    thingWithComps.AllComps.FirstOrDefault(
