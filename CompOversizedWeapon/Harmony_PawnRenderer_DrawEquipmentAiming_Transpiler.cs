@@ -249,16 +249,23 @@ namespace OgsCompOversizedWeapon
 		public static float rangedAngle = 135f;
 		public static bool rangedMirrored = true;
 		// Token: 0x0600007D RID: 125 RVA: 0x00006190 File Offset: 0x00004390
-		public static void SetAnglesAndOffsets(Thing eq, ThingWithComps offHandEquip, float aimAngle, Pawn pawn, ref Vector3 offsetMainHand, ref Vector3 offsetOffHand, ref float mainHandAngle, ref float offHandAngle, bool mainHandAiming, bool offHandAiming)
+		public static void SetAnglesAndOffsets(Thing eq, ThingWithComps offHandEquip, float aimAngle, Thing thing, ref Vector3 offsetMainHand, ref Vector3 offsetOffHand, ref float mainHandAngle, ref float offHandAngle, bool mainHandAiming, bool offHandAiming)
 		{
 			CompOversizedWeapon compOversized = eq.TryGetComp<CompOversizedWeapon>();
 			CompProperties_OversizedWeapon PropsOversized = compOversized.Props;
-			bool Melee = Harmony_PawnRenderer_DrawEquipmentAiming_Transpiler.IsMeleeWeapon(pawn.equipment.Primary);
+
+			Pawn pawn = thing as Pawn;
+
+			bool Melee = pawn != null;
+			if (Melee)
+			{
+				Melee = Harmony_PawnRenderer_DrawEquipmentAiming_Transpiler.IsMeleeWeapon(pawn.equipment.Primary);
+			}
 			bool Dual = PropsOversized != null && PropsOversized.isDualWeapon;
 			float num = meleeMirrored ? (360f - meleeAngle) : meleeAngle;
 			float num2 = rangedMirrored ? (360f - rangedAngle) : rangedAngle;
-			Vector3 offset = AdjustRenderOffsetFromDir(pawn, compOversized, offHandAiming);
-			if (pawn.Rotation == Rot4.East)
+			Vector3 offset = AdjustRenderOffsetFromDir(thing.Rotation, compOversized, offHandAiming);
+			if (thing.Rotation == Rot4.East)
 			{
 				offsetMainHand.z += offset.z;
 				offsetMainHand.x += offset.x;
@@ -271,7 +278,7 @@ namespace OgsCompOversizedWeapon
 			}
 			else
 			{
-				if (pawn.Rotation == Rot4.West)
+				if (thing.Rotation == Rot4.West)
 				{
 					if (Dual) offsetMainHand.y = -1f;
 					offsetMainHand.z += offset.z;
@@ -284,7 +291,7 @@ namespace OgsCompOversizedWeapon
 				}
 				else
 				{
-					if (pawn.Rotation == Rot4.North)
+					if (thing.Rotation == Rot4.North)
 					{
 						if (!mainHandAiming)
 						{
@@ -321,7 +328,7 @@ namespace OgsCompOversizedWeapon
 					}
 				}
 			}
-			if (!pawn.Rotation.IsHorizontal)
+			if (!thing.Rotation.IsHorizontal)
 			{
 				if (compOversized.Props != null)
 				{
@@ -436,9 +443,8 @@ namespace OgsCompOversizedWeapon
 			return num;
 		}
 
-		private static Vector3 AdjustRenderOffsetFromDir(Pawn pawn, CompOversizedWeapon compOversizedWeapon, bool Offhand = false)
+		private static Vector3 AdjustRenderOffsetFromDir(Rot4 curDir, CompOversizedWeapon compOversizedWeapon, bool Offhand = false)
 		{
-			var curDir = pawn.Rotation;
 
 			Vector3 curOffset = Vector3.zero;
 

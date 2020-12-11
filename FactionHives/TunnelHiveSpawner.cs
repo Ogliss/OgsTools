@@ -9,7 +9,7 @@ using Verse.Sound;
 namespace ExtraHives
 {
 
-	[StaticConstructorOnStartup]
+//	[StaticConstructorOnStartup]
 	public class TunnelHiveSpawner : ThingWithComps
 	{
 		public TunnelExtension Ext => this.def.HasModExtension<TunnelExtension>() ? this.def.GetModExtension<TunnelExtension>() : null;
@@ -73,7 +73,7 @@ namespace ExtraHives
 			if (Ext.effecter != null)
 			{
 				Rand.PushState();
-				if (Rand.MTBEventOccurs((EMPMoteSpawnMTB * TimeRemaining), 1f, 0.25f))
+				if (Rand.MTBEventOccurs((EMPMoteSpawnMTB * TimeRemaining), 0.5f, 0.25f))
 				{
 					if (this.Effecter == null && Ext.effecter != null)
 					{
@@ -206,9 +206,9 @@ namespace ExtraHives
 			pos.y += 0.0454545468f * Rand.Range(0f, 1f);
 			Rand.PopState();
 			Color value = new Color(0.470588237f, 98f / 255f, 83f / 255f, 0.7f);
-			matPropertyBlock.SetColor(ShaderPropertyIDs.Color, value);
+			TunnelHiveSpawnerStatic.matPropertyBlock.SetColor(ShaderPropertyIDs.Color, value);
 			Matrix4x4 matrix = Matrix4x4.TRS(pos, Quaternion.Euler(0f, initialAngle + speedMultiplier * num, 0f), Vector3.one * scale);
-			Graphics.DrawMesh(MeshPool.plane10, matrix, TunnelMaterial, 0, null, 0, matPropertyBlock);
+			Graphics.DrawMesh(MeshPool.plane10, matrix, TunnelHiveSpawnerStatic.TunnelMaterial, 0, null, 0, TunnelHiveSpawnerStatic.matPropertyBlock);
 		}
 		// Token: 0x060051F2 RID: 20978 RVA: 0x001B9E34 File Offset: 0x001B8034
 		public static void ThrowDustPuffThick(Vector3 loc, Map map, float scale, Color color)
@@ -318,8 +318,6 @@ namespace ExtraHives
 		[TweakValue("Gameplay", 0f, 10f)]
 		private static float FilthSpawnRadius = 3f;
 
-		private static MaterialPropertyBlock matPropertyBlock = new MaterialPropertyBlock();
-		private static readonly Material TunnelMaterial = MaterialPool.MatFrom("Things/Filth/Grainy/GrainyA", ShaderDatabase.Transparent);
 	}
 
 	[StaticConstructorOnStartup]

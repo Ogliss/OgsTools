@@ -89,17 +89,20 @@ namespace ExtraHives
 			{
 				return 0f;
 			}
-			if ((!cell.Roofed(map) && HiveExt.requiresRoofed) || (cell.Roofed(map) && HiveExt.requiresUnroofed))
-			{
-				return 0f;
-			}
-			if ((cell.Roofed(map) && HiveExt.mustBeThickRoof))
-			{
-				if (!cell.GetRoof(map).isThickRoof)
+            if (HiveExt.requiresRoofed)
+            {
+                if (!cell.Roofed(map))
 				{
 					return 0f;
 				}
-			}
+                else
+                {
+                    if (HiveExt.mustBeThickRoof && !cell.GetRoof(map).isThickRoof)
+					{
+						return 0f;
+					}
+                }
+            }
 			Region region = cell.GetRegion(map);
 			if (region == null)
 			{
@@ -131,13 +134,16 @@ namespace ExtraHives
 				}
 			}
 			float mountainousnessScoreAt = GetMountainousnessScoreAt(cell, map);
-			if (mountainousnessScoreAt < HiveExt.minMountainouseness)
-			{
-				return 0f;
-			}
 			if (HiveExt.minMountainouseness == 0)
 			{
 				mountainousnessScoreAt = 1f;
+			}
+            else
+            {
+				if (mountainousnessScoreAt < HiveExt.minMountainouseness)
+				{
+					return 0f;
+				}
 			}
 			int num = StraightLineDistToUnroofed(cell, map);
 			float value = regionsDistanceToUnroofed.TryGetValue(region, out value) ? Mathf.Min(value, (float)num * 4f) : ((float)num * 1.15f);

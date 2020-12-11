@@ -133,7 +133,7 @@ namespace CrashedShipsExtension
                     else
                     if (Props.Factions.Count > 0)
                     {
-                        //    Log.Message(string.Format("Loading Faction List from CompProps"));
+                        //   Log.Message(string.Format("Loading Faction List from CompProps"));
                         factionDef = Props.Factions.RandomElement<FactionDef>();
                         Props.faction = faction;
                         faction = Find.FactionManager.FirstFactionOfDef(factionDef);

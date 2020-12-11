@@ -19,7 +19,7 @@ namespace AdvancedGraphics.HarmonyInstance
     public static class Verb_get_UIIcon_ColouredWeapons_Patch
     {
         [HarmonyPostfix]
-        public static void MakeDowned_Postfix(Verb __instance, ref Texture2D __result)
+        public static void Postfix(Verb __instance, ref Texture2D __result)
         {
             if (__instance.EquipmentSource != null)
             {
@@ -29,8 +29,25 @@ namespace AdvancedGraphics.HarmonyInstance
                     __result = __instance.EquipmentSource.Graphic.MatSingleFor(__instance.EquipmentSource).mainTexture as Texture2D;
                     // __result.IconDrawColor = ownerThing.Graphic.MatSingleFor(ownerThing).mainTexture as Texture2D;
                 }
+                if (__instance.EquipmentSource.Graphic is Graphic_SingleQuality)
+                {
+
+                //    Log.Message("UIIcon_ColouredWeapon Graphic_SingleQuality start: " + __result.name);
+                    __result = __instance.EquipmentSource.Graphic.MatSingleFor(__instance.EquipmentSource).mainTexture as Texture2D;
+                }
+                if (__instance.EquipmentSource.Graphic is Graphic_SingleRandomized)
+                {
+
+                //    Log.Message("UIIcon_ColouredWeapon Graphic_SingleRandomized start: " + __result.name);
+                    __result = __instance.EquipmentSource.Graphic.MatSingleFor(__instance.EquipmentSource).mainTexture as Texture2D;
+                }
+
+                if (__instance.EquipmentSource.Graphic is Graphic_RandomRotated r)
+                {
+                    __result = __instance.EquipmentSource.Graphic.MatSingleFor(__instance.EquipmentSource).mainTexture as Texture2D;
+                }
             }
-            
+
         }
     }
 }

@@ -1,5 +1,6 @@
 ﻿// RimWorld.IncidentWorker_Infestation
 using RimWorld;
+using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
 using Verse;
@@ -40,23 +41,38 @@ namespace ExtraHives //ExtraHives.IncidentWorker_Infestation
 			{
 				return false;
 			}
-			HiveDefExtension ext = def.mechClusterBuilding.GetModExtension<HiveDefExtension>();
+			HiveDefExtension ext = def.mechClusterBuilding.GetModExtension<HiveDefExtension>(); 
+			Map map = (Map)parms.target;
 			if (parms.faction==null)
 			{
 				try
 				{
-					parms.faction = Find.FactionManager.AllFactions.Where(x => x.def.defName.Contains(ext.Faction.defName))/*.Where(x => (float)GenDate.DaysPassed >= x.def.earliestRaidDays)*/.RandomElement();
+					IEnumerable<Faction> factions = Find.FactionManager.AllFactions.Where(x => x.def.defName.Contains(ext.Faction.defName));
+                    if (!factions.EnumerableNullOrEmpty())
+					{
+						parms.faction = factions.RandomElement();
+					}
+                    else
+                    {
+						parms.faction = FactionGenerator.NewGeneratedFaction(ext.Faction);
+					}
 				//	Log.Message(parms.faction.def.defName);
 				}
 				catch (System.Exception)
 				{
-					parms.faction = Find.FactionManager.FirstFactionOfDef(ext.Faction);
+					Faction faction = Find.FactionManager.FirstFactionOfDef(ext.Faction);
+                    if (faction == null)
+                    {
+						faction = FactionGenerator.NewGeneratedFaction(ext.Faction);
+                    }
+					parms.faction = faction;
 				}
 			}
 			CompProperties_SpawnerPawn spawnerPawn = def.mechClusterBuilding.GetCompProperties<CompProperties_SpawnerPawn>();
 			float points = spawnerPawn?.initialPawnsPoints ?? 250f;
-			Map map = (Map)parms.target;
-			Thing t = InfestationUtility.SpawnTunnels(def.mechClusterBuilding, Mathf.Max(GenMath.RoundRandom( parms.points / points), 1), map, faction: parms.faction);
+			int count = Mathf.Max(GenMath.RoundRandom(parms.points / points), 1);
+
+			Thing t = InfestationUtility.SpawnTunnels(def.mechClusterBuilding, count, map, true, true, faction: parms.faction);
 			SendStandardLetter(parms, t);
 			Find.TickManager.slower.SignalForceNormalSpeedShort();
 			return true;

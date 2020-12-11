@@ -34,10 +34,10 @@ namespace AdvancedGraphics
 			//	string s1 = this.path.Substring(0, idx);
 			//	Log.Message(s1);
 				string s2 = this.path.Substring(idx + 1);
-				Log.Message(s2);
+			//	Log.Message(s2);
 
 				this.path = req.path + "/" + s2;
-				Log.Message(path);
+			//	Log.Message(path);
 			}
 			// Regex.Match(test, @"^[^0-9]*").Value
 			List<Texture2D>  list = (from x in ContentFinder<Texture2D>.GetAllInFolder(path)
@@ -54,14 +54,14 @@ namespace AdvancedGraphics
 				return;
 			}
 
-			Log.Message("found " + list.Count()+" Variants");
+		//	Log.Message("found " + list.Count()+" Variants");
 
 			this.subGraphics = new Graphic[list.Count];
 			for (int i = 0; i < list.Count; i++)
 			{
 				string path = req.path + "/" + list[i].name;
 			//	Log.Message("loaded "+ path);
-				this.subGraphics[i] = GraphicDatabase.Get(typeof(Graphic_Single), path, req.shader, this.drawSize, this.color, this.colorTwo, null, req.shaderParameters);
+				this.subGraphics[i] = GraphicDatabase.Get(typeof(Graphic_Single), path, req.shader, this.drawSize, this.color, this.colorTwo, this.data, req.shaderParameters);
 			}
 			this.mat = this.subGraphics[0].MatSingle;
 		}
@@ -100,17 +100,24 @@ namespace AdvancedGraphics
 			}
 		}
 
+		public override Material MatSingleFor(Thing thing)
+		{
+			return RandomGraphicFor(thing).MatSingle;
+		}
 		public Graphic RandomGraphicFor(Thing thing)
 		{
+			Graphic graphic;
 			CompQuality quality = thing.TryGetComp<CompQuality>();
 			if (quality != null)
             {
                 if (subGraphics.Any(x=> x.path.Contains(quality.Quality.GetLabel().CapitalizeFirst())))
                 {
-					return subGraphics.Where(x => x.path.Contains(quality.Quality.GetLabel().CapitalizeFirst())).ToList()[thing.thingIDNumber % Count];
+					graphic = subGraphics.Where(x => x.path.Contains(quality.Quality.GetLabel().CapitalizeFirst())).ToList()[thing.thingIDNumber % Count];
+					return graphic.GetColoredVersion(graphic.Shader, thing.DrawColor, thing.DrawColorTwo);
 				}
             }
-			return subGraphics[thing.thingIDNumber % Count];
+			graphic = subGraphics[thing.thingIDNumber % Count];
+			return graphic.GetColoredVersion(graphic.Shader, thing.DrawColor, thing.DrawColorTwo);
 		}
 
 		public override string ToString()

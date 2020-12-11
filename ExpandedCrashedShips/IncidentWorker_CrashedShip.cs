@@ -39,20 +39,28 @@ namespace CrashedShipsExtension
             Faction faction = null;
             Building CrashedShipPart = null;
             CrashedShipPart = (Building)ThingMaker.MakeThing(this.def.mechClusterBuilding, null);
+            CompSpawnerOnDamaged onDamaged = CrashedShipPart.TryGetComp<CompSpawnerOnDamaged>();
+            if (onDamaged == null)
+            {
+                return false;
+            }
             if (faction == null)
             {
-                faction = CrashedShipPart.GetComp<CompSpawnerOnDamaged>().OfFaction;
+                faction = onDamaged.OfFaction;
             }
             for (int i = 0; i < countToSpawn; i++)
             {
                 IntVec3 intVec;
-                ThingDef faller = CrashedShipPart.GetComp<CompSpawnerOnDamaged>().Props.skyFaller ?? ThingDefOf.CrashedShipPartIncoming;
+                ThingDef faller = onDamaged?.Props.skyFaller ?? ThingDefOf.CrashedShipPartIncoming;
                 if (!CellFinderLoose.TryFindSkyfallerCell(faller, map, out intVec, 14, default(IntVec3), -1, false, true, true, true, true, false, null))
                 {
                     break;
                 }
                 CrashedShipPart.SetFaction(faction, null);
-                CrashedShipPart.GetComp<CompSpawnerOnDamaged>().pointsLeft = Mathf.Max(parms.points * 0.9f, 300f);
+                if (onDamaged != null)
+                {
+                    onDamaged.pointsLeft = Mathf.Max(parms.points * 0.9f, 300f);
+                }
 
                 Skyfaller skyfaller = SkyfallerMaker.MakeSkyfaller(faller, CrashedShipPart);
                 skyfaller.shrapnelDirection = shrapnelDirection;

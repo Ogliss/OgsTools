@@ -31,8 +31,9 @@
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
   <ItemGroup>
+    <Compile Include="Class1.cs" />
     <Compile Include="Graphic_SingleRandomized.cs" />
-    <Compile Include="Graphic_SingleQaulity.cs" />
+    <Compile Include="Graphic_SingleQuality.cs" />
     <Compile Include="Harmony\Patches\AG_ApparelGraphicRecordGetter_TryGetGraphicApparel_AdvancedGraphics_Patch.cs" />
     <Compile Include="Graphic_AdvancedMulti.cs" />
     <None Include="Graphic_AdvancedMulti.cs.bak" />

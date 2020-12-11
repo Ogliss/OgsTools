@@ -7,8 +7,7 @@ using Verse.Sound;
 
 namespace AbilitesExtended
 {
-
-    // Token: 0x02000025 RID: 37
+    // AbilitesExtended.Verb_EquipmentLaunchProjectile
     public class Verb_EquipmentLaunchProjectile : Verb_UseEquipment
     {
         // Token: 0x06002188 RID: 8584 RVA: 0x0000FFF1 File Offset: 0x0000E1F1
@@ -16,6 +15,7 @@ namespace AbilitesExtended
         {
             return true;
         }
+
 
         public virtual ThingDef Projectile
         {
@@ -83,21 +83,26 @@ namespace AbilitesExtended
                 if (num > 0.5f)
                 {
                     int max = GenRadial.NumCellsInRadius(num);
+                    Rand.PushState();
                     int num2 = Rand.Range(0, max);
+                    Rand.PopState();
                     if (num2 > 0)
                     {
                         IntVec3 c = this.currentTarget.Cell + GenRadial.RadialPattern[num2];
                         this.ThrowDebugText("ToRadius");
                         this.ThrowDebugText("Rad\nDest", c);
                         ProjectileHitFlags projectileHitFlags = ProjectileHitFlags.NonTargetWorld;
+                        Rand.PushState();
                         if (Rand.Chance(0.5f))
                         {
                             projectileHitFlags = ProjectileHitFlags.All;
                         }
+                        Rand.PopState();
                         if (!this.canHitNonTargetPawnsNow)
                         {
                             projectileHitFlags &= ~ProjectileHitFlags.NonTargetPawns;
                         }
+                    //    Log.Message("EquipmentAbility projectile2.Launch forcedMissRadius");
                         projectile2.Launch(launcher, drawPos, c, this.currentTarget, projectileHitFlags, equipment, null);
                         return true;
                     }
@@ -106,20 +111,29 @@ namespace AbilitesExtended
             ShotReport shotReport = ShotReport.HitReportFor(this.caster, this, this.currentTarget);
             Thing randomCoverToMissInto = shotReport.GetRandomCoverToMissInto();
             ThingDef targetCoverDef = (randomCoverToMissInto != null) ? randomCoverToMissInto.def : null;
-            if (!Rand.Chance(shotReport.AimOnTargetChance_IgnoringPosture))
+            Rand.PushState();
+            bool AimOnTarget = Rand.Chance(shotReport.AimOnTargetChance_IgnoringPosture);
+            Rand.PopState();
+            if (!AimOnTarget)
             {
                 shootLine.ChangeDestToMissWild(shotReport.AimOnTargetChance_StandardTarget);
                 this.ThrowDebugText("ToWild" + (this.canHitNonTargetPawnsNow ? "\nchntp" : ""));
                 this.ThrowDebugText("Wild\nDest", shootLine.Dest);
                 ProjectileHitFlags projectileHitFlags2 = ProjectileHitFlags.NonTargetWorld;
+                Rand.PushState();
                 if (Rand.Chance(0.5f) && this.canHitNonTargetPawnsNow)
                 {
                     projectileHitFlags2 |= ProjectileHitFlags.NonTargetPawns;
                 }
+                Rand.PopState();
                 projectile2.Launch(launcher, drawPos, shootLine.Dest, this.currentTarget, projectileHitFlags2, equipment, targetCoverDef);
+            //    Log.Message("EquipmentAbility projectile2.Launch OffTarget");
                 return true;
             }
-            if (this.currentTarget.Thing != null && this.currentTarget.Thing.def.category == ThingCategory.Pawn && !Rand.Chance(shotReport.PassCoverChance))
+            Rand.PushState();
+            bool PassCover = Rand.Chance(shotReport.PassCoverChance);
+            Rand.PopState();
+            if (this.currentTarget.Thing != null && this.currentTarget.Thing.def.category == ThingCategory.Pawn && !PassCover)
             {
                 this.ThrowDebugText("ToCover" + (this.canHitNonTargetPawnsNow ? "\nchntp" : ""));
                 this.ThrowDebugText("Cover\nDest", randomCoverToMissInto.Position);
@@ -129,6 +143,7 @@ namespace AbilitesExtended
                     projectileHitFlags3 |= ProjectileHitFlags.NonTargetPawns;
                 }
                 projectile2.Launch(launcher, drawPos, randomCoverToMissInto, this.currentTarget, projectileHitFlags3, equipment, targetCoverDef);
+            //    Log.Message("EquipmentAbility projectile2.Launch IntoCover");
                 return true;
             }
             ProjectileHitFlags projectileHitFlags4 = ProjectileHitFlags.IntendedTarget;
@@ -144,11 +159,13 @@ namespace AbilitesExtended
             if (this.currentTarget.Thing != null)
             {
                 projectile2.Launch(launcher, drawPos, this.currentTarget, this.currentTarget, projectileHitFlags4, equipment, targetCoverDef);
+            //    Log.Message("EquipmentAbility projectile2.Launch NoThing");
                 this.ThrowDebugText("Hit\nDest", this.currentTarget.Cell);
             }
             else
             {
                 projectile2.Launch(launcher, drawPos, shootLine.Dest, this.currentTarget, projectileHitFlags4, equipment, targetCoverDef);
+            //    Log.Message("EquipmentAbility projectile2.Launch AtThing");
                 this.ThrowDebugText("Hit\nDest", shootLine.Dest);
             }
             return true;

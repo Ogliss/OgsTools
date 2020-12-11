@@ -23,13 +23,16 @@ namespace ExtraHives.HarmonyInstance
             {
                 Faction faction = parms.faction;
                 HiveFactionEvolutionTracker evolutionTracker = Find.World.GetComponent<HiveFactionEvolutionTracker>();
-                HiveFactionExtension hive = faction.def.GetModExtension<HiveFactionExtension>();
+                HiveFactionExtension hive = faction?.def.GetModExtension<HiveFactionExtension>();
                 if (faction != null)
                 {
+                //    Log.Message("faction not null");
                     if ((parms.target is Map map))
                     {
+                    //    Log.Message("target is map");
                         if (evolutionTracker != null && hive != null)
                         {
+                        //    Log.Message("evolutionTracker & hive");
                             if (evolutionTracker.HiveFactionStages.TryGetValue(faction.ToString(), out int stage))
                             {
                                 float mult = hive.CurStage.pointMultipler;

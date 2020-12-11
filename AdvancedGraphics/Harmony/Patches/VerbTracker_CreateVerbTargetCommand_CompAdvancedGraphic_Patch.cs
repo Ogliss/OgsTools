@@ -22,10 +22,9 @@ namespace AdvancedGraphics.HarmonyInstance
         {
             if (__instance != null)
             {
-                if (ownerThing.Graphic is Graphic_SingleQuality)
-                {
 
-                    Log.Message("CreateVerbTargetCommand_AdvancedGraphics start: " + __result.icon.name);
+                if (ownerThing.Graphic is Graphic_RandomRotated r)
+                {
                     __result.icon = ownerThing.Graphic.MatSingleFor(ownerThing).mainTexture as Texture2D;
                     __result.defaultIconColor = ownerThing.Graphic.color;
                 }

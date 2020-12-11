@@ -14,10 +14,12 @@ namespace ExtraHives
 {
     public static class DebugActionsMisc
 	{
+		/*
 		[DebugAction("General", "Increment time 90 day", allowedGameStates = AllowedGameStates.PlayingOnMap)]
 		private static void IncrementTime1Day()
 		{
 			Find.TickManager.DebugSetTicksGame(Find.TickManager.TicksGame + (60000 * 90));
 		}
+		*/
 	}
 }

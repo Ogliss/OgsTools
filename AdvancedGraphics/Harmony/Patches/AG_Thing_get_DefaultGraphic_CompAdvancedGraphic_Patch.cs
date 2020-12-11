@@ -21,13 +21,6 @@ namespace AdvancedGraphics.HarmonyInstance
         {
             if (__instance != null)
             {
-
-                Pawn pawn = __instance as Pawn;
-                if (pawn != null)
-                {
-                    //    return;
-                }
-
                 if (___graphicInt == null)
                 {
                     Graphic Graphic = __instance.def.graphicData?.Graphic;

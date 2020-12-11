@@ -8,8 +8,7 @@ using Verse.Sound;
 
 namespace AbilitesExtended
 {
-
-    // Token: 0x02000025 RID: 37
+    // AbilitesExtended.Verb_ShootEquipment
     public class Verb_ShootEquipment : Verb_EquipmentLaunchProjectile
     {
         // Token: 0x170006AA RID: 1706
@@ -47,18 +46,17 @@ namespace AbilitesExtended
         protected override bool TryCastShot()
         {
 
-            bool flag = base.TryCastShot();
+            bool flag = false;
+            for (int i = 0; i < PropjectilesPerShot; i++)
+            {
+                if (base.TryCastShot())
+                {
+                    flag = true;
+                }
+            }
             if (flag && this.CasterIsPawn)
             {
                 this.CasterPawn.records.Increment(RecordDefOf.ShotsFired);
-            }
-            for (int i = 0; i < PropjectilesPerShot; i++)
-            {
-                bool flag2 = base.TryCastShot();
-                if (flag2 && this.CasterIsPawn)
-                {
-                    this.CasterPawn.records.Increment(RecordDefOf.ShotsFired);
-                }
             }
             return flag;
         }

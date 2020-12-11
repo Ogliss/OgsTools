@@ -9,7 +9,7 @@ using Verse.Sound;
 namespace AbilitesExtended
 {
 
-    // Token: 0x02000025 RID: 37
+    // AbilitesExtended.Verb_UseEquipment
     public class Verb_UseEquipment : Verb_CastAbility
     {
         public VerbProperties_EquipmentAbility verbProperties
