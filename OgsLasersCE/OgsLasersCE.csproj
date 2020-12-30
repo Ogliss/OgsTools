@@ -31,31 +31,31 @@
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
   <ItemGroup>
-    <Compile Include="Building_LaserGunCE.cs" />
-    <Compile Include="Harmony\HarmonyInstance.cs" />
-    <Compile Include="Harmony\Patches\OL_PawnRenderer_Draw_WquipmentAiming_GunDrawing_Patch.cs" />
-    <Compile Include="Harmony\Patches\OL_TuretTop_DrawTurret_LaserTurret_Patch.cs" />
-    <Compile Include="IBeamColorThing.cs" />
-    <Compile Include="IDrawnWeaponWithRotation.cs" />
-    <Compile Include="JobDriver_ChangeLaserColor.cs" />
-    <Compile Include="LaserBeamCE.cs" />
-    <Compile Include="LaserBeamDecoration.cs" />
-    <Compile Include="LaserBeamDefCE.cs" />
-    <Compile Include="LaserBeamGraphicCE.cs" />
-    <Compile Include="LaserColor.cs" />
-    <Compile Include="LaserGun.cs" />
-    <Compile Include="LaserGunDef.cs" />
-    <Compile Include="LightningLaserBoltMeshMaker.cs" />
-    <Compile Include="LightningLaserBoltMeshPool.cs" />
-    <Compile Include="MeshMakerLaser.cs" />
-    <Compile Include="MoteLaserDectoration.cs" />
-    <Compile Include="MoteLaserDectorationCE.cs" />
+    <Compile Include="Source\Building_LaserGunCE.cs" />
+    <Compile Include="Source\Harmony\HarmonyInstance.cs" />
+    <Compile Include="Source\Harmony\Patches\OL_PawnRenderer_Draw_WquipmentAiming_GunDrawing_Patch.cs" />
+    <Compile Include="Source\Harmony\Patches\OL_TuretTop_DrawTurret_LaserTurret_Patch.cs" />
+    <Compile Include="Source\IBeamColorThing.cs" />
+    <Compile Include="Source\IDrawnWeaponWithRotation.cs" />
+    <Compile Include="Source\JobDriver_ChangeLaserColor.cs" />
+    <Compile Include="Source\LaserBeamCE.cs" />
+    <Compile Include="Source\LaserBeamDecoration.cs" />
+    <Compile Include="Source\LaserBeamDefCE.cs" />
+    <Compile Include="Source\LaserBeamGraphicCE.cs" />
+    <Compile Include="Source\LaserColor.cs" />
+    <Compile Include="Source\LaserGun.cs" />
+    <Compile Include="Source\LaserGunDef.cs" />
+    <Compile Include="Source\LightningLaserBoltMeshMaker.cs" />
+    <Compile Include="Source\LightningLaserBoltMeshPool.cs" />
+    <Compile Include="Source\MeshMakerLaser.cs" />
+    <Compile Include="Source\MoteLaserDectoration.cs" />
+    <Compile Include="Source\MoteLaserDectorationCE.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="SpinningLaserGun.cs" />
-    <Compile Include="SpinningLaserGunBase.cs" />
-    <Compile Include="SpinningLaserGunDef.cs" />
-    <Compile Include="SpinningLaserGunTurret.cs" />
-    <Compile Include="ThingExtensions.cs" />
+    <Compile Include="Source\SpinningLaserGun.cs" />
+    <Compile Include="Source\SpinningLaserGunBase.cs" />
+    <Compile Include="Source\SpinningLaserGunDef.cs" />
+    <Compile Include="Source\SpinningLaserGunTurret.cs" />
+    <Compile Include="Source\ThingExtensions.cs" />
   </ItemGroup>
   <ItemGroup>
     <Reference Include="CombatExtended">
