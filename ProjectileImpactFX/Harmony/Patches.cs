@@ -57,7 +57,19 @@ namespace ProjectileImpactFX.HarmonyInstance
                 Log.Warning("Patch is null Projectile_Impact_EffectProjectileExtension_Patch_CE.Prefix");
                 return false;
             }
-            return harmony.Patch(target, new HarmonyMethod(patch)) != null;
+            MethodInfo target2 = type.GetMethod("Tick");
+            if (target2 == null)
+            {
+                Log.Warning("Target2: CombatExtended.ProjectileCE.Tick Not found");
+                return false;
+            }
+            MethodInfo patch2 = typeof(Projectile_Tick_Trailer_Patch_CE).GetMethod("Postfix");
+            if (patch == null)
+            {
+                Log.Warning("Patch2 is null Projectile_Tick_Trailer_Patch_CE.Postfix");
+                return false;
+            }
+            return harmony.Patch(target, new HarmonyMethod(patch)) != null && harmony.Patch(target2, new HarmonyMethod(patch2)) != null;
 
         }
         public static bool VanillaPatch(Harmony harmony)
@@ -74,7 +86,19 @@ namespace ProjectileImpactFX.HarmonyInstance
                 Log.Warning("Patch is null Projectile_Impact_EffectProjectileExtension_Patch.Prefix");
                 return false;
             }
-            return harmony.Patch(target, new HarmonyMethod(patch)) != null;
+            MethodInfo target2 = typeof(Projectile).GetMethod("Tick");
+            if (target2 == null)
+            {
+                Log.Warning("Target2: Projectile.Tick Not found");
+                return false;
+            }
+            MethodInfo patch2 = typeof(Projectile_Tick_Trailer_Patch).GetMethod("Postfix");
+            if (patch == null)
+            {
+                Log.Warning("Patch2 is null Projectile_Tick_Trailer_Patch.Postfix");
+                return false;
+            }
+            return harmony.Patch(target, new HarmonyMethod(patch)) != null && harmony.Patch(target2, new HarmonyMethod(patch2)) != null;
         }
     }
 }

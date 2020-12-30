@@ -33,6 +33,7 @@
   <ItemGroup>
     <Compile Include="Building_LaserGun.cs" />
     <Compile Include="Harmony\HarmonyInstance.cs" />
+    <Compile Include="Harmony\Patches\Class1.cs" />
     <Compile Include="LaserBeamGraphic.cs" />
     <Compile Include="LightningLaserBoltMeshMaker.cs" />
     <Compile Include="LaserBeamDecoration.cs" />

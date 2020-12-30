@@ -31,7 +31,11 @@
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
   <ItemGroup>
+    <Compile Include="TrailerProjectileExtension.cs" />
     <Compile Include="EffectProjectileExtension.cs" />
+    <Compile Include="Harmony\Projectile_Tick_Trailer_Patch.cs" />
+    <Compile Include="Harmony\Projectile_Tick_Trailer_Patch_CE.cs" />
+    <Compile Include="TrailThrower.cs" />
     <Compile Include="Harmony\Projectile_Impact_EffectProjectileExtension_Patch_CE.cs" />
     <Compile Include="Harmony\Patches.cs" />
     <Compile Include="Harmony\Projectile_Impact_EffectProjectileExtension_Patch.cs" />
