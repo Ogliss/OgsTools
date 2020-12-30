@@ -34,9 +34,13 @@ namespace CompTurret.HarmonyInstance
             for (int i = 0; i < __instance.apparel.WornApparel.Count; i++)
             {
                 Apparel apparel = __instance.apparel.WornApparel[i];
-                foreach (CompTurretGun comp in apparel.GetComps<CompTurretGun>())
+                for (int ii = 0; ii < apparel.AllComps.Count; ii++)
                 {
-                    comp.CompTick();
+                    CompTurretGun turretGun = apparel.AllComps[ii] as CompTurretGun;
+                    if (turretGun != null)
+                    {
+                        turretGun.CompTick();
+                    }
                 }
             }
         }

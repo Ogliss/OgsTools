@@ -120,29 +120,35 @@ namespace CrashedShipsExtension
                     if (parent.Faction != null)
                     {
                         faction = parent.Faction;
+                        return faction;
                     }
-                    else
                     if (Props.Faction != null)
                     {
                         //    Log.Message(string.Format("Loading Faction Def from CompProps"));
                         factionDef = Props.Faction;
-                        faction = Find.FactionManager.FirstFactionOfDef(factionDef);
-                        Props.faction = faction;
+                        Faction f = Find.FactionManager.FirstFactionOfDef(factionDef);
+                        if (f != null)
+                        {
+                            faction = Find.FactionManager.FirstFactionOfDef(factionDef);
+                            return faction;
+                        }
                         //    Log.Message(string.Format("Owner: {0} Def of:{1}", Find.FactionManager.FirstFactionOfDef(factionDef), factionDef));
                     }
-                    else
+
                     if (Props.Factions.Count > 0)
                     {
                         //   Log.Message(string.Format("Loading Faction List from CompProps"));
-                        factionDef = Props.Factions.RandomElement<FactionDef>();
-                        Props.faction = faction;
-                        faction = Find.FactionManager.FirstFactionOfDef(factionDef);
+                        factionDef = Props.Factions.Where(x=> Find.FactionManager.FirstFactionOfDef(x) != null).RandomElement<FactionDef>();
+                        if (factionDef != null)
+                        {
+                            faction = Find.FactionManager.FirstFactionOfDef(factionDef);
+                        }
                         //    Log.Message(string.Format("Owner: {0} Def of:{1}", Find.FactionManager.FirstFactionOfDef(factionDef), factionDef));
                     }
-                    else
+                    if (faction == null)
                     {
                         //    Log.Message(string.Format("Getting Random Enemy Faction"));
-                        faction = Find.FactionManager.RandomEnemyFaction(Props.allowHidden, Props.allowDefeated, Props.allowNonHumanlike, techLevel);
+                        faction = RandomEnemyFaction(Props.allowHidden, Props.allowDefeated, Props.allowNonHumanlike, techLevel);
                         factionDef = faction.def;
                         Props.faction = faction;
                         //    Log.Message(string.Format("Owner: {0} Def of:{1}", faction.Name, factionDef));
@@ -153,9 +159,21 @@ namespace CrashedShipsExtension
             set
             {
                 faction = value;
+                this.parent.SetFactionDirect(value);
             }
         }
 
+        public Faction RandomEnemyFaction(bool allowHidden = false, bool allowDefeated = false, bool allowNonHumanlike = true, TechLevel minTechLevel = TechLevel.Undefined)
+        {
+            Faction result;
+            if ((from x in Find.FactionManager.GetFactions_NewTemp(allowHidden, allowDefeated, allowNonHumanlike, minTechLevel, false)
+                 where x.HostileTo(Faction.OfPlayer) && x.RandomPawnKind() != null
+                 select x).TryRandomElement(out result))
+            {
+                return result;
+            }
+            return null;
+        }
         // Token: 0x060029EB RID: 10731 RVA: 0x0013D92F File Offset: 0x0013BD2F
         public override void PostExposeData()
         {
@@ -164,6 +182,7 @@ namespace CrashedShipsExtension
             Scribe_References.Look<Faction>(ref this.faction, "defenseFaction", false);
             Scribe_Values.Look<float>(ref this.pointsLeft, "PawnPointsLeft", 0f, false);
         }
+        public static float Inverse(float val) => 1f / val;
 
         // Token: 0x060029EC RID: 10732 RVA: 0x0013D960 File Offset: 0x0013BD60
         public override void PostPreApplyDamage(DamageInfo dinfo, out bool absorbed)
@@ -175,6 +194,51 @@ namespace CrashedShipsExtension
             }
             if (dinfo.Def.harmsHealth)
             {
+                if (parent.Faction == null)
+                {
+                    parent.SetFactionDirect(OfFaction);
+                //    Log.Message("set parent faction to "+ this.parent.Faction+" of "+ parent.Faction.def.LabelCap);
+                    if (spawnablePawnKinds.NullOrEmpty())
+                    {
+                        if (!this.Props.allowedKinddefs.NullOrEmpty())
+                        {
+                            spawnablePawnKinds = this.Props.allowedKinddefs;
+                        }
+                        else
+                        {
+                            if (parent.Faction != null)
+                            {
+                                if (parent.Faction.def.pawnGroupMakers.NullOrEmpty())
+                                {
+                                    List<PawnKindDef> kinds = DefDatabase<PawnKindDef>.AllDefsListForReading.Where(x => x.isFighter && x.defaultFactionType != null && x.defaultFactionType == parent.Faction.def).ToList();
+
+                                    for (int i = 0; i < kinds.Count(); i++)
+                                    {
+                                        spawnablePawnKinds.Add(new PawnGenOption(kinds[i], Inverse(kinds[i].combatPower)));
+                                    }
+                                }
+                                else
+                                {
+                                    List<RimWorld.PawnGenOption> opts = new List<RimWorld.PawnGenOption>();
+
+                                    if (parent.Faction.def.pawnGroupMakers.Any(x => x.kindDef == this.Props.factionGroupKindDef))
+                                    {
+                                        opts = parent.Faction.def.pawnGroupMakers.Where(x => x.kindDef == this.Props.factionGroupKindDef).RandomElementByWeight(x => x.commonality).options;
+                                    }
+                                    else
+                                    {
+                                        opts = parent.Faction.def.pawnGroupMakers.Where(x => x.kindDef == RimWorld.PawnGroupKindDefOf.Combat || x.kindDef == RimWorld.PawnGroupKindDefOf.Settlement).RandomElementByWeight(x => x.commonality).options;
+                                    }
+                                    for (int i = 0; i < opts.Count(); i++)
+                                    {
+                                        spawnablePawnKinds.Add(new PawnGenOption(opts[i]));
+                                    }
+                                }
+                            }
+                        }
+                    }
+
+                }
                 if (this.lord != null)
                 {
                     this.lord.ReceiveMemo(CompSpawnerOnDamaged.MemoDamaged);
@@ -193,15 +257,10 @@ namespace CrashedShipsExtension
             base.PostSpawnSetup(respawningAfterLoad);
             if (!respawningAfterLoad)
             {
-                if (parent.Faction == null)
-                {
-                    parent.SetFaction(OfFaction);
-                //    Log.Message("set parent faction to "+ this.parent.Faction);
-                }
                 if (this.pointsLeft == 0f)
                 {
                     this.pointsLeft = Mathf.Max(Props.defaultPoints * 0.9f, Props.minPoints);
-                //    Log.Message("set pointsLeft to " + this.pointsLeft);
+                    //    Log.Message("set pointsLeft to " + this.pointsLeft);
                 }
             }
         }
@@ -210,27 +269,6 @@ namespace CrashedShipsExtension
         private void TrySpawnPawns()
         {
 
-            if (spawnablePawnKinds.NullOrEmpty())
-            {
-                if (!this.Props.allowedKinddefs.NullOrEmpty())
-                {
-                    spawnablePawnKinds = this.Props.allowedKinddefs;
-                }
-                else
-                {
-                    if (parent.Faction != null)
-                    {
-                        if (parent.Faction.def.pawnGroupMakers.Any(x => x.kindDef == this.Props.factionGroupKindDef))
-                        {
-                            spawnablePawnKinds = parent.Faction.def.pawnGroupMakers.Where(x => x.kindDef == this.Props.factionGroupKindDef).RandomElementByWeight(x => x.commonality).options;
-                        }
-                        else
-                        {
-                            spawnablePawnKinds = parent.Faction.def.pawnGroupMakers.Where(x => x.kindDef == RimWorld.PawnGroupKindDefOf.Combat || x.kindDef == RimWorld.PawnGroupKindDefOf.Settlement).RandomElementByWeight(x => x.commonality).options;
-                        }
-                    }
-                }
-            }
             IEnumerable<PawnGenOption> source = spawnablePawnKinds;
             if (this.pointsLeft <= 0f)
             {

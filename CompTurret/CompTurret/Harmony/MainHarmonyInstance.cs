@@ -1,9 +1,6 @@
-﻿using RimWorld;
-using Verse;
+﻿using Verse;
 using HarmonyLib;
 using System.Reflection;
-using System.Collections.Generic;
-using UnityEngine;
 
 namespace CompTurret.HarmonyInstance
 {

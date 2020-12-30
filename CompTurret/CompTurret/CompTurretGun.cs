@@ -401,7 +401,11 @@ namespace CompTurret
 			}
 			Thing tgt = (Thing)BestShootTargetFromCurrentPosition(attackTargetSearcher, AttackVerb, targetScanFlags, new Predicate<Thing>(this.IsValidTarget), 0f, 9999f, Building != null);
 
-			if (tgt == null && OperatorPawn?.verbTracker.PrimaryVerb.CurrentTarget != null && OperatorPawn.verbTracker.PrimaryVerb.CurrentTarget.HasThing) tgt = OperatorPawn.verbTracker.PrimaryVerb.CurrentTarget.Thing;
+			if (tgt == null && OperatorPawn?.verbTracker.PrimaryVerb.CurrentTarget != null && OperatorPawn.verbTracker.PrimaryVerb.CurrentTarget.HasThing)
+			{
+				tgt = OperatorPawn.verbTracker.PrimaryVerb.CurrentTarget.Thing;
+				Log.Message("TryFindNewTarget OperatorPawntgt found: " + (tgt != null));
+			}
 
 		//	Log.Messageage("TryFindNewTarget tgt found: " + (tgt != null));
 			return tgt;

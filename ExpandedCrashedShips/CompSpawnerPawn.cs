@@ -290,6 +290,7 @@ namespace CrashedShipsExtension
 				}
 			}
 		}
+		public static float Inverse(float val) => 1f / val;
 
 		// Token: 0x0600573F RID: 22335 RVA: 0x001D335C File Offset: 0x001D155CC
 		private PawnKindDef RandomPawnKindDef()
@@ -306,13 +307,31 @@ namespace CrashedShipsExtension
 				{
 					if (parent.Faction != null)
 					{
-						if (parent.Faction.def.pawnGroupMakers.Any(x => x.kindDef == this.Props.factionGroupKindDef))
+						if (parent.Faction.def.pawnGroupMakers.NullOrEmpty())
 						{
-							spawnablePawnKinds = parent.Faction.def.pawnGroupMakers.Where(x => x.kindDef == this.Props.factionGroupKindDef).RandomElementByWeight(x => x.commonality).options;
+							List<PawnKindDef> kinds = DefDatabase<PawnKindDef>.AllDefsListForReading.Where(x => x.isFighter && x.defaultFactionType != null && x.defaultFactionType == parent.Faction.def).ToList();
+
+							for (int i = 0; i < kinds.Count(); i++)
+							{
+								spawnablePawnKinds.Add(new PawnGenOption(kinds[i], Inverse(kinds[i].combatPower)));
+							}
 						}
 						else
 						{
-							spawnablePawnKinds = parent.Faction.def.pawnGroupMakers.Where(x => x.kindDef == RimWorld.PawnGroupKindDefOf.Combat || x.kindDef == RimWorld.PawnGroupKindDefOf.Settlement).RandomElementByWeight(x => x.commonality).options;
+							List<RimWorld.PawnGenOption> opts = new List<RimWorld.PawnGenOption>();
+
+							if (parent.Faction.def.pawnGroupMakers.Any(x => x.kindDef == this.Props.factionGroupKindDef))
+							{
+								opts = parent.Faction.def.pawnGroupMakers.Where(x => x.kindDef == this.Props.factionGroupKindDef).RandomElementByWeight(x => x.commonality).options;
+							}
+							else
+							{
+								opts = parent.Faction.def.pawnGroupMakers.Where(x => x.kindDef == RimWorld.PawnGroupKindDefOf.Combat || x.kindDef == RimWorld.PawnGroupKindDefOf.Settlement).RandomElementByWeight(x => x.commonality).options;
+							}
+							for (int i = 0; i < opts.Count(); i++)
+							{
+								spawnablePawnKinds.Add(new PawnGenOption(opts[i]));
+							}
 						}
 					}
 				}

@@ -537,8 +537,17 @@ namespace OgsCompOversizedWeapon
         {
             if (___graphicInt == null) return;
             if (__instance.ParentHolder is Pawn) return;
-
-            var compOversizedWeapon = __instance.TryGetComp<CompOversizedWeapon>();
+            ThingWithComps withComps = __instance as ThingWithComps;
+            if (withComps == null) return;
+            CompOversizedWeapon compOversizedWeapon = null;
+            for (int i = 0; i < withComps.AllComps.Count; i++)
+            {
+                compOversizedWeapon = withComps.AllComps[i] as CompOversizedWeapon;
+                if (compOversizedWeapon != null)
+                {
+                    break;
+                }
+            }
             if (compOversizedWeapon != null)
             {
             //    Log.Message("am i doing anything? :" + __instance);

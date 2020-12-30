@@ -73,6 +73,10 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "HunterMarkingSystem", "Hunt
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ResourceBoxes", "ResourceBoxes\ResourceBoxes.csproj", "{39C8990C-9E46-45AC-A9EB-E54B57E11D0E}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PlaceworkersPlus", "PlaceworkersPlus\PlaceworkersPlus.csproj", "{8DB7E001-9E70-4926-804D-8BA103FBC940}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ProjectileImpactFX", "ProjectileImpactFX\ProjectileImpactFX.csproj", "{CCF99513-ED8B-43D3-8717-A4BBE5E68443}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -203,6 +207,14 @@ Global
 		{39C8990C-9E46-45AC-A9EB-E54B57E11D0E}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{39C8990C-9E46-45AC-A9EB-E54B57E11D0E}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{39C8990C-9E46-45AC-A9EB-E54B57E11D0E}.Release|Any CPU.Build.0 = Release|Any CPU
+		{8DB7E001-9E70-4926-804D-8BA103FBC940}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{8DB7E001-9E70-4926-804D-8BA103FBC940}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{8DB7E001-9E70-4926-804D-8BA103FBC940}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{8DB7E001-9E70-4926-804D-8BA103FBC940}.Release|Any CPU.Build.0 = Release|Any CPU
+		{CCF99513-ED8B-43D3-8717-A4BBE5E68443}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{CCF99513-ED8B-43D3-8717-A4BBE5E68443}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{CCF99513-ED8B-43D3-8717-A4BBE5E68443}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{CCF99513-ED8B-43D3-8717-A4BBE5E68443}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
