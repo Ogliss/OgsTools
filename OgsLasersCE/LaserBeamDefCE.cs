@@ -7,7 +7,7 @@ using System.Text;
 using UnityEngine;
 using Verse;
 
-namespace AdeptusMechanicus
+namespace OgsLasers
 {
     public class LaserBeamDefCE : AmmoDef
     {

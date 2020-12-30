@@ -5,7 +5,7 @@ using System.Text;
 using UnityEngine;
 using Verse;
 
-namespace AdeptusMechanicus
+namespace OgsLasers
 {
     public class LaserBeamGraphicCE :Thing
     {

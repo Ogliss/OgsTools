@@ -5,7 +5,7 @@ using HarmonyLib;
 using RimWorld;
 using Verse;
 
-namespace AdeptusMechanicus.HarmonyInstance
+namespace OgsLasers
 {
     [StaticConstructorOnStartup]
     public static class HarmonyInstance

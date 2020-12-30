@@ -4,7 +4,7 @@ using System.Collections.Generic;
 using Verse;
 using Verse.Sound;
 
-namespace AdeptusMechanicus
+namespace OgsLasers
 {
     public class Building_LaserGunDef : ThingDef
     {

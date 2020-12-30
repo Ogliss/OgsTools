@@ -1,7 +1,7 @@
 ﻿using System.Collections.Generic;
 using Verse;
 
-namespace AdeptusMechanicus
+namespace OgsLasers
 {
     public class SpinningLaserGunDef : LaserGunDef
     {

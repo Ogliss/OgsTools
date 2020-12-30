@@ -11,6 +11,7 @@ namespace ProjectileImpactFX
     {
         public bool explosionMote = false;
         public float explosionMoteSize = 1f;
+        public EffecterDef explosionEffecter;
         public FloatRange? explosionMoteSizeRange;
         public string ImpactMoteDef = string.Empty;
         public float ImpactMoteSize = 1f;
@@ -57,7 +58,7 @@ namespace ProjectileImpactFX
             {
                 if (hitThing != null && hitThing is Pawn pawn)
                 {
-                    ImpactMoteDef = ThingDef.Named("AdeptusMechanicus_Mote_Blood_Puff");
+                    ImpactMoteDef = ThingDef.Named("Mote_Blood_Puff");
                     if (sound != null)
                     {
                         sound.PlayOneShot(new TargetInfo(loc.ToIntVec3(), map, false));
@@ -72,12 +73,36 @@ namespace ProjectileImpactFX
                     moteThrown.instanceColor = pawn.RaceProps.BloodDef.graphic.color;
                     moteThrown.SetVelocity(VelocityAngel, VelocitySpeed);
                     GenSpawn.Spawn(moteThrown, loc.ToIntVec3(), map, WipeMode.Vanish);
+                    if (explosionEffecter != null)
+                    {
+                        TriggerEffect(explosionEffecter, loc, map, hitThing);
+                    }
                 }
                 else
                 {
+                    if (explosionEffecter != null)
+                    {
+                        TriggerEffect(explosionEffecter, loc, map);
+                    }
                     MoteMaker.MakeStaticMote(loc, map, ImpactMoteDef, ImpactMoteSize);
                 }
             }
         }
+        void TriggerEffect(EffecterDef effect, Vector3 position, Map map, Thing hitThing = null)
+        {
+            TriggerEffect(effect, IntVec3.FromVector3(position), map);
+        }
+
+        void TriggerEffect(EffecterDef effect, IntVec3 dest, Map map)
+        {
+            if (effect == null) return;
+
+            var targetInfo = new TargetInfo(dest, map, false);
+
+            Effecter effecter = effect.Spawn();
+            effecter.Trigger(targetInfo, targetInfo);
+            effecter.Cleanup();
+        }
+
     }
 }

@@ -5,7 +5,7 @@ using UnityEngine;
 using Verse;
 using Verse.AI;
 
-namespace AdeptusMechanicus
+namespace OgsLasers
 {
 
     public class LaserGun : ThingWithComps, IBeamColorThing, IDrawnWeaponWithRotation

@@ -4,11 +4,11 @@ using System.Linq;
 using System.Text;
 using Verse;
 
-namespace AdeptusMechanicus
+namespace OgsLasers
 {
     class MoteLaserDectoration : MoteThrown
     {
-        public LaserBeamGraphic beam;
+        public LaserBeamGraphicCE beam;
         public float baseSpeed;
         public float speedJitter;
         public float speedJitterOffset;

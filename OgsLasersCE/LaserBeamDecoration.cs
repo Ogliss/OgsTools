@@ -1,6 +1,6 @@
 ﻿using Verse;
 
-namespace AdeptusMechanicus
+namespace OgsLasers
 {
     public class LaserBeamDecoration
     {

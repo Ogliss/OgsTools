@@ -8,7 +8,7 @@ using System.Text;
 using UnityEngine;
 using Verse;
 
-namespace AdeptusMechanicus
+namespace OgsLasers
 {
     [HarmonyPatch(typeof(TurretTop), "DrawTurret", new Type[] { }), StaticConstructorOnStartup]
     class OL_TuretTop_DrawTurret_LaserTurret_Patch

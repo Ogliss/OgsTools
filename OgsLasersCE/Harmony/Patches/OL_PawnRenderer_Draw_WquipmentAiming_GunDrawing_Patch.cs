@@ -7,7 +7,7 @@ using System.Text;
 using UnityEngine;
 using Verse;
 
-namespace AdeptusMechanicus
+namespace OgsLasers
 {
 
     [HarmonyPatch(typeof(PawnRenderer), "DrawEquipmentAiming", new Type[] { typeof(Thing), typeof(Vector3), typeof(float) }), StaticConstructorOnStartup]
