@@ -10,6 +10,7 @@ namespace ProjectileImpactFX
     public class EffectProjectileExtension : DefModExtension
     {
         public bool explosionMote = false;
+        public string explosionMoteDef = string.Empty;
         public float explosionMoteSize = 1f;
         public EffecterDef explosionEffecter;
         public FloatRange? explosionMoteSizeRange;
@@ -45,6 +46,19 @@ namespace ProjectileImpactFX
             {
                 MoteThrown moteThrown;
                 moteThrown = (MoteThrown)ThingMaker.MakeThing(explosionMoteDef, null);
+                moteThrown.Scale = explosionSize;
+                Rand.PushState();
+                moteThrown.rotationRate = Rand.Range(-30f, 30f);
+                Rand.PopState();
+                moteThrown.exactPosition = loc;
+                moteThrown.instanceColor = color;
+                moteThrown.SetVelocity(VelocityAngel, VelocitySpeed);
+                GenSpawn.Spawn(moteThrown, loc.ToIntVec3(), map, WipeMode.Vanish);
+            }
+            if (this.explosionMoteDef != null && explosionMote)
+            {
+                MoteThrown moteThrown;
+                moteThrown = (MoteThrown)ThingMaker.MakeThing(ThingDef.Named(this.explosionMoteDef), null);
                 moteThrown.Scale = explosionSize;
                 Rand.PushState();
                 moteThrown.rotationRate = Rand.Range(-30f, 30f);

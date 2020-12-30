@@ -17,7 +17,7 @@
     <DebugSymbols>true</DebugSymbols>
     <DebugType>full</DebugType>
     <Optimize>false</Optimize>
-    <OutputPath>..\..\..\..\..\Program Files %28x86%29\Steam\steamapps\common\RimWorld\Mods\BlackAndWhiteDeathWhisper\Assemblies\</OutputPath>
+    <OutputPath>bin\Debug\</OutputPath>
     <DefineConstants>DEBUG;TRACE</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
@@ -71,6 +71,13 @@
     <PackageReference Include="Lib.Harmony">
       <Version>2.0.4</Version>
     </PackageReference>
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="XML\Defs\Required\Abstracts_Lasers.xml" />
+    <Content Include="XML\Defs\Required\Laser_Effecter.xml" />
+    <Content Include="XML\Defs\Example\Las_Ammo.xml" />
+    <Content Include="XML\Defs\Example\TestLaser.xml" />
+    <Content Include="XML\Patches_Example\Weapons_Imperial_Ranged.xml" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>
