@@ -27,6 +27,86 @@ namespace ProjectileImpactFX
         public string muzzleSmokeDef = string.Empty;
         public float muzzleSmokeSize = 0.35f;
 
+        public void ThrowMote(Vector3 loc, Map map, ThingDef explosionMoteDef, Color color, SoundDef sound, EffectProjectileExtension effects, Thing hitThing = null)
+        {
+            ThingDef explosionmoteDef = explosionMoteDef;
+            ThingDef ImpactMoteDef = DefDatabase<ThingDef>.GetNamedSilentFail(effects.ImpactMoteDef) ?? null;
+            ThingDef ImpactGlowMoteDef = DefDatabase<ThingDef>.GetNamedSilentFail(effects.ImpactGlowMoteDef) ?? null;
+            float explosionSize = effects.explosionMoteSize;
+            float ImpactMoteSize = effects.ImpactMoteSizeRange?.RandomInRange ?? effects.ImpactMoteSize;
+            float ImpactGlowMoteSize = effects.ImpactGlowMoteSizeRange?.RandomInRange ?? effects.ImpactGlowMoteSize;
+            if (!loc.ShouldSpawnMotesAt(map) || map.moteCounter.SaturatedLowPriority)
+            {
+                return;
+            }
+            Rand.PushState();
+            float rotationRate = Rand.Range(-30f, 30f);
+            float VelocityAngel = (float)Rand.Range(0, 360);
+            float VelocitySpeed = Rand.Range(0.48f, 0.72f);
+            Rand.PopState();
+            if (ImpactGlowMoteDef != null)
+            {
+                MoteMaker.MakeStaticMote(loc, map, ImpactGlowMoteDef, ImpactGlowMoteSize);
+            }
+            if (explosionMote)
+            {
+                if (!this.explosionMoteDef.NullOrEmpty())
+                {
+                    ThingDef def = DefDatabase<ThingDef>.GetNamedSilentFail(this.explosionMoteDef);
+                    if (def != null)
+                    {
+                        explosionmoteDef = def;
+                    }
+                }
+                if (explosionmoteDef != null)
+                {
+                    MoteThrown moteThrown;
+                    moteThrown = (MoteThrown)ThingMaker.MakeThing(explosionmoteDef, null);
+                    moteThrown.Scale = explosionSize;
+                    Rand.PushState();
+                    moteThrown.rotationRate = Rand.Range(-30f, 30f);
+                    Rand.PopState();
+                    moteThrown.exactPosition = loc;
+                    moteThrown.instanceColor = color;
+                    moteThrown.SetVelocity(VelocityAngel, VelocitySpeed);
+                    GenSpawn.Spawn(moteThrown, loc.ToIntVec3(), map, WipeMode.Vanish);
+                }
+
+            }
+            if (ImpactMoteDef != null)
+            {
+                if (hitThing != null && hitThing is Pawn pawn)
+                {
+                    ImpactMoteDef = ThingDef.Named("Mote_Blood_Puff");
+                    if (sound != null)
+                    {
+                        sound.PlayOneShot(new TargetInfo(loc.ToIntVec3(), map, false));
+                    }
+                    MoteThrown moteThrown;
+                    moteThrown = (MoteThrown)ThingMaker.MakeThing(ImpactMoteDef, null);
+                    moteThrown.Scale = ImpactMoteSize;
+                    Rand.PushState();
+                    moteThrown.rotationRate = Rand.Range(-30f, 30f);
+                    Rand.PopState();
+                    moteThrown.exactPosition = loc;
+                    moteThrown.instanceColor = pawn.RaceProps.BloodDef.graphic.color;
+                    moteThrown.SetVelocity(VelocityAngel, VelocitySpeed);
+                    GenSpawn.Spawn(moteThrown, loc.ToIntVec3(), map, WipeMode.Vanish);
+                    if (explosionEffecter != null)
+                    {
+                        TriggerEffect(explosionEffecter, loc, map, hitThing);
+                    }
+                }
+                else
+                {
+                    if (explosionEffecter != null)
+                    {
+                        TriggerEffect(explosionEffecter, loc, map);
+                    }
+                    MoteMaker.MakeStaticMote(loc, map, ImpactMoteDef, ImpactMoteSize);
+                }
+            }
+        }
         public void ThrowMote(Vector3 loc, Map map, ThingDef explosionMoteDef, float explosionSize, Color color, SoundDef sound, ThingDef ImpactMoteDef, float ImpactMoteSize, ThingDef ImpactGlowMoteDef, float ImpactGlowMoteSize, Thing hitThing = null)
         {
             if (!loc.ShouldSpawnMotesAt(map) || map.moteCounter.SaturatedLowPriority)

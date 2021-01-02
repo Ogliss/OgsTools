@@ -17,7 +17,7 @@
     <DebugSymbols>true</DebugSymbols>
     <DebugType>full</DebugType>
     <Optimize>false</Optimize>
-    <OutputPath>bin\Debug\</OutputPath>
+    <OutputPath>..\..\..\..\..\Program Files %28x86%29\Steam\steamapps\common\RimWorld\Mods\BlackAndWhiteDeathWhisper\Assemblies\</OutputPath>
     <DefineConstants>DEBUG;TRACE</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
@@ -31,6 +31,8 @@
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
   <ItemGroup>
+    <Compile Include="BarrelOffsetExtension.cs" />
+    <Compile Include="Harmony\Verb_TryCastNextBurstShot_MuzzlePosition_Transpiler.cs" />
     <Compile Include="TrailerProjectileExtension.cs" />
     <Compile Include="EffectProjectileExtension.cs" />
     <Compile Include="Harmony\Projectile_Tick_Trailer_Patch.cs" />
@@ -42,6 +44,10 @@
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>
+    <Reference Include="1CompOversizedWeapon">
+      <HintPath>..\CompOversizedWeapon\bin\Debug\1CompOversizedWeapon.dll</HintPath>
+      <Private>False</Private>
+    </Reference>
     <Reference Include="CombatExtended">
       <HintPath>..\..\..\..\..\Program Files (x86)\Steam\steamapps\workshop\content\294100\1631756268\Assemblies\CombatExtended.dll</HintPath>
       <Private>False</Private>

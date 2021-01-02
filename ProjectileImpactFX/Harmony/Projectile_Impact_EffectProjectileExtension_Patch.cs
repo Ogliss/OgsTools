@@ -28,10 +28,11 @@ namespace ProjectileImpactFX.HarmonyInstance
 
         private static void EffectProjectileExtension(Projectile __instance, Vector3 vector, Thing hitThing)
         {
-            if (__instance.def.HasModExtension<EffectProjectileExtension>())
+            EffectProjectileExtension effects = __instance.def.GetModExtension<EffectProjectileExtension>();
+            if (effects != null)
             {
-                EffectProjectileExtension effects = __instance.def.GetModExtension<EffectProjectileExtension>();
-                effects.ThrowMote(vector, __instance.Map, __instance.def.projectile.damageDef.explosionCellMote, effects.explosionMoteSize, __instance.def.projectile.damageDef.explosionColorCenter, __instance.def.projectile.damageDef.soundExplosion, ThingDef.Named(effects.ImpactMoteDef) ?? null, effects.ImpactMoteSizeRange?.RandomInRange ?? effects.ImpactMoteSize, ThingDef.Named(effects.ImpactGlowMoteDef) ?? null, effects.ImpactGlowMoteSizeRange?.RandomInRange ?? effects.ImpactGlowMoteSize, hitThing);
+            //    effects.ThrowMote(vector, __instance.Map, __instance.def.projectile.damageDef.explosionCellMote, effects.explosionMoteSize, __instance.def.projectile.damageDef.explosionColorCenter, __instance.def.projectile.damageDef.soundExplosion, ThingDef.Named(effects.ImpactMoteDef) ?? null, effects.ImpactMoteSizeRange?.RandomInRange ?? effects.ImpactMoteSize, ThingDef.Named(effects.ImpactGlowMoteDef) ?? null, effects.ImpactGlowMoteSizeRange?.RandomInRange ?? effects.ImpactGlowMoteSize, hitThing);
+                effects.ThrowMote(vector, __instance.Map, __instance.def.projectile.damageDef.explosionCellMote, __instance.def.projectile.damageDef.explosionColorCenter, __instance.def.projectile.damageDef.soundExplosion, effects, hitThing);
             }
         }
     }

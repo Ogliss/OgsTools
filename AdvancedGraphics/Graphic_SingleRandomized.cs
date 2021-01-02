@@ -68,7 +68,7 @@ namespace AdvancedGraphics
 
 		public override Graphic GetColoredVersion(Shader newShader, Color newColor, Color newColorTwo)
 		{
-			return GraphicDatabase.Get<Graphic_SingleRandomized>(this.path, newShader, this.drawSize, newColor, newColorTwo, this.data);
+			return GraphicDatabase.Get<Graphic_Single>(this.path, newShader, this.drawSize, newColor, newColorTwo, this.data);
 		}
 
         public override Material MatSingle

@@ -205,6 +205,10 @@ namespace CompTurret
 		public override void CompTick()
 		{
 			base.CompTick();
+			if (Operator == null)
+			{
+				return;
+			}
 			if (this.Stunned)
 			{
 				this.stunTicksLeft--;
@@ -214,7 +218,7 @@ namespace CompTurret
 				}
 				return;
 			}
-            if (Operator.Map == null)
+            if (Operator?.Map == null)
 			{
 				return;
 			}

@@ -252,6 +252,7 @@ namespace OgsCompOversizedWeapon
 		public static void SetAnglesAndOffsets(Thing eq, ThingWithComps offHandEquip, float aimAngle, Thing thing, ref Vector3 offsetMainHand, ref Vector3 offsetOffHand, ref float mainHandAngle, ref float offHandAngle, bool mainHandAiming, bool offHandAiming)
 		{
 			CompOversizedWeapon compOversized = eq.TryGetComp<CompOversizedWeapon>();
+
 			CompProperties_OversizedWeapon PropsOversized = compOversized.Props;
 
 			Pawn pawn = thing as Pawn;
@@ -261,7 +262,12 @@ namespace OgsCompOversizedWeapon
 			{
 				Melee = Harmony_PawnRenderer_DrawEquipmentAiming_Transpiler.IsMeleeWeapon(pawn.equipment.Primary);
 			}
-			bool Dual = PropsOversized != null && PropsOversized.isDualWeapon;
+
+			bool Dual = false;
+            if (PropsOversized != null)
+            {
+				Dual = PropsOversized.isDualWeapon;
+			}
 			float num = meleeMirrored ? (360f - meleeAngle) : meleeAngle;
 			float num2 = rangedMirrored ? (360f - rangedAngle) : rangedAngle;
 			Vector3 offset = AdjustRenderOffsetFromDir(thing.Rotation, compOversized, offHandAiming);
@@ -273,7 +279,10 @@ namespace OgsCompOversizedWeapon
 				offsetOffHand.z = 0.1f;
 				offsetOffHand.z += offset.z;
 				offsetOffHand.x += offset.x;
-				mainHandAngle += PropsOversized.angleAdjustmentEast;
+                if (PropsOversized != null)
+				{
+					mainHandAngle += PropsOversized.angleAdjustmentEast;
+				}
 				offHandAngle = mainHandAngle;
 			}
 			else
@@ -286,7 +295,10 @@ namespace OgsCompOversizedWeapon
 					offsetOffHand.z = -0.1f;
 					offsetOffHand.z += offset.z;
 					offsetOffHand.x += offset.x;
-					mainHandAngle += PropsOversized.angleAdjustmentWest;
+					if (PropsOversized != null)
+					{
+						mainHandAngle += PropsOversized.angleAdjustmentWest;
+					}
 					offHandAngle = mainHandAngle;
 				}
 				else
@@ -299,8 +311,11 @@ namespace OgsCompOversizedWeapon
 							offsetOffHand.x = -offset.x + (Melee ? -meleeXOffset : -rangedXOffset);
 							offsetMainHand.z = offset.z + (Dual ? (Melee ? meleeZOffset : rangedZOffset) : 0);
 							offsetOffHand.z = offset.z + (Melee ? meleeZOffset : rangedZOffset);
-							offHandAngle = PropsOversized.angleAdjustmentNorth + (Melee ? meleeAngle : rangedAngle);
-							mainHandAngle = -PropsOversized.angleAdjustmentNorth + (Melee ? num : num2);
+							if (PropsOversized != null)
+							{
+								offHandAngle = PropsOversized.angleAdjustmentNorth + (Melee ? meleeAngle : rangedAngle);
+								mainHandAngle = -PropsOversized.angleAdjustmentNorth + (Melee ? num : num2);
+							}
 						}
 						else
 						{
@@ -316,8 +331,11 @@ namespace OgsCompOversizedWeapon
 							offsetOffHand.x = offset.x + (Melee ? meleeXOffset : rangedXOffset);
 							offsetMainHand.z = offset.z + (Dual ? (Melee ? meleeZOffset : rangedZOffset) : 0);
 							offsetOffHand.z = offset.z + (Melee ? meleeZOffset : rangedZOffset);
-							offHandAngle = -PropsOversized.angleAdjustmentSouth + (Melee ? num : num2);
-							mainHandAngle = PropsOversized.angleAdjustmentSouth + (Melee ? meleeAngle : rangedAngle);
+							if (PropsOversized != null)
+							{
+								offHandAngle = -PropsOversized.angleAdjustmentSouth + (Melee ? num : num2);
+								mainHandAngle = PropsOversized.angleAdjustmentSouth + (Melee ? meleeAngle : rangedAngle);
+							}
 						}
 						else
 						{

@@ -39,6 +39,25 @@ namespace ProjectileImpactFX.HarmonyInstance
                     Log.Warning("Vanilla Patch Failed");
                 }
             }
+
+            MethodInfo target = typeof(Verb).GetMethod("TryCastNextBurstShot", BindingFlags.NonPublic | BindingFlags.Instance);
+            if (target == null)
+            {
+                Log.Warning("Target: Verb.TryCastNextBurstShot Not found");
+            }
+            MethodInfo patch = typeof(Verb_TryCastNextBurstShot_MuzzlePosition_Transpiler).GetMethod("Transpiler");
+            if (patch == null)
+            {
+                Log.Warning("Patch is null Verb_TryCastNextBurstShot_MuzzlePosition_Transpiler.Transpiler");
+            }
+            if (target != null && patch != null)
+            {
+                if (harmony.Patch(target, null, null, new HarmonyMethod(patch)) == null)
+                {
+                    Log.Warning("ProjectileFX: Muzzle Position Transpiler Failed to apply");
+                }
+            }
+
          //   harmony.PatchAll(Assembly.GetExecutingAssembly());
         }
 
