@@ -108,10 +108,13 @@ namespace ExtraHives
 		public override void Tick()
 		{
 			base.Tick();
-			if (base.Spawned && !this.CompDormant.Awake && !base.Position.Fogged(base.Map))
-			{
-				this.CompDormant.WakeUp();
-			}
+            if (this.CompDormant != null)
+            {
+				if (base.Spawned && !this.CompDormant.Awake && !base.Position.Fogged(base.Map))
+				{
+					this.CompDormant.WakeUp();
+				}
+            }
 		}
 
 		// Token: 0x06004E26 RID: 20006 RVA: 0x001A412C File Offset: 0x001A232C

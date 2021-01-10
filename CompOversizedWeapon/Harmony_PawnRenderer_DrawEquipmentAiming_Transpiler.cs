@@ -211,7 +211,8 @@ namespace OgsCompOversizedWeapon
 				if (HarmonyCompOversizedWeapon.enabled_AlienRaces)
 				{
 					Vector2 v = AlienRacesPatch(pawn);
-					s = new Vector3(eq.def.graphicData.drawSize.x * v.x, 1f, eq.def.graphicData.drawSize.y * v.y);
+					float f = Mathf.Max(v.x, v.y);
+					s = new Vector3(eq.def.graphicData.drawSize.x * f, 1f, eq.def.graphicData.drawSize.y * f);
 				}
 				else
 				{
