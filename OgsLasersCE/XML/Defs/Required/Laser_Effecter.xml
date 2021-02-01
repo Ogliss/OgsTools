@@ -14,6 +14,19 @@
     </mote>
   </ThingDef>
   
+  <ThingDef ParentName="MoteBase">
+    <defName>Mote_Blood_Puff</defName>
+    <graphicData>
+      <texPath>Things/Mote/BodyImpact</texPath>
+    </graphicData>
+    <altitudeLayer>MoteOverhead</altitudeLayer>
+    <mote>
+      <fadeInTime>0.04</fadeInTime>
+      <solidTime>0.25</solidTime>
+      <fadeOutTime>0.1</fadeOutTime>
+    </mote>
+  </ThingDef>
+  
   <EffecterDef Name="LaserImpact">
     <defName>LaserImpact</defName>
     <children>

@@ -22,8 +22,8 @@
 		<defName>AmmoSet_OGLasStd</defName>
 		<label>Las charge (Imperial)</label>
 		<ammoTypes>
-			<Ammo_OGLasStd>OGI_Bullet_LasGun</Ammo_OGLasStd>
-			<!--Ammo_OGLasStd>OGI_Bullet_LasGun_Hot</Ammo_OGLasStd-->
+			<Ammo_OGLasStd>Bullet_LasGun</Ammo_OGLasStd>
+			<!--Ammo_OGLasStd>Bullet_LasGun_Hot</Ammo_OGLasStd-->
 		</ammoTypes>
 	</CombatExtended.AmmoSetDef>
 

@@ -64,7 +64,7 @@ namespace OgsLasers
             bool shielded = hitThing.IsShielded() && def.IsWeakToShields;
 
             LaserGunDef defWeapon = equipmentDef as LaserGunDef;
-            Vector3 dir = (destination - Origin).normalized;
+            Vector3 dir = ShotLine.direction;
             dir.y = 0;
 
             Vector3 a = Origin + dir * (defWeapon == null ? 0.9f : defWeapon.barrelLength);
@@ -92,7 +92,7 @@ namespace OgsLasers
                 Rand.PopState();
             }
             a.y = b.y = def.Altitude;
-            SpawnBeam(a, b);
+        //    SpawnBeam(a, b);
             /*
             bool createsExplosion = this.def.projectile.explosionRadius>0f;
             if (createsExplosion)
@@ -292,13 +292,13 @@ namespace OgsLasers
         }
         public override void DeSpawn(DestroyMode mode = DestroyMode.Vanish)
         {
+            
             LaserGunDef defWeapon = equipmentDef as LaserGunDef;
-            Vector3 dir = (destination - Origin).normalized;
-            dir.y = 0;
-            Vector3 a = Origin + dir * (defWeapon == null ? 0.9f : defWeapon.barrelLength);
-            Vector3 b = destination;
+            Vector3 a = Origin + ShotLine.direction * (defWeapon == null ? 0.9f : defWeapon.barrelLength);
+            Vector3 b = ExactPosition;
             a.y = b.y = def.Altitude;
             SpawnBeam(a, b);
+            
             base.DeSpawn(mode);
         }
     }

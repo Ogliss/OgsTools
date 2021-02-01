@@ -10,8 +10,6 @@ using System.Linq;
 using Verse.AI.Group;
 using RimWorld.Planet;
 using UnityEngine;
-using CloakingDevice.settings;
-using CloakingDevice.ExtensionMethods;
 
 namespace CloakingDevice.HarmonyInstance
 {
@@ -69,7 +67,7 @@ namespace CloakingDevice.HarmonyInstance
 			{
 				if (pawn.CarriedBy != null)
 				{
-					if (pawn.CarriedBy.isXenomorph())
+					if (pawn.CarriedBy.isCloaked())
 					{
 						__result.SetTexture(AvPConstants.Invisiblegraphics(pawn).hairGraphic.MatSingle.name, AvPConstants.Invisiblegraphics(pawn).hairGraphic.MatSingle.mainTexture);
 						__result.shader = ShaderDatabase.Cutout;

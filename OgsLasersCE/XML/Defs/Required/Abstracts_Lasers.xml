@@ -22,14 +22,14 @@
     <graphicData>
       <graphicClass>Graphic_Single</graphicClass>
       <texPath>Things/Mote/LongSparkThrown</texPath>
-      <shaderType>TransparentPostLight</shaderType>
+      <shaderType>MoteGlow</shaderType>
       <drawSize>1.5</drawSize>
     </graphicData>
     <explosionEffect>LaserImpact</explosionEffect>
     <hitLivingEffect>LaserLivingImpact</hitLivingEffect>
     <projectile>
       <damageDef>Bomb</damageDef>
-      <speed>10000</speed>
+      <speed>500</speed>
     </projectile>
     
     <seam>0.25</seam>
@@ -39,7 +39,7 @@
     <graphicData>
       <graphicClass>Graphic_Single</graphicClass>
       <texPath>Things/Mote/LongSparkThrown</texPath>
-      <shaderType>TransparentPostLight</shaderType>
+      <shaderType>MoteGlow</shaderType>
       <drawSize>1.5</drawSize>
     </graphicData>
   </ThingDef>

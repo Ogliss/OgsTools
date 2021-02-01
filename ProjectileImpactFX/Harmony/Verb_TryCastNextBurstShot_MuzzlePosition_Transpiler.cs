@@ -116,6 +116,7 @@ namespace ProjectileImpactFX.HarmonyInstance
 		public static bool meleeMirrored = true;
 		public static float rangedAngle = 135f;
 		public static bool rangedMirrored = true;
+
 		public static void SetAnglesAndOffsets(Thing eq, ThingWithComps offHandEquip, float aimAngle, Thing thing, ref Vector3 offsetMainHand, ref Vector3 offsetOffHand, ref float mainHandAngle, ref float offHandAngle, bool mainHandAiming, bool offHandAiming)
 		{
 			CompOversizedWeapon compOversized = eq.TryGetComp<CompOversizedWeapon>();
@@ -137,7 +138,26 @@ namespace ProjectileImpactFX.HarmonyInstance
 			}
 			float num = meleeMirrored ? (360f - meleeAngle) : meleeAngle;
 			float num2 = rangedMirrored ? (360f - rangedAngle) : rangedAngle;
-			Vector3 offset = AdjustRenderOffsetFromDir(thing.Rotation, compOversized, offHandAiming);
+
+			Vector3 offset = Vector3.zero;
+
+			if (compOversized?.Props != null)
+			{
+
+				offset = offHandAiming ? -compOversized.Props.southOffset : compOversized.Props.southOffset;
+				if (thing.Rotation == Rot4.North)
+				{
+					offset = offHandAiming ? -compOversized.Props.northOffset : compOversized.Props.northOffset;
+				}
+				else if (thing.Rotation == Rot4.East)
+				{
+					offset = offHandAiming ? -compOversized.Props.eastOffset : compOversized.Props.eastOffset;
+				}
+				else if (thing.Rotation == Rot4.West)
+				{
+					offset = offHandAiming ? -compOversized.Props.westOffset : compOversized.Props.westOffset;
+				}
+			}
 			if (thing.Rotation == Rot4.East)
 			{
 				offsetMainHand.z += offset.z;
@@ -227,31 +247,6 @@ namespace ProjectileImpactFX.HarmonyInstance
 			}
 		}
 
-		private static Vector3 AdjustRenderOffsetFromDir(Rot4 curDir, CompOversizedWeapon compOversizedWeapon, bool Offhand = false)
-		{
-
-			Vector3 curOffset = Vector3.zero;
-
-			if (compOversizedWeapon?.Props != null)
-			{
-
-				curOffset = Offhand ? -compOversizedWeapon.Props.southOffset : compOversizedWeapon.Props.southOffset;
-				if (curDir == Rot4.North)
-				{
-					curOffset = Offhand ? -compOversizedWeapon.Props.northOffset : compOversizedWeapon.Props.northOffset;
-				}
-				else if (curDir == Rot4.East)
-				{
-					curOffset = Offhand ? -compOversizedWeapon.Props.eastOffset : compOversizedWeapon.Props.eastOffset;
-				}
-				else if (curDir == Rot4.West)
-				{
-					curOffset = Offhand ? -compOversizedWeapon.Props.westOffset : compOversizedWeapon.Props.westOffset;
-				}
-			}
-
-			return curOffset;
-		}
 		// Token: 0x06000080 RID: 128 RVA: 0x00006594 File Offset: 0x00004794
 		private static bool IsMeleeWeapon(ThingWithComps eq)
 		{
