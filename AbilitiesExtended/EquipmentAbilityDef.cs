@@ -8,6 +8,7 @@ namespace AbilitesExtended
     public class EquipmentAbilityDef : AbilityDef
     {
         public float cooldown = -1;
+        public bool requirePsyker = false;
         public virtual string GetDescription()
         {
             var result = "";

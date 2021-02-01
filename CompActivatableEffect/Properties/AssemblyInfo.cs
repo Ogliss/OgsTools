@@ -1,12 +1,11 @@
 ﻿using System.Reflection;
 using System.Runtime.InteropServices;
 
-[assembly: AssemblyTitle("CompActivatableEffect")]
+[assembly: AssemblyTitle("OgsCompActivatableEffect")]
 [assembly: AssemblyDescription("")]
 [assembly: AssemblyConfiguration("")]
 [assembly: AssemblyCompany("")]
-[assembly: AssemblyProduct("CompActivatableEffect")]
-[assembly: AssemblyCopyright("Copyright © Jecrell 2017")]
+[assembly: AssemblyProduct("OgsCompActivatableEffect")]
 [assembly: AssemblyTrademark("")]
 [assembly: AssemblyCulture("")]
 
@@ -14,5 +13,5 @@ using System.Runtime.InteropServices;
 
 [assembly: Guid("ec1aea45-45fe-4a6a-a835-81b289e03bc9")]
 
-[assembly: AssemblyVersion("1.18.0.0")]
-[assembly: AssemblyFileVersion("1.18.0.0")]
+[assembly: AssemblyVersion("2.0.0.0")]
+[assembly: AssemblyFileVersion("2.0.0.0")]

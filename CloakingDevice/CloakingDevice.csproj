@@ -31,6 +31,7 @@
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
   <ItemGroup>
+    <Compile Include="Class1.cs" />
     <Compile Include="HarmonyPatches.cs" />
     <Compile Include="AvP_PawnRenderer_DrawEquipment_Cloak_Patch.cs" />
     <Compile Include="AvPConstants.cs" />

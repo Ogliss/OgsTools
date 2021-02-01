@@ -1,0 +1,73 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="15.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <Import Project="$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props" Condition="Exists('$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props')" />
+  <PropertyGroup>
+    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
+    <ProjectGuid>{12524CEA-8DBE-443B-9BAC-39076030500A}</ProjectGuid>
+    <OutputType>Library</OutputType>
+    <AppDesignerFolder>Properties</AppDesignerFolder>
+    <RootNamespace>GasTech</RootNamespace>
+    <AssemblyName>GasTech</AssemblyName>
+    <TargetFrameworkVersion>v4.7.2</TargetFrameworkVersion>
+    <FileAlignment>512</FileAlignment>
+    <Deterministic>true</Deterministic>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
+    <DebugSymbols>true</DebugSymbols>
+    <DebugType>full</DebugType>
+    <Optimize>false</Optimize>
+    <OutputPath>bin\Debug\</OutputPath>
+    <DefineConstants>DEBUG;TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
+    <DebugType>pdbonly</DebugType>
+    <Optimize>true</Optimize>
+    <OutputPath>bin\Release\</OutputPath>
+    <DefineConstants>TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+  </PropertyGroup>
+  <ItemGroup>
+    <Compile Include="CompSpawnerGas.cs" />
+    <Compile Include="GasCloud.cs" />
+    <Compile Include="ValueInterpolator.cs" />
+    <Compile Include="FactionGoodwillCaps.cs" />
+    <Compile Include="Graphic_GasCloud.cs" />
+    <Compile Include="Building_GasVent.cs" />
+    <Compile Include="CachedValue.cs" />
+    <Compile Include="Resources.cs" />
+    <Compile Include="RemoteTechUtility.cs" />
+    <Compile Include="Command_ChannelsBasic.cs" />
+    <Compile Include="Command_ChannelsKeypad.cs" />
+    <Compile Include="GraphicData_Blinker.cs" />
+    <Compile Include="IPowerUseNotified.cs" />
+    <Compile Include="IWirelessDetonationReceiver.cs" />
+    <Compile Include="InterpolationCurves.cs" />
+    <Compile Include="PlayerAvoidanceGrids.cs" />
+    <Compile Include="GasCloud_AffectThing.cs" />
+    <Compile Include="GasCloud_DamageDealer.cs" />
+    <Compile Include="GasCloud_HediffGiver.cs" />
+    <Compile Include="MoteProperties_GasCloud.cs" />
+    <Compile Include="MoteProperties_GasEffect.cs" />
+    <Compile Include="GasTechMain.cs" />
+    <Compile Include="Properties\AssemblyInfo.cs" />
+  </ItemGroup>
+  <ItemGroup>
+    <Reference Include="System.Runtime.InteropServices.RuntimeInformation" />
+  </ItemGroup>
+  <ItemGroup>
+    <PackageReference Include="Krafs.Rimworld.Ref">
+      <Version>1.2.2753</Version>
+    </PackageReference>
+    <PackageReference Include="Lib.Harmony">
+      <Version>2.0.4</Version>
+    </PackageReference>
+    <PackageReference Include="UnlimitedHugs.Rimworld.HugsLib">
+      <Version>8.0.0</Version>
+    </PackageReference>
+  </ItemGroup>
+  <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
+</Project>

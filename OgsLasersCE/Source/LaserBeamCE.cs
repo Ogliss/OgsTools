@@ -56,7 +56,7 @@ namespace OgsLasers
             }
         }
         //    public new ThingDef equipmentDef => base.equipmentDef
-        public Vector3 destination => new Vector3(base.Destination.x,0, base.Destination.y);
+        public Vector3 destination => new Vector3(Mathf.Clamp(base.Destination.x, 0, Map.Size.x), 0, Mathf.Clamp(base.Destination.y, 0, Map.Size.z));
         public Vector3 Origin => new Vector3(base.origin.x,0, base.origin.y);
 
         protected override void Impact(Thing hitThing)
@@ -289,6 +289,17 @@ namespace OgsLasers
                     */
                 }
             }
+        }
+        public override void DeSpawn(DestroyMode mode = DestroyMode.Vanish)
+        {
+            LaserGunDef defWeapon = equipmentDef as LaserGunDef;
+            Vector3 dir = (destination - Origin).normalized;
+            dir.y = 0;
+            Vector3 a = Origin + dir * (defWeapon == null ? 0.9f : defWeapon.barrelLength);
+            Vector3 b = destination;
+            a.y = b.y = def.Altitude;
+            SpawnBeam(a, b);
+            base.DeSpawn(mode);
         }
     }
 }

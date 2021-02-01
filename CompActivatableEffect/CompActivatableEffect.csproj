@@ -47,11 +47,13 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Harmony_PawnRenderer_DrawEquipmentAiming_Transpiler.cs" />
+    <Compile Include="AlienRaceUtility.cs" />
     <Compile Include="CompActivatableEffectUtil.cs" />
     <Compile Include="CompActivatableEffect.cs" />
     <Compile Include="CompProperties_ActivatableEffect.cs" />
     <Compile Include="HarmonyCompActivatableEffect.cs" />
+    <Compile Include="Harmony_PawnRenderer_DrawEquipmentAimingOverride_Transpiler.cs" />
+    <Compile Include="Harmony_PawnRenderer_DrawEquipmentAiming_Transpiler.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>

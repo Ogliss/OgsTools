@@ -19,6 +19,7 @@ namespace OgsCompActivatableEffect
         public bool drawAboveItem = false;
 
         public bool gizmosOnEquip = false;
+        public bool allowUnactivedUse = true;
         public GraphicData graphicData;
         public SoundDef sustainerSound;
 

@@ -45,7 +45,7 @@ namespace CompTurret
 				}
 				else
 				{
-				return this.turretGun.Operator;
+					return this.turretGun.Operator;
 				}
 				return this.caster;
 			}

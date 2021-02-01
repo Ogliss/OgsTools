@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Reflection;
 using HarmonyLib;
 using RimWorld;
 using UnityEngine;
@@ -23,26 +24,65 @@ namespace OgsCompActivatableEffect
             harmony.Patch(typeof(Pawn).GetMethod("GetGizmos"), null,
                 new HarmonyMethod(typeof(HarmonyCompActivatableEffect).GetMethod("GetGizmosPrefix")));
 
-            if (enabled_rooloDualWield)
+            MethodInfo target = AccessTools.Method(GenTypes.GetTypeInAnyAssembly("OgsCompOversizedWeapon.Harmony_PawnRenderer_DrawEquipmentAiming_Transpiler", "OgsCompOversizedWeapon"), "draw", null, null);
+            if (target == null)
             {
-                DualWieldPatch(harmony);
+                Log.Warning("Target: Harmony_PawnRenderer_DrawEquipmentAiming_Transpiler.draw Not found");
             }
-            
-            harmony.Patch(typeof(PawnRenderer).GetMethod("DrawEquipmentAiming"), null,
-                new HarmonyMethod(typeof(HarmonyCompActivatableEffect), nameof(DrawEquipmentAimingPostFix)));
-            harmony.Patch(typeof(OgsCompOversizedWeapon.Harmony_PawnRenderer_DrawEquipmentAiming_Transpiler).GetMethod("draw"), null,
-                new HarmonyMethod(typeof(HarmonyCompActivatableEffect), nameof(DrawMeshModified)));
-            
-            /*
-            harmony.Patch(typeof(PawnRenderer).GetMethod("DrawEquipmentAiming"), null, null,
-                new HarmonyMethod(typeof(Harmony_PawnRenderer_DrawEquipmentAiming_Transpiler).GetMethod(nameof(Harmony_PawnRenderer_DrawEquipmentAiming_Transpiler.Transpiler)), Priority.Last)) ;
-            */
+            MethodInfo patch = typeof(HarmonyCompActivatableEffect).GetMethod("DrawMeshModified");
+            if (patch == null)
+            {
+                Log.Warning("Patch is null HarmonyCompActivatableEffect.DrawMeshModified");
+            }
+            if (target != null && patch != null)
+            {
+                if (harmony.Patch(target, null, new HarmonyMethod(patch)) == null)
+                {
+                    Log.Warning("OgsCompActivatableEffect: OgsCompOversizedWeapon Patch Failed to apply");
+                }
+            }
+            else
+            {
+                MethodInfo target2 = AccessTools.Method(GenTypes.GetTypeInAnyAssembly("DualWield.Harmony.PawnRenderer_DrawEquipmentAiming", "DualWield.Harmony"), "DrawEquipmentAimingOverride", null, null);
+                if (target2 == null && enabled_rooloDualWield)
+                {
+                    Log.Warning("Target: DualWield.Harmony.PawnRenderer_DrawEquipmentAiming.DrawEquipmentAimingOverride Not found");
+                }
+                MethodInfo patch2 = typeof(Harmony_PawnRenderer_DrawEquipmentAimingOverride_Transpiler).GetMethod("Transpiler");
+                if (patch2 == null && enabled_rooloDualWield)
+                {
+                    Log.Warning("Patch is null Harmony_PawnRenderer_DrawEquipmentAimingOverride_Transpiler.Transpiler");
+                }
+                if (target2 != null && patch2 != null && enabled_rooloDualWield)
+                {
+                    if (harmony.Patch(target2, null, null, new HarmonyMethod(patch2)) == null)
+                    {
+                        Log.Warning("OgsCompOversizedWeapon: DualWield Patch Failed to apply");
+                    }
+                }
+                else
+                {
+                    MethodInfo target3 = AccessTools.Method(typeof(PawnRenderer), "DrawEquipmentAiming", null, null);
+                    if (target3 == null)
+                    {
+                        Log.Warning("Target: PawnRenderer.DrawEquipmentAiming Not found");
+                    }
+                    MethodInfo patch3 = typeof(Harmony_PawnRenderer_DrawEquipmentAiming_Transpiler).GetMethod("Transpiler");
+                    if (patch3 == null)
+                    {
+                        Log.Warning("Patch is null Harmony_PawnRenderer_DrawEquipmentAiming_Transpiler.Transpiler");
+                    }
+                    if (target3 != null && patch3 != null)
+                    {
+                        if (harmony.Patch(target3, null, new HarmonyMethod(patch3)) == null)
+                        {
+                            Log.Warning("OgsCompActivatableEffect: Patch Failed to apply");
+                        }
+                    }
+                }
+            }
             harmony.Patch(typeof(Verb).GetMethod("TryStartCastOn", new Type[] { typeof(LocalTargetInfo), typeof(LocalTargetInfo), typeof(bool), typeof(bool) }),
                 new HarmonyMethod(typeof(HarmonyCompActivatableEffect), nameof(TryStartCastOnPrefix)), null);
-            /*
-            harmony.Patch(typeof(Pawn_DraftController).GetMethod("set_Drafted"), null,
-                new HarmonyMethod(typeof(HarmonyCompActivatableEffect).GetMethod("set_Drafted_PostFix")));
-            */
             harmony.Patch(typeof(Pawn).GetMethod("ExitMap"),
                 new HarmonyMethod(typeof(HarmonyCompActivatableEffect).GetMethod("ExitMap_PreFix")), null);
             harmony.Patch(typeof(Pawn_EquipmentTracker).GetMethod("TryDropEquipment"),
@@ -51,20 +91,6 @@ namespace OgsCompActivatableEffect
                 new HarmonyMethod(typeof(HarmonyCompActivatableEffect).GetMethod("set_DraftedPostFix")));
         }
 
-
-        public static void DualWieldPatch(Harmony harmony)
-        {
-            /*
-            harmony.Patch(AccessTools.Method(GenTypes.GetTypeInAnyAssembly("CompOversizedWeapon.HarmonyCompOversizedWeapon", "CompOversizedWeapon"), "DrawEquipmentAimingPreFix", null, null), new HarmonyMethod(Main.patchType, "`", null), new HarmonyMethod(Main.patchType, "DrawEquipmentAiming_DualWield_OverSized_PostFix", null));
-            harmony.Patch(AccessTools.Method(GenTypes.GetTypeInAnyAssembly("CompActivatableEffect.HarmonyCompActivatableEffect", "CompActivatableEffect"), "DrawEquipmentAimingPostFix", null, null), new HarmonyMethod(Main.patchType, "DrawEquipmentAiming_DualWield_Activatable_PreFix", null));
-            harmony.Patch(AccessTools.Method(GenTypes.GetTypeInAnyAssembly("DualWield.Harmony.PawnRenderer_DrawEquipmentAiming", "DualWield.Harmony"), "DrawEquipmentAimingOverride", null, null), new HarmonyMethod(Main.patchType, "DrawEquipmentAimingOverride_DualWield_compActivatableEffect_PreFix", null));
-            harmony.Patch(AccessTools.Method(GenTypes.GetTypeInAnyAssembly("DualWield.Ext_Pawn_EquipmentTracker", "DualWield"), "AddOffHandEquipment", null, null),null , new HarmonyMethod(Main.patchType, "AddOffHandEquipment_PostFix", null));
-            harmony.Patch(AccessTools.Method(GenTypes.GetTypeInAnyAssembly("DualWield.Harmony.PawnWeaponGenerator_TryGenerateWeaponFor", "DualWield.Harmony"), "Postfix", null, null), new HarmonyMethod(Main.patchType, "PawnWeaponGenerator_TryGenerateWeaponFor_PostFix", null));
-            */
-
-            harmony.Patch(AccessTools.Method(GenTypes.GetTypeInAnyAssembly("DualWield.Harmony.PawnRenderer_DrawEquipmentAiming", "DualWield.Harmony"), "DrawEquipmentAimingOverride", null, null),
-                new HarmonyMethod(typeof(HarmonyCompActivatableEffect).GetMethod("DrawEquipmentAimingPreFix_DualWield")), null);
-        }
 
         //=================================== COMPACTIVATABLE
 
@@ -137,8 +163,11 @@ namespace OgsCompActivatableEffect
                 if (Find.TickManager.TicksGame % 250 == 0)
                     Messages.Message("DeactivatedWarning".Translate(pawn.Label),
                         MessageTypeDefOf.RejectInput);
-                __result = false;
-                return false;
+                if (!compActivatableEffect.Props.allowUnactivedUse)
+                {
+                    __result = false;
+                    return false;
+                }
             }
             return true;
         }
@@ -178,400 +207,36 @@ namespace OgsCompActivatableEffect
         ///     Adds another "layer" to the equipment aiming if they have a
         ///     weapon with a CompActivatableEffect.
         /// </summary>
-        /// <param name="__instance"></param>
-        /// <param name="eq"></param>
-        /// <param name="drawLoc"></param>
-        /// <param name="aimAngle"></param>
-        public static void DrawEquipmentAimingPostFix(Pawn ___pawn, Thing eq, Vector3 drawLoc,float aimAngle)
+        public static void DrawMeshModified(Mesh mesh, Matrix4x4 matrix, Material mat, int layer, Thing eq, Pawn pawn, Vector3 position, Quaternion rotation)
         {
-            var pawn = (Pawn)___pawn;
-
-            var pawn_EquipmentTracker = pawn.equipment;
-            var thingWithComps =pawn_EquipmentTracker?.Primary; 
-            if (enabled_rooloDualWield)
-            {
-                if (pawn.equipment.CAETryGetOffHandEquipment(out ThingWithComps thingy))
-                {
-                //    Log.Message("DrawEquipmentAimingPostFix enabled_rooloDualWield Offhand Detected");
-                    return;
-                }
-            //    Log.Message("DrawEquipmentAimingPostFix enabled_rooloDualWield");
-
-            }
-            OgsCompOversizedWeapon.CompOversizedWeapon compOversized = thingWithComps.TryGetComp<OgsCompOversizedWeapon.CompOversizedWeapon>();
-            if (compOversized != null) return;
-            var compActivatableEffect = thingWithComps?.GetComp<OgsCompActivatableEffect.CompActivatableEffect>();
-            if (compActivatableEffect?.Graphic == null) return;
-            if (compActivatableEffect.CurrentState != OgsCompActivatableEffect.CompActivatableEffect.State.Activated) return;
-            var num = aimAngle - 90f;
-            var flip = false;
-
-            if (aimAngle > 20f && aimAngle < 160f)
-            {
-                //mesh = MeshPool.GridPlaneFlip(thingWithComps.def.graphicData.drawSize);
-                num += eq.def.equippedAngleOffset;
-            }
-            else if (aimAngle > 200f && aimAngle < 340f)
-            {
-                //mesh = MeshPool.GridPlane(thingWithComps.def.graphicData.drawSize);
-                flip = true;
-                num -= 180f;
-                num -= eq.def.equippedAngleOffset;
-            }
-            else
-            {
-                if (compOversized != null)
-                    num = AdjustOffsetAtPeace(eq, pawn, compOversized, num);
-                else
-                    num += eq.def.equippedAngleOffset;
-            }
-            if (compOversized != null)
-            {
-                if (compOversized.Props != null && (!pawn.IsFighting() && (compOversized.Props.verticalFlipNorth && pawn.Rotation == Rot4.North)))
-                {
-                    num += 180f;
-                }
-                if (!pawn.IsFighting() || pawn.TargetCurrentlyAimingAt == null)
-                {
-                    num = AdjustNonCombatRotation(pawn, num, compOversized);
-                }
-            }
-
-            Vector3 offset = Vector3.zero;
-
-            if (eq is ThingWithComps eqComps)
-            {
-                if (compOversized!=null)
-                {
-                    if (pawn.Rotation == Rot4.East)
-                        offset = compOversized.Props.eastOffset;
-                    else if (pawn.Rotation == Rot4.West)
-                        offset = compOversized.Props.westOffset;
-                    else if (pawn.Rotation == Rot4.North)
-                        offset = compOversized.Props.northOffset;
-                    else if (pawn.Rotation == Rot4.South)
-                        offset = compOversized.Props.southOffset;
-                }
-                                
-                                    
-                var deflector = eqComps.AllComps.FirstOrDefault(y =>
-                    y.GetType().ToString().Contains("Deflect"));
-                if (deflector != null)
-                {
-                    var isActive = (bool) AccessTools
-                        .Property(deflector.GetType(), "IsAnimatingNow").GetValue(deflector, null);
-                    if (isActive)
-                    {
-                        float numMod = (int) AccessTools
-                            .Property(deflector.GetType(), "AnimationDeflectionTicks")
-                            .GetValue(deflector, null);
-                        //float numMod2 = new float();
-                        //numMod2 = numMod;
-                        if (numMod > 0)
-                            if (!flip) num += (numMod + 1) / 2;
-                            else num -= (numMod + 1) / 2;
-                    }
-                }
-            }
-            num %= 360f;
-
-            //ThingWithComps eqComps = eq as ThingWithComps;
-            //if (eqComps != null)
-            //{
-            //    ThingComp deflector = eqComps.AllComps.FirstOrDefault<ThingComp>((ThingComp y) => y.GetType().ToString() == "CompDeflector.CompDeflector");
-            //    if (deflector != null)
-            //    {
-            //        float numMod = (float)((int)AccessTools.Property(deflector.GetType(), "AnimationDeflectionTicks").GetValue(deflector, null));
-            //        //Log.ErrorOnce("NumMod " + numMod.ToString(), 1239);
-            //numMod = (numMod + 1) / 2;
-            //if (subtract) num -= numMod;
-            //else num += numMod;
-            //    }
-            //}
-            Quaternion rotation = Quaternion.AngleAxis(num, Vector3.up);
-            var matSingle = compActivatableEffect.Graphic.MatSingle;
-            //if (mesh == null) mesh = MeshPool.GridPlane(thingWithComps.def.graphicData.drawSize);
-            Vector3 s = new Vector3(eq.def.graphicData.drawSize.x, 1f, eq.def.graphicData.drawSize.y);
-            if (compOversized!=null)
-            {
-                /*
-                if (enabled_AlienRaces && pawn.RaceProps.Humanlike)
-                {
-                    Vector2 v = OgsCompOversizedWeapon.HarmonyCompOversizedWeapon.AlienRacesPatch(___pawn);
-                    s = new Vector3(eq.def.graphicData.drawSize.x * v.x, 1f, eq.def.graphicData.drawSize.y * v.y);
-                }
-                else
-                {
-                    s = new Vector3(eq.def.graphicData.drawSize.x, 1f, eq.def.graphicData.drawSize.y);
-                }
-                */
-
-                if (enabled_AlienRaces && pawn.RaceProps.Humanlike)
-                {
-                    Vector2 v = OgsCompOversizedWeapon.HarmonyCompOversizedWeapon.AlienRacesPatch(pawn);
-                    s = new Vector3(eq.def.graphicData.drawSize.x * v.x, 1f, eq.def.graphicData.drawSize.y * v.y);
-                }
-                else
-                {
-                    s = new Vector3(eq.def.graphicData.drawSize.x, 1f, eq.def.graphicData.drawSize.y);
-                }
-            //    Log.Message("DrawEquipmentAimingPostFix compOversized offset: "+ offset + " Rotation: "+rotation + " size: " + s);
-            }
-            var matrix = default(Matrix4x4);
-            drawLoc.y = compActivatableEffect.Altitude(drawLoc);
-            matrix.SetTRS(drawLoc + offset , rotation, s);
-            Graphics.DrawMesh((!flip) ? MeshPool.plane10 : MeshPool.plane10Flip, matrix, matSingle, 0);
-        //    Log.Message("DrawEquipmentAimingPostFix DrawMesh");
-            /*
-            if (!flip) Graphics.DrawMesh(MeshPool.plane10, matrix, matSingle, 0);
-            else Graphics.DrawMesh(MeshPool.plane10Flip, matrix, matSingle, 0);
-            */
-            //Graphics.DrawMesh(mesh, drawLoc, Quaternion.AngleAxis(num, Vector3.up), matSingle, 0);
-
-            if (compOversized != null)
-            {
-                if (compOversized.Props != null && compOversized.Props.isDualWeapon)
-                {
-                    offset = compOversized.renderPos;
-                    rotation = compOversized.renderAngle;
-                    s = new Vector3(compOversized.drawScale.x, 1f, compOversized.drawScale.y);
-                    Mesh curPool;
-                    if (pawn.Rotation == Rot4.North || pawn.Rotation == Rot4.South)
-                    {
-                        /*
-                        offset = new Vector3(-1f * offset.x, offset.y, offset.z);
-                        num += 135f;
-                        num %= 360f;
-                        */
-                        curPool = !flip ? MeshPool.plane10Flip : MeshPool.plane10;
-                    }
-                    else
-                    {
-                    //    offset = new Vector3(offset.x, offset.y - 0.1f, offset.z + 0.15f);
-                        curPool = !flip ? MeshPool.plane10 : MeshPool.plane10Flip;
-                    }
-
-
-                    offset = compOversized.renderPosDual;
-                    rotation = compOversized.renderAngleDual;
-                    matrix.SetTRS(drawLoc + offset, rotation, s);
-                    Graphics.DrawMesh(curPool, matrix, matSingle, 0);
-                }
-            }
-        }
-
-        // Token: 0x06000079 RID: 121 RVA: 0x00005DB4 File Offset: 0x00003FB4
-        public static bool DrawEquipmentAimingPreFix_DualWield(Thing eq, Vector3 drawLoc, float aimAngle)
-        {
-            Pawn pawn = eq.TryGetComp<CompEquippable>().PrimaryVerb.CasterPawn;
-            bool flag7 = false;
-            if (pawn != null)
-            {
-                if (pawn.equipment.CAETryGetOffHandEquipment(out ThingWithComps thingy))
-                {
-                    Pawn_EquipmentTracker equipment = pawn.equipment;
-                    //    ThingWithComps thingWithComps = (equipment != null) ? equipment.Primary : null;
-                    ThingWithComps thingWithComps = (eq != null) ? (ThingWithComps)eq : null;
-                    OgsCompActivatableEffect.CompActivatableEffect compActivatableEffect = (thingWithComps != null) ? thingWithComps.GetComp<OgsCompActivatableEffect.CompActivatableEffect>() : null;
-                    bool flag = ((compActivatableEffect != null) ? compActivatableEffect.Graphic : null) == null;
-                    if (!flag)
-                    {
-                    //    Log.Message("DrawEquipmentAimingPreFix_DualWield");
-                        bool flag2 = compActivatableEffect.CurrentState != OgsCompActivatableEffect.CompActivatableEffect.State.Activated;
-                        if (!flag2)
-                        {
-                            float num = aimAngle - 90f;
-                            bool flag3 = false;
-                            bool flag4 = aimAngle > 20f && aimAngle < 160f;
-                            if (flag4)
-                            {
-                                num += eq.def.equippedAngleOffset;
-                            }
-                            else
-                            {
-                                bool flag5 = aimAngle > 200f && aimAngle < 340f;
-                                if (flag5)
-                                {
-                                    flag3 = true;
-                                    num -= 180f;
-                                    num -= eq.def.equippedAngleOffset;
-                                }
-                                else
-                                {
-                                    num += eq.def.equippedAngleOffset;
-                                }
-                            }
-                            Vector3 vector = Vector3.zero;
-                            ThingWithComps thingWithComps2;
-                            bool flag6 = (thingWithComps2 = (eq as ThingWithComps)) != null;
-                            if (flag6)
-                            {
-                                OgsCompOversizedWeapon.CompOversizedWeapon compOversizedWeapon;
-                                flag7 = (compOversizedWeapon = (thingWithComps2.AllComps.FirstOrDefault((ThingComp z) => z is OgsCompOversizedWeapon.CompOversizedWeapon) as OgsCompOversizedWeapon.CompOversizedWeapon)) != null;
-                                if (flag7)
-                                {
-                                    return true;
-                                    bool flag8 = pawn.Rotation == Rot4.East;
-                                    if (flag8)
-                                    {
-                                        vector = compOversizedWeapon.Props.eastOffset;
-                                    }
-                                    else
-                                    {
-                                        bool flag9 = pawn.Rotation == Rot4.West;
-                                        if (flag9)
-                                        {
-                                            vector = compOversizedWeapon.Props.westOffset;
-                                        }
-                                        else
-                                        {
-                                            bool flag10 = pawn.Rotation == Rot4.North;
-                                            if (flag10)
-                                            {
-                                                vector = compOversizedWeapon.Props.northOffset;
-                                            }
-                                            else
-                                            {
-                                                bool flag11 = pawn.Rotation == Rot4.South;
-                                                if (flag11)
-                                                {
-                                                    vector = compOversizedWeapon.Props.southOffset;
-                                                }
-                                            }
-                                        }
-                                    }
-                                }
-                                ThingComp thingComp = thingWithComps2.AllComps.FirstOrDefault((ThingComp y) => y.GetType().ToString().Contains("Deflect"));
-                                bool flag12 = thingComp != null;
-                                if (flag12)
-                                {
-                                    bool flag13 = (bool)AccessTools.Property(thingComp.GetType(), "IsAnimatingNow").GetValue(thingComp, null);
-                                    bool flag14 = flag13;
-                                    if (flag14)
-                                    {
-                                        float num2 = (float)((int)AccessTools.Property(thingComp.GetType(), "AnimationDeflectionTicks").GetValue(thingComp, null));
-                                        bool flag15 = num2 > 0f;
-                                        if (flag15)
-                                        {
-                                            bool flag16 = !flag3;
-                                            if (flag16)
-                                            {
-                                                num += (num2 + 1f) / 2f;
-                                            }
-                                            else
-                                            {
-                                                num -= (num2 + 1f) / 2f;
-                                            }
-                                        }
-                                    }
-                                }
-                            }
-                            num %= 360f;
-                            drawLoc.y = compActivatableEffect.Altitude(drawLoc);
-                            Material matSingle = compActivatableEffect.Graphic.MatSingle;
-                            Vector3 s;
-                            if (flag7 && enabled_AlienRaces && pawn.RaceProps.Humanlike)
-                            {
-                                Vector2 v = OgsCompOversizedWeapon.HarmonyCompOversizedWeapon.AlienRacesPatch(pawn);
-                                s = new Vector3(eq.def.graphicData.drawSize.x * v.x, 1f, eq.def.graphicData.drawSize.y * v.y);
-                            }
-                            else
-                            {
-                                s = new Vector3(eq.def.graphicData.drawSize.x, 1f, eq.def.graphicData.drawSize.y);
-                            }
-                            Matrix4x4 matrix = default(Matrix4x4);
-                            matrix.SetTRS(drawLoc + vector, Quaternion.AngleAxis(num, Vector3.up), s);
-                            //    Log.Message(string.Format("thingy: {0}, thingWithComps: {1}, eq: {2}", thingy, thingWithComps, eq));
-                            bool flag17 = !flag3;
-                            if (flag17)
-                            {
-                                Graphics.DrawMesh(MeshPool.plane10, matrix, matSingle, 0);
-                            }
-                            else
-                            {
-                                Graphics.DrawMesh(MeshPool.plane10Flip, matrix, matSingle, 0);
-                            }
-
-                            float numA = aimAngle - 90f;
-                            bool flagA = aimAngle > 20f && aimAngle < 160f;
-                            Mesh mesh;
-                            if (flagA)
-                            {
-                                mesh = MeshPool.plane10;
-                                numA += eq.def.equippedAngleOffset;
-                            }
-                            else
-                            {
-                                bool flagB = aimAngle > 200f && aimAngle < 340f;
-                                if (flagB)
-                                {
-                                    mesh = MeshPool.plane10Flip;
-                                    numA -= 180f;
-                                    numA -= eq.def.equippedAngleOffset;
-                                }
-                                else
-                                {
-                                    mesh = MeshPool.plane10;
-                                    numA += eq.def.equippedAngleOffset;
-                                }
-                            }
-                            numA %= 360f;
-                            Graphic_StackCount graphic_StackCount = eq.Graphic as Graphic_StackCount;
-                            bool flagC = graphic_StackCount != null;
-                            Material matSingleA;
-                            if (flagC)
-                            {
-                                matSingleA = graphic_StackCount.SubGraphicForStackCount(1, eq.def).MatSingle;
-                            }
-                            else
-                            {
-                                matSingleA = eq.Graphic.MatSingle;
-                            }
-                            Matrix4x4 matrixA = default(Matrix4x4);
-                            matrixA.SetTRS(drawLoc + vector, Quaternion.AngleAxis(numA, Vector3.up), s);
-                            Graphics.DrawMesh(mesh, matrixA, matSingleA, 0);
-                            return false;
-                        }
-                    }
-                }
-            }
-            return true;
-        }
-
-        private static void DrawMeshModified(Mesh mesh, Matrix4x4 matrix, Material mat, int layer, Thing eq, Pawn pawn, Vector3 position, Quaternion rotation)
-        {
-        //    Log.Message("DrawMeshModified");
+            //    Log.Message("DrawMeshModified");
             ThingWithComps thingWithComps = eq as ThingWithComps;
             CompEquippable equippable = eq.TryGetComp<CompEquippable>();
             OgsCompOversizedWeapon.CompOversizedWeapon compOversized = thingWithComps.TryGetComp<OgsCompOversizedWeapon.CompOversizedWeapon>();
-            var compActivatableEffect = thingWithComps?.GetComp<OgsCompActivatableEffect.CompActivatableEffect>();
+            var compActivatableEffect = thingWithComps?.GetComp<CompActivatableEffect>();
             if (compActivatableEffect?.Graphic == null) return;
-
+            if (!compActivatableEffect.IsActiveNow) return;
             var matSingle = compActivatableEffect.Graphic.MatSingle;
-            //if (mesh == null) mesh = MeshPool.GridPlane(thingWithComps.def.graphicData.drawSize);
             Vector3 s = new Vector3(eq.def.graphicData.drawSize.x, 1f, eq.def.graphicData.drawSize.y);
             if (compOversized != null)
             {
-                /*
-                if (enabled_AlienRaces && pawn.RaceProps.Humanlike)
+                if (pawn.RaceProps.Humanlike)
                 {
-                    Vector2 v = OgsCompOversizedWeapon.HarmonyCompOversizedWeapon.AlienRacesPatch(___pawn);
-                    s = new Vector3(eq.def.graphicData.drawSize.x * v.x, 1f, eq.def.graphicData.drawSize.y * v.y);
+                    if (HarmonyCompActivatableEffect.enabled_AlienRaces)
+                    {
+                        Vector2 v = AlienRaceUtility.AlienRacesPatch(pawn, eq);
+                        float f = Mathf.Max(v.x, v.y);
+                        s = new Vector3(eq.def.graphicData.drawSize.x * f, 1f, eq.def.graphicData.drawSize.y * f);
+                    }
+                    else
+                    {
+                        s = new Vector3(eq.def.graphicData.drawSize.x, 1f, eq.def.graphicData.drawSize.y);
+                    }
                 }
                 else
                 {
-                    s = new Vector3(eq.def.graphicData.drawSize.x, 1f, eq.def.graphicData.drawSize.y);
-                }
-                */
-
-                if (HarmonyCompActivatableEffect.enabled_AlienRaces && pawn.RaceProps.Humanlike)
-                {
-                    Vector2 v = OgsCompOversizedWeapon.HarmonyCompOversizedWeapon.AlienRacesPatch(pawn);
-                    s = new Vector3(eq.def.graphicData.drawSize.x * v.x, 1f, eq.def.graphicData.drawSize.y * v.y);
-                }
-                else
-                {
-                    s = new Vector3(eq.def.graphicData.drawSize.x, 1f, eq.def.graphicData.drawSize.y);
+                    Vector2 v = pawn.ageTracker.CurKindLifeStage.bodyGraphicData.drawSize;
+                    s = new Vector3(eq.def.graphicData.drawSize.x + v.x / 10, 1f, eq.def.graphicData.drawSize.y + v.y / 10);
                 }
                 //    Log.Message("DrawEquipmentAimingPostFix compOversized offset: "+ offset + " Rotation: "+rotation + " size: " + s);
             }
@@ -580,78 +245,6 @@ namespace OgsCompActivatableEffect
             matrix.SetTRS(vector3, rotation, s);
             Graphics.DrawMesh(mesh, matrix, matSingle, 0);
         }
-        public static float AdjustOffsetAtPeace(Thing eq, Pawn pawn, OgsCompOversizedWeapon.CompOversizedWeapon compOversizedWeapon, float num)
-        {
-            if (compOversizedWeapon == null)
-            {
-                return num;
-            }
-            Mesh mesh;
-            mesh = MeshPool.plane10;
-            var offsetAtPeace = eq.def.equippedAngleOffset;
-            if (compOversizedWeapon.Props != null && (!pawn.IsFighting() && compOversizedWeapon.Props.verticalFlipOutsideCombat))
-            {
-                offsetAtPeace += 180f;
-            }
-            num += offsetAtPeace;
-            return num;
-        }
-
-        private static float AdjustNonCombatRotation(Pawn pawn, float num, OgsCompOversizedWeapon.CompOversizedWeapon compOversizedWeapon)
-        {
-            if (compOversizedWeapon==null)
-            {
-                return num;
-            }
-            if (compOversizedWeapon.Props != null)
-            {
-                if (pawn.Rotation == Rot4.North)
-                {
-                    num += compOversizedWeapon.Props.angleAdjustmentNorth;
-                }
-                else if (pawn.Rotation == Rot4.East)
-                {
-                    num += compOversizedWeapon.Props.angleAdjustmentEast;
-                }
-                else if (pawn.Rotation == Rot4.West)
-                {
-                    num += compOversizedWeapon.Props.angleAdjustmentWest;
-                }
-                else if (pawn.Rotation == Rot4.South)
-                {
-                    num += compOversizedWeapon.Props.angleAdjustmentSouth;
-                }
-            }
-            return num;
-        }
-
-        private static Vector3 AdjustRenderOffsetFromDir(Pawn pawn, OgsCompOversizedWeapon.CompOversizedWeapon compOversizedWeapon)
-        {
-            var curDir = pawn.Rotation;
-
-            Vector3 curOffset = Vector3.zero;
-
-            if (compOversizedWeapon.Props != null)
-            {
-
-                curOffset = compOversizedWeapon.Props.northOffset;
-                if (curDir == Rot4.East)
-                {
-                    curOffset = compOversizedWeapon.Props.eastOffset;
-                }
-                else if (curDir == Rot4.South)
-                {
-                    curOffset = compOversizedWeapon.Props.southOffset;
-                }
-                else if (curDir == Rot4.West)
-                {
-                    curOffset = compOversizedWeapon.Props.westOffset;
-                }
-            }
-
-            return curOffset;
-        }
-
         public static IEnumerable<Gizmo> GizmoGetter(OgsCompActivatableEffect.CompActivatableEffect compActivatableEffect)
         {
             //Log.Message("5");

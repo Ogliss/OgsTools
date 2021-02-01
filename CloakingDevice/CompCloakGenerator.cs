@@ -9,7 +9,7 @@ using System.Linq;
 
 namespace CloakingDevice
 {
-    public class CompProperties_CloakGenerator : CompProperties_Wearable
+    public class CompProperties_CloakGenerator : CompProperties
     {
         public CompProperties_CloakGenerator()
         {
@@ -36,9 +36,12 @@ namespace CloakingDevice
 
         public int minsDisruptionTicks = 60;
 
+        public ResearchProjectDef requiredResearch;
+        public HediffDef cloakHediff;
+
     }
 
-    public class CompCloakGenerator : CompWearable
+    public class CompCloakGenerator : ThingComp
     {
         public CompProperties_CloakGenerator Props => (CompProperties_CloakGenerator)props;
 
@@ -99,13 +102,13 @@ namespace CloakingDevice
         }
 
         public bool Cloaked => this.cloakMode == CloakMode.On;
-        public override IEnumerable<Gizmo> CompGetGizmosWorn()
+        public override IEnumerable<Gizmo> CompGetWornGizmosExtra()
         {
             if (Wearer.Faction != Faction.OfPlayer)
             {
                 yield break;
             }
-            bool CloakReseached = (YautjaDefOf.AvP_Tech_Yautja_CloakGenerator.IsFinished);
+            bool CloakReseached = Props.requiredResearch == null || (Props.requiredResearch !=null && Props.requiredResearch.IsFinished);
             if (CloakReseached)
             {
                 if (Find.Selector.SingleSelectedObject == (Wearer) && Gizmo != null)
@@ -158,8 +161,8 @@ namespace CloakingDevice
                 }
                 */
             }
-        }
 
+        }
         // Token: 0x0600000A RID: 10 RVA: 0x000023A4 File Offset: 0x000005A4
         public void SwitchCloakMode()
         {
@@ -193,37 +196,10 @@ namespace CloakingDevice
                 this.nextUpdateTick = Find.TickManager.TicksGame + 60;
                 this.RefreshCloakState();
             }
-            if (base.Wearer == null)
+            if (this.Wearer == null)
             {
                 this.energy = 0f;
                 return;
-            }
-            else if (Wearer.Faction == Faction.OfPlayer)
-            {
-                if (!PlayerKnowledgeDatabase.IsComplete(YautjaConceptDefOf.AvP_Concept_Gauntlet) && Wearer.IsColonist)
-                {
-                    LessonAutoActivator.TeachOpportunity(YautjaConceptDefOf.AvP_Concept_Gauntlet, OpportunityType.GoodToKnow);
-                }
-                if (!PlayerKnowledgeDatabase.IsComplete(YautjaConceptDefOf.AvP_Concept_Wistblade) && Wearer.IsColonist)
-                {
-                    LessonAutoActivator.TeachOpportunity(YautjaConceptDefOf.AvP_Concept_Wistblade, OpportunityType.GoodToKnow);
-                }
-                if (!PlayerKnowledgeDatabase.IsComplete(YautjaConceptDefOf.AvP_Concept_SelfDestruct) && (Wearer.IsColonist || Wearer.IsPrisoner))
-                {
-                    LessonAutoActivator.TeachOpportunity(YautjaConceptDefOf.AvP_Concept_SelfDestruct, OpportunityType.GoodToKnow);
-                }
-                if (!PlayerKnowledgeDatabase.IsComplete(YautjaConceptDefOf.AvP_Concept_MediComp) && Wearer.IsColonist && YautjaDefOf.AvP_Tech_Yautja_MediComp.IsFinished)
-                {
-                    LessonAutoActivator.TeachOpportunity(YautjaConceptDefOf.AvP_Concept_MediComp, OpportunityType.GoodToKnow);
-                }
-                if (!PlayerKnowledgeDatabase.IsComplete(YautjaConceptDefOf.AvP_Concept_ShardInjector) && Wearer.IsColonist && YautjaDefOf.AvP_Tech_Yautja_HealthShard.IsFinished)
-                {
-                    LessonAutoActivator.TeachOpportunity(YautjaConceptDefOf.AvP_Concept_ShardInjector, OpportunityType.GoodToKnow);
-                }
-                if (!PlayerKnowledgeDatabase.IsComplete(YautjaConceptDefOf.AvP_Concept_Cloak) && Wearer.IsColonist && YautjaDefOf.AvP_Tech_Yautja_CloakGenerator.IsFinished)
-                {
-                    LessonAutoActivator.TeachOpportunity(YautjaConceptDefOf.AvP_Concept_Cloak, OpportunityType.GoodToKnow);
-                }
             }
             if (this.cloakState == CloakState.Resetting)
             {
@@ -263,7 +239,7 @@ namespace CloakingDevice
         // Token: 0x06000006 RID: 6 RVA: 0x000021F0 File Offset: 0x000003F0
         public void SwitchOnCloak()
         {
-            IntVec3 intVec = base.Wearer.DrawPos.ToIntVec3();
+            IntVec3 intVec = this.Wearer.DrawPos.ToIntVec3();
             if (Apparel.DestroyedOrNull() || !IsWorn)
             {
                 this.cloakIsOn = false;
@@ -276,7 +252,7 @@ namespace CloakingDevice
         {
             if (Wearer != null)
             {
-                if (Wearer.health.hediffSet.HasHediff(YautjaDefOf.AvP_Hediff_Cloaked))
+                if (Wearer.health.hediffSet.HasHediff(Props.cloakHediff))
                 {
                     /*
                     Hediff hediff = Wearer.health.hediffSet.GetFirstHediffOfDef(YautjaDefOf.AvP_Hediff_Cloaked);
@@ -395,6 +371,66 @@ namespace CloakingDevice
             }
         }
 
+        public Apparel Apparel => this.parent as Apparel;
+
+        public bool IsWorn => Apparel != null ? Apparel.Wearer != null : false;
+
+        public Pawn Wearer => IsWorn ? Apparel.Wearer : null;
+
+        public Map Map
+        {
+            get
+            {
+                Map map = null;
+                if (IsWorn)
+                {
+                    map = Wearer.Map ?? Wearer.MapHeld;
+                }
+                else
+                {
+                    map = Apparel.Map ?? Apparel.MapHeld;
+                }
+
+                return map;
+            }
+        }
+
+        public IntVec3 Loc
+        {
+            get
+            {
+                IntVec3 vec3 = IntVec3.Invalid;
+                if (IsWorn)
+                {
+                    vec3 = Wearer.Position != null ? Wearer.Position : Wearer.PositionHeld;
+                }
+                else
+                {
+                    vec3 = Apparel.Position != null ? Apparel.Position : Apparel.PositionHeld;
+                }
+
+                return vec3;
+            }
+        }
+        public void ThrowMote(string str, float time = 5f)
+        {
+            if (!str.NullOrEmpty())
+            {
+                if (Map != null && Loc != IntVec3.Invalid)
+                {
+                    IntVec3 vec3 = Loc;
+                    //    vec3.x -= 1;
+                    vec3.z += 1;
+                    MoteMaker.ThrowText(vec3.ToVector3ShiftedWithAltitude(AltitudeLayer.MoteOverhead), Map, str, time);
+                }
+            }
+        }
+
+        public virtual IEnumerable<Gizmo> CompGetGizmosWorn()
+        {
+            // return no Gizmos
+            return new List<Gizmo>();
+        }
         public override void PostExposeData()
         {
             base.PostExposeData();

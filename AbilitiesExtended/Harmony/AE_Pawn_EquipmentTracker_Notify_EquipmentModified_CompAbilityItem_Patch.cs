@@ -31,16 +31,88 @@ namespace AbilitesExtended.HarmonyInstance
                 }
                 if (!abilityItem.Props.Abilities.NullOrEmpty())
                 {
-                    foreach (AbilityDef def in abilityItem.Props.Abilities)
+                    foreach (EquipmentAbilityDef def in abilityItem.Props.Abilities)
                     {
-                        if (!__instance.pawn.abilities.abilities.Any(x => x.def == def))
+                        if (!__instance.pawn.abilities.abilities.Any(x => x.def == def) && (!def.requirePsyker || isPsyker(pawn)))
                         {
-                            __instance.pawn.abilities.GainAbility(def, eq);
+                            __instance.pawn.abilities.GainEquipmentAbility(def, eq);
                         }
                     }
                 }
             }
         }
+        public static bool isPsyker(Pawn pawn)
+        {
+            return isPsyker(pawn, out int Level);
+        }
+
+        public static bool isPsyker(Pawn pawn, out int Level)
+        {
+            return isPsyker(pawn, out Level, out float Mult);
+        }
+
+        public static bool isPsyker(Pawn pawn, out int Level, out float Mult)
+        {
+            bool result = false;
+            Mult = 0f;
+            Level = 0;
+
+            if (pawn.RaceProps.Humanlike)
+            {
+                if (pawn.health.hediffSet.hediffs.Any(x => x.GetType() == typeof(Hediff_ImplantWithLevel)))
+                {
+                    Level = (pawn.health.hediffSet.hediffs.First(x => x.GetType() == typeof(Hediff_ImplantWithLevel)) as Hediff_ImplantWithLevel).level;
+                    result = true;
+                }
+                else
+                if (pawn.story.traits.HasTrait(TraitDefOf.PsychicSensitivity))
+                {
+                    result = pawn.story.traits.DegreeOfTrait(TraitDefOf.PsychicSensitivity) > 0;
+                    Level = pawn.story.traits.DegreeOfTrait(TraitDefOf.PsychicSensitivity);
+                }
+                else
+                {
+                    TraitDef Corruptionpsyker = DefDatabase<TraitDef>.GetNamedSilentFail("Psyker");
+                    if (Corruptionpsyker != null)
+                    {
+                        result = true;
+                        pawn.story.traits.HasTrait(Corruptionpsyker);
+                        Level = pawn.story.traits.DegreeOfTrait(Corruptionpsyker);
+                    }
+                }
+                Mult = pawn.GetStatValue(StatDefOf.PsychicSensitivity) * (pawn.needs.mood.CurInstantLevelPercentage - pawn.health.hediffSet.PainTotal);
+            }
+            /*
+            else
+            {
+                ToolUserPskyerDefExtension extension = null;
+                if (pawn.def.HasModExtension<ToolUserPskyerDefExtension>())
+                {
+                    extension = pawn.def.GetModExtension<ToolUserPskyerDefExtension>();
+                }
+                else
+                if (pawn.kindDef.HasModExtension<ToolUserPskyerDefExtension>())
+                {
+                    extension = pawn.kindDef.GetModExtension<ToolUserPskyerDefExtension>();
+                }
+                if (extension != null)
+                {
+                    result = true;
+                    Level = extension.Level;
+                }
+                if (pawn.needs != null && pawn.needs.mood != null)
+                {
+                    Mult = pawn.GetStatValue(StatDefOf.PsychicSensitivity) * (pawn.needs.mood.CurInstantLevelPercentage - pawn.health.hediffSet.PainTotal);
+                }
+                else
+                {
+                    Mult = pawn.GetStatValue(StatDefOf.PsychicSensitivity) * (1 - pawn.health.hediffSet.PainTotal);
+                }
+            }
+            */
+            return result;
+        }
+
     }
 
     [HarmonyPatch(typeof(Pawn_EquipmentTracker), "Notify_EquipmentRemoved")]

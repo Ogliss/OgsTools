@@ -31,6 +31,7 @@
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
   <ItemGroup>
+    <None Include="Command_EquipmentAbility - Copy.cs.bak" />
     <Compile Include="ExtentionMethods\AbilityTracker_Extentions.cs" />
     <Compile Include="Harmony\AE_Pawn_EquipmentTracker_Notify_EquipmentModified_CompAbilityItem_Patch.cs" />
     <Compile Include="Harmony\AE_NeurotrainerDefGenerator_ImpliedThingDefs_Filter_Patch.cs" />

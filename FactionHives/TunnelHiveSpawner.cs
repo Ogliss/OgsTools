@@ -69,10 +69,8 @@ namespace ExtraHives
 					}
 				}
 			}
-			Rand.PopState();
 			if (Ext.effecter != null)
 			{
-				Rand.PushState();
 				if (Rand.MTBEventOccurs((EMPMoteSpawnMTB * TimeRemaining), 0.5f, 0.25f))
 				{
 					if (this.Effecter == null && Ext.effecter != null)
@@ -88,8 +86,8 @@ namespace ExtraHives
 						this.Effecter.EffectTick(localTarget, localTarget);
 					}
 				}
-				Rand.PopState();
 			}
+			Rand.PopState();
 			if (secondarySpawnTick > Find.TickManager.TicksGame)
 			{
 				return;

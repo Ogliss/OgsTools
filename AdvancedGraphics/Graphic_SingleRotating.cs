@@ -7,7 +7,6 @@ namespace AdvancedGraphics
 	// AdvancedGraphics.Graphic_SingleRotating
 	public class Graphic_SingleRotating : Graphic_Single
 	{
-
 		// Token: 0x060015AD RID: 5549 RVA: 0x0007F364 File Offset: 0x0007D564
 		public override void DrawWorker(Vector3 loc, Rot4 rot, ThingDef thingDef, Thing thing, float extraRotation)
 		{

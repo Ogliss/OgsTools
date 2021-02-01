@@ -34,7 +34,6 @@ namespace AbilitesExtended.HarmonyInstance
                     }
                     __result = equipmentAbility.sourceEquipment;
                 }
-                ThingWithComps withComps = null;
             }
             return true;
         }

@@ -39,7 +39,7 @@ namespace OgsCompOversizedWeapon
 			}
 			return list;
 		}
-		// ,CompOversizedWeapon compOversized, CompEquippable equippable, Pawn pawn
+
 		public static void DrawMeshModified(Mesh mesh, Vector3 position, Quaternion rotation, Material mat, int layer, Thing eq, float aimAngle)
 		{
 
@@ -49,7 +49,7 @@ namespace OgsCompOversizedWeapon
 			if (pawn == null) return;
 			if (compOversized == null || (compOversized != null && compOversized.CompDeflectorIsAnimatingNow) || pawn == null || eq == null)
 			{
-				Graphics.DrawMesh(mesh, position, rotation, mat, layer);
+				draw(mesh, default(Matrix4x4), mat, layer, eq, pawn, position, rotation);
 				return;
 			}
 			ThingWithComps thingWithComps = eq as ThingWithComps;
@@ -210,7 +210,7 @@ namespace OgsCompOversizedWeapon
 			{
 				if (HarmonyCompOversizedWeapon.enabled_AlienRaces)
 				{
-					Vector2 v = AlienRacesPatch(pawn);
+					Vector2 v = AlienRaceUtility.AlienRacesPatch(pawn, eq);
 					float f = Mathf.Max(v.x, v.y);
 					s = new Vector3(eq.def.graphicData.drawSize.x * f, 1f, eq.def.graphicData.drawSize.y * f);
 				}
@@ -416,13 +416,11 @@ namespace OgsCompOversizedWeapon
 		}
 		public static void draw(Mesh mesh, Matrix4x4 matrix, Material mat, int layer, Thing eq, Pawn pawn, Vector3 position, Quaternion rotation)
 		{
-			Graphics.DrawMesh(mesh, matrix, mat, layer);
-		}
-		public static Vector2 AlienRacesPatch(Pawn pawn)
-		{
-			AlienRace.ThingDef_AlienRace alienDef = pawn.def as AlienRace.ThingDef_AlienRace;
-			Vector2 s = alienDef.alienRace.generalSettings.alienPartGenerator.customDrawSize;
-			return s;
+            if (matrix == default(Matrix4x4))
+            {
+				Graphics.DrawMesh(mesh, position, rotation, mat, layer);
+			}
+            else Graphics.DrawMesh(mesh, matrix, mat, layer);
 		}
 
 		private static float AdjustOffsetAtPeace(Thing eq, Pawn pawn, CompOversizedWeapon compOversizedWeapon, float num)

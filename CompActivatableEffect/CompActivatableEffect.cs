@@ -14,9 +14,10 @@ namespace OgsCompActivatableEffect
             Activated
         }
 
+        public virtual CompProperties_ActivatableEffect Props => (CompProperties_ActivatableEffect)props;
         private State currentState = State.Deactivated;
 
-        public bool IsActiveNow => currentState == State.Activated;
+        public virtual bool IsActiveNow => currentState == State.Activated;
         public bool IsInitialized;
 
         private Sustainer sustainer;
@@ -221,7 +222,6 @@ namespace OgsCompActivatableEffect
             }
         }
 
-        public virtual CompProperties_ActivatableEffect Props => (CompProperties_ActivatableEffect) props;
 
         public virtual Graphic Graphic
         {
