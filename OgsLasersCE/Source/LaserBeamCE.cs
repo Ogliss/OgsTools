@@ -19,16 +19,12 @@ namespace OgsLasers
         
         void TriggerEffect(EffecterDef effect, Vector3 position, Thing hitThing = null)
         {
-            TriggerEffect(effect, IntVec3.FromVector3(position));
-        }
-
-        void TriggerEffect(EffecterDef effect, IntVec3 dest)
-        {
             if (effect == null) return;
 
-            var targetInfo = new TargetInfo(dest, Map, false);
+            var targetInfo = new TargetInfo(IntVec3.FromVector3(position), Map, false);
 
             Effecter effecter = effect.Spawn();
+            effecter.offset = position - targetInfo.CenterVector3;
             effecter.Trigger(targetInfo, targetInfo);
             effecter.Cleanup();
         }
@@ -71,21 +67,21 @@ namespace OgsLasers
             Vector3 b;
             if (hitThing == null)
             {
-                b = destination;
+                b = ExactPosition;
             }
             else if (shielded)
             {
                 Rand.PushState();
-                b = hitThing.TrueCenter() - dir.RotatedBy(Rand.Range(-22.5f, 22.5f)) * 0.8f;
+                b = ExactPosition - dir.RotatedBy(Rand.Range(-22.5f, 22.5f)) * 0.8f;
                 Rand.PopState();
             }
-            else if ((destination - hitThing.TrueCenter()).magnitude < 1)
+            else if ((destination - ExactPosition).magnitude < 1)
             {
-                b = destination;
+                b = ExactPosition;
             }
             else
             {
-                b = hitThing.TrueCenter();
+                b = ExactPosition;
                 Rand.PushState();
                 b.x += Rand.Range(-0.5f, 0.5f);
                 b.z += Rand.Range(-0.5f, 0.5f);
@@ -151,6 +147,7 @@ namespace OgsLasers
             }
             Map map = base.Map;
             base.Impact(hitThing);
+            /*
             if (this.equipmentDef==null)
             {
                 this.equipmentDef = this.launcher.def;
@@ -182,6 +179,7 @@ namespace OgsLasers
                     MoteMaker.MakeWaterSplash(this.ExactPosition, map, Mathf.Sqrt((float)this.def.projectile.GetDamageAmount(1f, null)) * 1f, 4f);
                 }
             }
+            */
         }
 
         public float DamageAmount
@@ -201,7 +199,7 @@ namespace OgsLasers
             }
         }
 
-        // Token: 0x060000FB RID: 251 RVA: 0x00009248 File Offset: 0x00007448
+
         protected virtual void Explode(Thing hitThing, bool destroy = false)
         {
             Map map = base.Map;

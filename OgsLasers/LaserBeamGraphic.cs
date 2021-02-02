@@ -7,10 +7,12 @@ using Verse;
 
 namespace OgsLasers
 {
+    [StaticConstructorOnStartup]
     class LaserBeamGraphic : Thing
     {
         public LaserBeamDef projDef;
-
+        float beamWidth;
+        float beamLength;
         int ticks;
         int colorIndex = 2;
         Vector3 a;
@@ -32,6 +34,8 @@ namespace OgsLasers
         {
             base.ExposeData();
 
+            Scribe_Values.Look(ref beamWidth, "beamWidth");
+            Scribe_Values.Look(ref beamLength, "beamLength");
             Scribe_Values.Look(ref ticks, "ticks");
             Scribe_Values.Look(ref colorIndex, "colorIndex");
             Scribe_Values.Look(ref a, "a");
@@ -85,7 +89,7 @@ namespace OgsLasers
         {
             if (mesh != null) return;
 
-            materialBeam = projDef.GetBeamMaterial(colorIndex) ?? def.graphicData.Graphic.MatSingle;
+            materialBeam = projDef.GetBeamMaterial(colorIndex) ?? LaserBeamGraphic.BeamMat;
 
             if (this.def.graphicData != null)
             {
@@ -97,26 +101,27 @@ namespace OgsLasers
                     }
                 }
             }
-            float beamWidth = projDef.beamWidth;
+            beamWidth = projDef.beamWidth;
             Quaternion rotation = Quaternion.LookRotation(b - a);
             Vector3 dir = (b - a).normalized;
-            float length = (b - a).magnitude;
+            beamLength = (b - a).magnitude;
 
-            Vector3 drawingScale = new Vector3(beamWidth, 1f, length);
+            Vector3 drawingScale = new Vector3(beamWidth, 1f, beamLength);
             Vector3 drawingPosition = (a + b) / 2;
+            drawingPosition.y = AltitudeLayer.MetaOverlays.AltitudeFor();
             drawingMatrix.SetTRS(drawingPosition, rotation, drawingScale);
 
             float textureRatio = 1.0f * materialBeam.mainTexture.width / materialBeam.mainTexture.height;
             float seamTexture = projDef.seam < 0 ? textureRatio : projDef.seam;
             float capLength = beamWidth / textureRatio / 2f * seamTexture;
-            float seamGeometry = length <= capLength * 2 ? 0.5f : capLength * 2 / length;
+            float seamGeometry = beamLength <= capLength * 2 ? 0.5f : capLength * 2 / beamLength;
 
             if (Lightning)
             {
                 float distance = Vector3.Distance(a, b);
                 for (int i = 0; i < projDef.ArcCount; i++)
                 {
-                    meshes.Add(LightningLaserBoltMeshMaker.NewBoltMesh(new Vector2(0, -(distance + 0.25f)), projDef.LightningVariance));
+                    meshes.Add(LightningLaserBoltMeshMaker.NewBoltMesh(new Vector2(0, -(distance + 0.25f)), projDef.LightningVariance, beamWidth));
                 }
                 //    this.mesh = LightningBoltMeshMakerOG.NewBoltMesh(new Vector2(0, -(distance + 0.25f)), def.LightningVariance);
             }
@@ -172,6 +177,9 @@ namespace OgsLasers
             SetupDrawing();
 
             float opacity = Opacity;
+            Color color = projDef.graphicData.color;
+            color.a *= opacity;
+            LaserBeamGraphic.MatPropertyBlock.SetColor(ShaderPropertyIDs.Color, color);
             if (Lightning)
             {
                 Vector3 vector;
@@ -195,8 +203,10 @@ namespace OgsLasers
                             }
                         }
                     }
-                    meshes[i] = Find.TickManager.Paused || meshes[i] != null && Static ? meshes[i] : LightningLaserBoltMeshMaker.NewBoltMesh(new Vector2(0, -(distance + 0.25f)));
-                    Graphics.DrawMesh(this.meshes[i], b, Quaternion.LookRotation((vector - this.a).normalized), FadedMaterialPool.FadedVersionOf(materialBeam, opacity), 0);
+                    float mult = Mathf.Max(0.5f, 1f - (1.0f * ticks / projDef.lifetime));
+                    meshes[i] = Find.TickManager.Paused || Find.TickManager.TicksGame % this.projDef.flickerFrameTime != 0 || meshes[i] != null && Static ? meshes[i] : LightningLaserBoltMeshMaker.NewBoltMesh(new Vector2(0, -(distance + 0.25f)), projDef.LightningVariance * mult, beamWidth * mult);
+                    Graphics.DrawMesh(this.meshes[i], b, Quaternion.LookRotation((vector - this.a).normalized), materialBeam, 0, null, 0, LaserBeamGraphic.MatPropertyBlock, 0);
+                    Graphics.DrawMesh(this.meshes[i], b, Quaternion.LookRotation((vector - this.a).normalized), BeamEndMat, 0, null, 0, LaserBeamGraphic.MatPropertyBlock, 0);
 
                 }
             }
@@ -215,7 +225,9 @@ namespace OgsLasers
                         }
                     }
                 }
-                Graphics.DrawMesh(mesh, drawingMatrix, FadedMaterialPool.FadedVersionOf(materialBeam, opacity), 0);
+                Graphics.DrawMesh(mesh, drawingMatrix, materialBeam, 0, null, 0, LaserBeamGraphic.MatPropertyBlock);
+                Graphics.DrawMesh(mesh, drawingMatrix, BeamEndMat, 0, null, 0, LaserBeamGraphic.MatPropertyBlock);
+            //    Graphics.DrawMesh(mesh, drawingMatrix, FadedMaterialPool.FadedVersionOf(materialBeam, opacity), 0);
             }
         }
         protected virtual void Explode()
@@ -245,5 +257,8 @@ namespace OgsLasers
             GenExplosion.DoExplosion(center, map2, explosionRadius, damageDef, launcher, damageAmount, 0f, soundExplode, equipmentDef, def, null, postExplosionSpawnThingDef, postExplosionSpawnChance, postExplosionSpawnThingCount, this.def.projectile.applyDamageToExplosionCellsNeighbors, preExplosionSpawnThingDef, this.def.projectile.preExplosionSpawnChance, this.def.projectile.preExplosionSpawnThingCount, this.def.projectile.explosionChanceToStartFire, this.def.projectile.explosionDamageFalloff);
         }
 
+        private static readonly Material BeamMat = MaterialPool.MatFrom("Other/OrbitalBeam", ShaderDatabase.MoteGlow, MapMaterialRenderQueues.OrbitalBeam);
+        private static readonly Material BeamEndMat = MaterialPool.MatFrom("Other/OrbitalBeamEnd", ShaderDatabase.MoteGlow, MapMaterialRenderQueues.OrbitalBeam);
+        private static readonly MaterialPropertyBlock MatPropertyBlock = new MaterialPropertyBlock();
     }
 }

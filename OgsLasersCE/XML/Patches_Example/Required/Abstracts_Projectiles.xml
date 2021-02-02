@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<Patch>
+	<Operation Class="PatchOperationSequence">
+		<operations>
+			<li Class="PatchOperationReplace">
+				<xpath>Defs/ThingDef[defName="BeamGraphic"]/thingClass</xpath>
+				<value>
+					<thingClass>OgsLasers.LaserBeamGraphicCE</thingClass>
+				</value>
+			</li>
+			<li Class="PatchOperationReplace">
+				<xpath>Defs/ThingDef[@Name="Bullet_LaserBase"]/thingClass</xpath>
+				<value>
+					<thingClass>OgsLasers.LaserBeamCE</thingClass>
+				</value>
+			</li>
+			<li Class="PatchOperationAttributeSet">
+				<xpath>Defs/ThingDef[@Name="Bullet_LaserBase"]/projectile</xpath>
+				<attribute>Class</attribute>
+				<value>CombatExtended.ProjectilePropertiesCE</value>
+			</li>
+		</operations>
+	</Operation>
+
+</Patch>

@@ -7,7 +7,7 @@ using Verse.AI;
 
 namespace OgsLasers
 {
-
+    // 	OgsLasers.LaserGun
     public class LaserGun : ThingWithComps, IBeamColorThing, IDrawnWeaponWithRotation
     {
         new public LaserGunDef def => base.def as LaserGunDef ?? LaserGunDef.defaultObj;

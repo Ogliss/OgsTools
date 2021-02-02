@@ -1,0 +1,102 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<Patch>
+
+	<Operation Class="PatchOperationSequence">
+		<!--success>Always</success-->
+		<operations>
+				<!-- ====================== Teslagun ===================== -->
+				<li Class="CombatExtended.PatchOperationMakeGunCECompatible">
+					<defName>Gun_Teslagun</defName>
+					<statBases>
+						<Mass>2.3</Mass>
+						<RangedWeapon_Cooldown>1.70</RangedWeapon_Cooldown>
+						<SightsEfficiency>1.0</SightsEfficiency>
+						<ShotSpread>0.15</ShotSpread>
+						<SwayFactor>1.2</SwayFactor>
+						<Bulk>2.2</Bulk>
+					</statBases>
+					<Properties>
+						<recoilAmount>0.1</recoilAmount>
+						<verbClass>CombatExtended.Verb_ShootCE</verbClass>
+						<hasStandardCommand>true</hasStandardCommand>
+						<defaultProjectile>Bullet_Teslagun</defaultProjectile>
+						<warmupTime>1</warmupTime>
+						<range>22.5</range>
+						<soundCast>Shot_ChargeRifle</soundCast>
+						<soundCastTail>GunTail_Medium</soundCastTail>
+						<muzzleFlashScale>10</muzzleFlashScale>
+						<ticksBetweenBurstShots>15</ticksBetweenBurstShots>
+						<burstShotCount>3</burstShotCount>
+						<targetParams>
+							<canTargetLocations>true</canTargetLocations>
+						</targetParams>
+					</Properties>
+					<!-- Commented out for testing, can be enabled if disired -->
+					<!--AmmoUser>
+						<magazineSize>80</magazineSize>
+						<reloadTime>2.5</reloadTime>
+						<ammoSet>AmmoSet_OGLasStd</ammoSet>
+					</AmmoUser-->
+					<FireModes>
+						<aiAimMode>AimedShot</aiAimMode>
+						<aiUseBurstMode>TRUE</aiUseBurstMode>	
+					</FireModes>
+					<weaponTags>
+
+					</weaponTags>
+				</li>
+
+				<!--li Class="PatchOperationAttributeSet">
+					<xpath>Defs/ThingDef[defName="Gun_Teslagun"]/tools/li</xpath>
+					<attribute>Class</attribute>
+					<value>CombatExtended.ToolCE</value>
+				</li-->
+				
+				<li Class="PatchOperationReplace">
+					<xpath>Defs/ThingDef[defName="Gun_Teslagun"]/tools</xpath>
+					<value>
+						<tools>
+							<li Class="CombatExtended.ToolCE">
+								<label>stock</label>
+								<capacities>
+									<li>Blunt</li>
+								</capacities>
+								<power>9</power>
+								<cooldownTime>1.8</cooldownTime>
+								<armorPenetrationBlunt>2.755</armorPenetrationBlunt>
+							</li>
+							<li Class="CombatExtended.ToolCE">
+								<label>barrel</label>
+								<capacities>
+									<li>Blunt</li>
+									<li>Poke</li>
+								</capacities>
+								<power>10</power>
+								<cooldownTime>1.9</cooldownTime>
+								<armorPenetrationBlunt>2.755</armorPenetrationBlunt>
+							</li>
+						</tools>
+					</value>
+				</li>
+
+				<li Class="PatchOperationAttributeSet">
+					<xpath>Defs/ThingDef[defName="Bullet_Teslagun"]</xpath>
+					<attribute>Class</attribute>
+					<value>OgsLasers.LaserBeamDefCE</value>
+				</li>
+				<li Class="PatchOperationReplace">
+					<xpath>Defs/ThingDef[defName="Bullet_Teslagun"]/projectile</xpath>
+					<value>
+						<projectile Class="CombatExtended.ProjectilePropertiesCE">
+							<damageDef>Bullet</damageDef>
+							<damageAmountBase>10</damageAmountBase>
+							<armorPenetrationSharp>12</armorPenetrationSharp>
+							<armorPenetrationBlunt>28</armorPenetrationBlunt>
+						</projectile>
+					</value>
+				</li>
+
+		</operations>
+	</Operation>
+
+</Patch>

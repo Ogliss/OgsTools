@@ -18,5 +18,6 @@ namespace ProjectileImpactFX.HarmonyInstance
             var harmony = new Harmony("com.ogliss.rimworld.mod.ProjectileImpactFX");
             harmony.PatchAll(Assembly.GetExecutingAssembly());
         }
+
     }
 }

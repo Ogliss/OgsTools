@@ -1,14 +1,13 @@
 ﻿using Verse;
 using HarmonyLib;
 using RimWorld;
-using CombatExtended;
 
 namespace ProjectileImpactFX.HarmonyInstance
 {
-//    [HarmonyPatch(typeof(ProjectileCE), "Tick")]
-    public static class Projectile_Tick_Trailer_Patch_CE
+    [HarmonyPatch(typeof(Projectile), "Tick")]
+    public static class Projectile_Tick_Trailer_Patch
     {
-        public static void Postfix(ProjectileCE __instance, int ___ticksToImpact)
+        public static void Postfix(Projectile __instance, int ___ticksToImpact)
         {
             if (__instance != null)
             {

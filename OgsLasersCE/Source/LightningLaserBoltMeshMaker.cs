@@ -20,12 +20,12 @@ namespace OgsLasers
         }
 
         // Token: 0x0600137D RID: 4989 RVA: 0x00095543 File Offset: 0x00093943
-        public static Mesh NewBoltMesh(Vector2 vector, float str = 3f)
+        public static Mesh NewBoltMesh(Vector2 vector, float str = 3f, float width = 1f)
         {
             LightningLaserBoltMeshMaker.lightningTop = vector;
             LightningLaserBoltMeshMaker.MakeVerticesBase();
             LightningLaserBoltMeshMaker.PeturbVerticesRandomly(str);
-            LightningLaserBoltMeshMaker.DoubleVertices();
+            LightningLaserBoltMeshMaker.DoubleVertices(width);
             return LightningLaserBoltMeshMaker.MeshFromVerts();
         }
 
@@ -67,6 +67,26 @@ namespace OgsLasers
         }
 
         // Token: 0x06001380 RID: 4992 RVA: 0x000956A0 File Offset: 0x00093AA0
+        private static void DoubleVertices(float width)
+        {
+            List<Vector2> list = LightningLaserBoltMeshMaker.verts2D.ListFullCopy<Vector2>();
+            Vector3 vector = default(Vector3);
+            Vector2 a = default(Vector2);
+            LightningLaserBoltMeshMaker.verts2D.Clear();
+            for (int i = 0; i < list.Count; i++)
+            {
+                if (i <= list.Count - 2)
+                {
+                    vector = Quaternion.AngleAxis(90f, Vector3.up) * (list[i] - list[i + 1]);
+                    a = new Vector2(vector.y, vector.z);
+                    a.Normalize();
+                }
+                Vector2 item = list[i] - width * a;
+                Vector2 item2 = list[i] + width * a;
+                LightningLaserBoltMeshMaker.verts2D.Add(item);
+                LightningLaserBoltMeshMaker.verts2D.Add(item2);
+            }
+        }
         private static void DoubleVertices()
         {
             List<Vector2> list = LightningLaserBoltMeshMaker.verts2D.ListFullCopy<Vector2>();

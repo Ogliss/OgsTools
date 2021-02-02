@@ -1,0 +1,108 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<Patch>
+
+	<Operation Class="PatchOperationSequence">
+		<!--success>Always</success-->
+		<operations>
+				<!-- ====================== LasGun ===================== -->
+				<li Class="CombatExtended.PatchOperationMakeGunCECompatible">
+					<defName>Gun_Lasrifle</defName>
+					<statBases>
+					  <Mass>7.30</Mass>
+					  <RangedWeapon_Cooldown>1.5</RangedWeapon_Cooldown>
+					  <SightsEfficiency>2.6</SightsEfficiency>
+					  <ShotSpread>0.05</ShotSpread>
+					  <SwayFactor>1.35</SwayFactor>
+					  <Bulk>11.92</Bulk>
+					  <WorkToMake>30000</WorkToMake>
+					</statBases>
+					<costList>
+					  <Steel>60</Steel>
+					  <ComponentIndustrial>5</ComponentIndustrial>
+					  <Chemfuel>15</Chemfuel>
+					</costList>
+					<Properties>
+					  <verbClass>CombatExtended.Verb_ShootCE</verbClass>
+					  <hasStandardCommand>true</hasStandardCommand>
+					  <defaultProjectile>Bullet_Lasrifle</defaultProjectile>
+					  <warmupTime>2</warmupTime>
+					  <range>80</range>
+					  <soundCast>Bullet_Lasrifle</soundCast>
+					  <soundCastTail>GunTail_Heavy</soundCastTail>
+					  <muzzleFlashScale>9</muzzleFlashScale>
+						<targetParams>
+							<canTargetLocations>true</canTargetLocations>
+						</targetParams>
+					</Properties>
+					<!--AmmoUser>
+					  <magazineSize>5</magazineSize>
+					  <reloadTime>4</reloadTime>
+					  <ammoSet>AmmoSet_762x51mmNATO</ammoSet>
+					</AmmoUser-->
+					<FireModes>
+					  <aiAimMode>AimedShot</aiAimMode>
+					</FireModes>
+					<weaponTags>
+					  <li>CE_AI_Rifle</li>
+					</weaponTags>
+					<researchPrerequisite>PrecisionRifling</researchPrerequisite>
+					<AllowWithRunAndGun>false</AllowWithRunAndGun>
+				</li>
+			  <li Class="PatchOperationAddModExtension">
+				<xpath>Defs/ThingDef[defName="Gun_Lasrifle"]</xpath>
+				<value>
+				  <li Class="CombatExtended.GunDrawExtension">
+					<DrawSize>1.25,1.45</DrawSize>
+					<DrawOffset>0.15,-0.05</DrawOffset>
+				  </li>
+				</value>
+			  </li>
+
+				<li Class="PatchOperationReplace">
+					<xpath>Defs/ThingDef[defName="Gun_Lasrifle"]/tools</xpath>
+					<value>
+						<tools>
+							<li Class="CombatExtended.ToolCE">
+								<label>stock</label>
+								<capacities>
+									<li>Blunt</li>
+								</capacities>
+								<power>9</power>
+								<cooldownTime>1.8</cooldownTime>
+								<armorPenetrationBlunt>2.755</armorPenetrationBlunt>
+							</li>
+							<li Class="CombatExtended.ToolCE">
+								<label>barrel</label>
+								<capacities>
+									<li>Blunt</li>
+									<li>Poke</li>
+								</capacities>
+								<power>10</power>
+								<cooldownTime>1.9</cooldownTime>
+								<armorPenetrationBlunt>2.755</armorPenetrationBlunt>
+							</li>
+						</tools>
+					</value>
+				</li>
+
+				<li Class="PatchOperationAttributeSet">
+					<xpath>Defs/ThingDef[defName="Bullet_Lasrifle"]</xpath>
+					<attribute>Class</attribute>
+					<value>OgsLasers.LaserBeamDefCE</value>
+				</li>
+				<li Class="PatchOperationReplace">
+					<xpath>Defs/ThingDef[defName="Bullet_Lasrifle"]/projectile</xpath>
+					<value>
+						<projectile Class="CombatExtended.ProjectilePropertiesCE">
+							<damageDef>Bullet</damageDef>
+							<damageAmountBase>35</damageAmountBase>
+							<armorPenetrationSharp>48</armorPenetrationSharp>
+							<armorPenetrationBlunt>124</armorPenetrationBlunt>
+						</projectile>
+					</value>
+				</li>
+			
+		</operations>
+	</Operation>
+
+</Patch>

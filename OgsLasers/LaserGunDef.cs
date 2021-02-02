@@ -6,6 +6,7 @@ using Verse;
 
 namespace OgsLasers
 {
+    // 	OgsLasers.LaserGunDef
     public class LaserGunDef : ThingDef
     {
         public static LaserGunDef defaultObj = new LaserGunDef();

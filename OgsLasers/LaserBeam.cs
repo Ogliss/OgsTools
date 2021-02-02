@@ -18,18 +18,14 @@ namespace OgsLasers
 
         }
 
-        void TriggerEffect(EffecterDef effect, Vector3 position)
-        {
-            TriggerEffect(effect, IntVec3.FromVector3(position));
-        }
-
-        void TriggerEffect(EffecterDef effect, IntVec3 dest)
+        void TriggerEffect(EffecterDef effect, Vector3 position, Thing hitThing = null)
         {
             if (effect == null) return;
 
-            var targetInfo = new TargetInfo(dest, Map, false);
+            var targetInfo = hitThing != null ? new TargetInfo(hitThing) : new TargetInfo(IntVec3.FromVector3(position), Map, false);
 
             Effecter effecter = effect.Spawn();
+            effecter.offset = position - targetInfo.CenterVector3;
             effecter.Trigger(targetInfo, targetInfo);
             effecter.Cleanup();
         }
@@ -49,8 +45,9 @@ namespace OgsLasers
             for (int i = 0; i < count; i++)
             {
                 Vector3 dir = (b - a).normalized;
+                Rand.PushState();
                 Vector3 c = b - dir.RotatedBy(Rand.Range(-22.5f, 22.5f)) * Rand.Range(1f, 4f);
-
+                Rand.PopState();
                 SpawnBeam(b, c);
             }
         }
@@ -86,7 +83,7 @@ namespace OgsLasers
 
             a.y = b.y = def.Altitude;
 
-            SpawnBeam(a, b);
+        //    SpawnBeam(a, b);
             
             bool createsExplosion = this.def.projectile.explosionRadius>0f;
             if (createsExplosion)
@@ -247,7 +244,6 @@ namespace OgsLasers
             }
         }
 
-        // Token: 0x060000FB RID: 251 RVA: 0x00009248 File Offset: 0x00007448
         protected virtual void Explode(Thing hitThing, bool destroy = false)
         {
             Map map = base.Map;
@@ -332,6 +328,29 @@ namespace OgsLasers
                     */
                 }
             }
+        }
+        public override void DeSpawn(DestroyMode mode = DestroyMode.Vanish)
+        {
+
+            LaserGunDef defWeapon = equipmentDef as LaserGunDef;
+            Vector3 a = origin + Velocity(this.ExactRotation.eulerAngles.y) * (defWeapon == null ? 0.9f : defWeapon.barrelLength);
+            Vector3 b = ExactPosition;
+            a.y = b.y = def.Altitude;
+            SpawnBeam(a, b);
+            if (this.def.impactReflection > 0)
+            {
+                Vector3 dir = (destination - origin).normalized;
+                Rand.PushState();
+                Vector3 c = ExactPosition - dir.RotatedBy(Rand.Range(-22.5f, 22.5f)) * 0.8f;
+                Rand.PopState();
+                SpawnBeamReflections(b, c, this.def.impactReflection);
+            }
+
+            base.DeSpawn(mode);
+        }
+        public Vector3 Velocity(float angle)
+        {
+            return Quaternion.AngleAxis(angle, Vector3.up) * Vector3.forward;
         }
     }
 }
