@@ -57,22 +57,39 @@ namespace HunterMarkingSystem.ExtensionMethods
         
         public static bool isBloodable(this Pawn p)
         {
+            if (p == null)
+            {
+                return false;
+            }
             return p.TryGetComp<Comp_Markable>() != null;
         }
 
         public static bool Markable(this Pawn p)
         {
+            if (p == null)
+            {
+                return false;
+            }
             return p.Markable(out Comp_Markable comp);
         }
 
         public static bool Markable(this Pawn p, out Comp_Markable comp)
         {
+            if (p == null)
+            {
+                comp = null;
+                return false;
+            }
             comp = p.TryGetComp<Comp_Markable>();
             return comp != null;
         }
 
         public static bool Markable(this Thing p)
         {
+            if (p == null)
+            {
+                return false;
+            }
             return p.Markable(out Comp_Markable comp);
         }
 

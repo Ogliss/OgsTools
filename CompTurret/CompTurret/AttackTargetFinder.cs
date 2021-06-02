@@ -1,4 +1,5 @@
 ﻿// Verse.AI.AttackTargetFinder
+using CompTurret.ExtensionMethods;
 using RimWorld;
 using System;
 using System.Collections.Generic;
@@ -150,7 +151,7 @@ namespace CompTurret
 				}
 				if (searcherThing.def.race != null && (int)searcherThing.def.race.intelligence >= 2)
 				{
-					CompExplosive compExplosive = thing.TryGetComp<CompExplosive>();
+					CompExplosive compExplosive = thing.TryGetCompFast<CompExplosive>();
 					if (compExplosive != null && compExplosive.wickStarted)
 					{
 					//	Log.Messageage(thing + " wickStarted: false");
@@ -642,12 +643,12 @@ namespace CompTurret
 
 		public static bool IsAutoTargetable(IAttackTarget target)
 		{
-			CompCanBeDormant compCanBeDormant = target.Thing.TryGetComp<CompCanBeDormant>();
+			CompCanBeDormant compCanBeDormant = target.Thing.TryGetCompFast<CompCanBeDormant>();
 			if (compCanBeDormant != null && !compCanBeDormant.Awake)
 			{
 				return false;
 			}
-			CompInitiatable compInitiatable = target.Thing.TryGetComp<CompInitiatable>();
+			CompInitiatable compInitiatable = target.Thing.TryGetCompFast<CompInitiatable>();
 			if (compInitiatable != null && !compInitiatable.Initiated)
 			{
 				return false;

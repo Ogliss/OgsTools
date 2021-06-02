@@ -7,7 +7,8 @@ using Verse;
 
 namespace OgsLasers
 {
-    public class LaserBeamGraphicCE :Thing
+    [StaticConstructorOnStartup]
+    public class LaserBeamGraphicCE : Thing
     {
         public LaserBeamDefCE projDef;
         float beamWidth;
@@ -21,13 +22,11 @@ namespace OgsLasers
         Material materialBeam;
         Mesh mesh;
         Thing launcher;
+        Thing hitThing;
         ThingDef equipmentDef;
         public List<Mesh> meshes = new List<Mesh>();
-
-
-        public float Opacity => (float)Math.Sin(Math.Pow(1.0 - 1.0 * ticks / projDef.lifetime, projDef.impulse) * Math.PI);
-        public bool Lightning => projDef.LightningBeam;
-        public bool Static => projDef.StaticLightning;
+        EffecterDef effecterDef;
+        Effecter effecter;
         public int ticksToDetonation;
         public override void ExposeData()
         {
@@ -40,13 +39,45 @@ namespace OgsLasers
             Scribe_Values.Look(ref a, "a");
             Scribe_Values.Look(ref b, "b");
             Scribe_Defs.Look(ref projDef, "projectileDef");
+            Scribe_Defs.Look(ref effecterDef, "effecterDef");
+            Scribe_References.Look(ref launcher, "launcher");
+            Scribe_References.Look(ref hitThing, "hitThing");
         }
+
+        public void TriggerEffect(EffecterDef effect, Vector3 position, Thing hitThing = null)
+        {
+            if (effect == null) return;
+
+            var targetInfo = hitThing != null ? new TargetInfo(hitThing) : new TargetInfo(IntVec3.FromVector3(position), launcher.Map, false);
+
+            if (hitThing != null)
+            {
+                effecter = effect.Spawn(hitThing, hitThing.Map);
+            }
+            else effecter = effect.Spawn();
+            effecter.Trigger(targetInfo, null);
+            //    effecter.Cleanup();
+        }
+
+
+        public float Opacity => (float)Math.Sin(Math.Pow(1.0 - 1.0 * ticks / projDef.lifetime, projDef.impulse) * Math.PI);
+        public bool Lightning => projDef.LightningBeam;
+        public bool Static => projDef.StaticLightning;
 
         public override void Tick()
         {
             if (def==null || ticks++ > projDef.lifetime)
             {
+                if (effecter != null)
+                {
+                    effecter.Cleanup();
+                }
                 Destroy(DestroyMode.Vanish);
+            }
+            if (effecter != null)
+            {
+                var targetInfo = hitThing != null ? new TargetInfo(hitThing) : new TargetInfo(IntVec3.FromVector3(b), launcher.Map, false);
+                effecter.EffectTick(hitThing, hitThing);
             }
             if (this.ticksToDetonation > 0)
             {
@@ -84,6 +115,20 @@ namespace OgsLasers
             b = destination;
         }
 
+        public void Setup(Thing launcher, Vector3 origin, Vector3 destination, Thing hitThing = null, Effecter effecter = null, EffecterDef effecterDef = null)
+        {
+            //SetColor(launcher);
+            this.launcher = launcher;
+            this.a = origin;
+            this.b = destination;
+            this.hitThing = hitThing ?? null;
+            this.effecter = effecter ?? null;
+            this.effecterDef = effecterDef ?? null;
+            if (effecter == null)
+            {
+                TriggerEffect(effecterDef, b, hitThing);
+            }
+        }
         public void SetupDrawing()
         {
             if (mesh != null) return;
@@ -203,8 +248,11 @@ namespace OgsLasers
                             }
                         }
                     }
-                    meshes[i] = Find.TickManager.Paused || Find.TickManager.TicksGame % this.projDef.flickerFrameTime != 0 || meshes[i] != null && Static ? meshes[i] : LightningLaserBoltMeshMaker.NewBoltMesh(new Vector2(0, -(distance + 0.25f)), projDef.LightningVariance, beamWidth);
+                    float mult = Mathf.InverseLerp(projDef.lifetime, 0f, ticks);
+                    //    if (Find.TickManager.TicksGame % this.projDef.flickerFrameTime != 0)  Log.Message("Mult for Arc "+(i+1)+" : "+mult);
+                    meshes[i] = Find.TickManager.Paused || Find.TickManager.TicksGame % this.projDef.flickerFrameTime != 0 || meshes[i] != null && Static ? meshes[i] : LightningLaserBoltMeshMaker.NewBoltMesh(new Vector2(0, -(distance + 0.25f)), projDef.LightningVariance * mult, beamWidth * mult);
                     Graphics.DrawMesh(this.meshes[i], b, Quaternion.LookRotation((vector - this.a).normalized), materialBeam, 0, null, 0, LaserBeamGraphicCE.MatPropertyBlock, 0);
+                    Graphics.DrawMesh(this.meshes[i], b, Quaternion.LookRotation((vector - this.a).normalized), BeamEndMat, 0, null, 0, LaserBeamGraphicCE.MatPropertyBlock, 0);
 
                 }
             }
@@ -223,9 +271,10 @@ namespace OgsLasers
                         }
                     }
                 }
-                Graphics.DrawMesh(mesh, drawingMatrix, materialBeam, 0, null, 0, LaserBeamGraphicCE.MatPropertyBlock);
-                //   Graphics.DrawMesh(mesh, drawingMatrix, FadedMaterialPool.FadedVersionOf(materialBeam, opacity), 0);
             }
+            Graphics.DrawMesh(mesh, drawingMatrix, materialBeam, 0, null, 0, LaserBeamGraphicCE.MatPropertyBlock);
+            Graphics.DrawMesh(mesh, drawingMatrix, BeamEndMat, 0, null, 0, LaserBeamGraphicCE.MatPropertyBlock);
+            //   Graphics.DrawMesh(mesh, drawingMatrix, FadedMaterialPool.FadedVersionOf(materialBeam, opacity), 0);
         }
         protected virtual void Explode()
         {

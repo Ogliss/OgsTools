@@ -1,6 +1,9 @@
 ﻿using HunterMarkingSystem;
+using HunterMarkingSystem.ExtensionMethods;
 using System;
 using Verse;
+using static HunterMarkingSystem.HMSUtility;
+
 namespace RimWorld
 {
     // Token: 0x0200054F RID: 1359
@@ -37,13 +40,14 @@ namespace RimWorld
         // Token: 0x06001985 RID: 6533 RVA: 0x0004F00D File Offset: 0x0004D40D
         public override float OpinionOffset()
         {
+            float score = Other_Markable != null ? Other_Markable.MarkScore : 500;
             if (base.CurStage.baseOpinionOffset>=0)
             {
-                return (Other_Markable.MarkScore / 10) + base.CurStage.baseOpinionOffset;
+                return (score / 10) + base.CurStage.baseOpinionOffset;
             }
             else
             {
-                return -(Other_Markable.MarkScore / 10) + base.CurStage.baseOpinionOffset;
+                return -(score / 10) + base.CurStage.baseOpinionOffset;
             }
         }
         

@@ -8,6 +8,7 @@ using Verse.AI;
 using Verse.AI.Group;
 using HarmonyLib;
 using Verse.Sound;
+using OgsCompOversizedWeapon.ExtentionMethods;
 
 namespace OgsCompOversizedWeapon
 {
@@ -18,7 +19,7 @@ namespace OgsCompOversizedWeapon
         public static void Postfix(Pawn_EquipmentTracker __instance, ThingWithComps eq)
         {
 
-            if (eq.TryGetComp<CompOversizedWeapon>() != null && eq.TryGetComp<CompOversizedWeapon>() is CompOversizedWeapon oversized)
+            if (eq.TryGetCompFast<CompOversizedWeapon>() != null && eq.TryGetCompFast<CompOversizedWeapon>() is CompOversizedWeapon oversized)
             {
                 if (oversized.Props != null && oversized.Props.groundGraphic != null)
                 {
@@ -36,7 +37,7 @@ namespace OgsCompOversizedWeapon
         public static void Postfix(Pawn_EquipmentTracker __instance, ThingWithComps eq)
         {
 
-            if (eq.TryGetComp<CompOversizedWeapon>() != null && eq.TryGetComp<CompOversizedWeapon>() is CompOversizedWeapon oversized)
+            if (eq.TryGetCompFast<CompOversizedWeapon>() != null && eq.TryGetCompFast<CompOversizedWeapon>() is CompOversizedWeapon oversized)
             {
                 if (oversized.Props != null && oversized.Props.groundGraphic != null)
                 {

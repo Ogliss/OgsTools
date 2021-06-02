@@ -16,9 +16,9 @@ namespace AbilitesExtended
         public override void TransformValue(StatRequest req, ref float val)
         {
             /*
-            if (req.HasThing && req.Thing.TryGetComp<CompWeapon_GunSpecialRules>() != null)
+            if (req.HasThing && req.Thing.TryGetCompFast<CompWeapon_GunSpecialRules>() != null)
             {
-                CompWeapon_GunSpecialRules gun = req.Thing.TryGetComp<CompWeapon_GunSpecialRules>();
+                CompWeapon_GunSpecialRules gun = req.Thing.TryGetCompFast<CompWeapon_GunSpecialRules>();
                 string reliabilityString;
                 float jamsOn;
                 GetReliability(gun, out reliabilityString, out jamsOn);

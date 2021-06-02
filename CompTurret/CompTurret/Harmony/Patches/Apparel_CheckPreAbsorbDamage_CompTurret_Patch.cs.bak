@@ -10,6 +10,7 @@ using System.Linq;
 using Verse.AI.Group;
 using RimWorld.Planet;
 using UnityEngine;
+using CompTurret.ExtensionMethods;
 
 namespace CompTurret.HarmonyInstance 
 {
@@ -24,7 +25,7 @@ namespace CompTurret.HarmonyInstance
             {
                 return;
             }
-            CompTurret apparel_Turret = __instance.TryGetComp<CompTurret>();
+            CompTurret apparel_Turret = __instance.TryGetCompFast<CompTurret>();
             if (apparel_Turret!=null)
             {
                 if (dinfo.Def == DamageDefOf.EMP)

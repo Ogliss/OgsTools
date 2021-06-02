@@ -18,7 +18,7 @@ namespace AbilitesExtended.HarmonyInstance
         [HarmonyPostfix] // Apparel apparel
         public static void Notify_ApparelRemovedPostfix(Pawn_EquipmentTracker __instance, Apparel apparel)
         {
-            bool abilityitem = apparel.TryGetComp<AbilitesExtended.CompAbilityItem>() != null;
+            bool abilityitem = apparel.TryGetCompFast<AbilitesExtended.CompAbilityItem>() != null;
             if (abilityitem)
             {
                 Pawn pawn = __instance.pawn;
@@ -50,7 +50,7 @@ namespace AbilitesExtended.HarmonyInstance
         [HarmonyPostfix] // Apparel apparel
         public static void Notify_Notify_ApparelAddedPostfix(Pawn_EquipmentTracker __instance, Apparel apparel)
         {
-            if (apparel.TryGetComp<AbilitesExtended.CompAbilityItem>() != null && apparel.TryGetComp<AbilitesExtended.CompAbilityItem>() is AbilitesExtended.CompAbilityItem abilityItem)
+            if (apparel.TryGetCompFast<AbilitesExtended.CompAbilityItem>() != null && apparel.TryGetCompFast<AbilitesExtended.CompAbilityItem>() is AbilitesExtended.CompAbilityItem abilityItem)
             {
                 Pawn pawn = __instance.pawn;
                 if (!pawn.RaceProps.Humanlike)

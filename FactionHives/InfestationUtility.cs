@@ -5,7 +5,7 @@ using Verse;
 namespace ExtraHives
 {
 	public static class InfestationUtility
-	{
+    {
 		public static Thing SpawnTunnels(ThingDef hiveDef, int hiveCount, Map map, bool spawnAnywhereIfNoGoodCell = false, bool ignoreRoofedRequirement = false, string questTag = null, Faction faction = null)
 		{
 			ThingDef HiveDef = hiveDef ?? RimWorld.ThingDefOf.Hive;

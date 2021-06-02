@@ -12,6 +12,7 @@ namespace ExtraHives
 //	[StaticConstructorOnStartup]
 	public class TunnelHiveSpawner : ThingWithComps
 	{
+
 		public TunnelExtension Ext => this.def.HasModExtension<TunnelExtension>() ? this.def.GetModExtension<TunnelExtension>() : null;
 		public Faction SpawnedFaction
 		{
@@ -125,7 +126,7 @@ namespace ExtraHives
 				}
 			}
 			List<Pawn> list = new List<Pawn>();
-			if ((initialPoints > 0f))
+			if (initialPoints > 0f)
 			{
 				initialPoints = Mathf.Max(initialPoints, this.Ext.HiveDef.GetCompProperties<CompProperties_SpawnerPawn>().spawnablePawnKinds.Min((PawnGenOption x) => x.Cost));
 				float pointsLeft = initialPoints;

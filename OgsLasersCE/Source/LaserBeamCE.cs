@@ -11,24 +11,29 @@ namespace OgsLasers
     public class LaserBeamCE : BulletCE
     {
         public new LaserBeamDefCE def => base.def as LaserBeamDefCE;
+        public Vector3 destination => new Vector3(Mathf.Clamp(base.Destination.x, 0, Map.Size.x), 0, Mathf.Clamp(base.Destination.y, 0, Map.Size.z));
+        public Vector3 Origin => new Vector3(base.origin.x, 0, base.origin.y);
 
-        public override void Draw()
-        {
-
-        }
-        
-        void TriggerEffect(EffecterDef effect, Vector3 position, Thing hitThing = null)
+        public override void Draw() { }
+        void TriggerEffect(EffecterDef effect, Vector3 position)
         {
             if (effect == null) return;
-
             var targetInfo = new TargetInfo(IntVec3.FromVector3(position), Map, false);
-
             Effecter effecter = effect.Spawn();
             effecter.offset = position - targetInfo.CenterVector3;
             effecter.Trigger(targetInfo, targetInfo);
             effecter.Cleanup();
         }
 
+        public void TriggerEffect(EffecterDef effect, Vector3 position, Thing hitThing = null)
+        {
+            if (effect == null) return;
+            var targetInfo = hitThing != null ? new TargetInfo(hitThing) : new TargetInfo(IntVec3.FromVector3(position), Map, false);
+            if (hitThing != null) effecter = effect.Spawn(hitThing, hitThing.Map);
+            else effecter = effect.Spawn();
+            effecter.Trigger(targetInfo, null);
+            //    effecter.Cleanup();
+        }
         void SpawnBeam(Vector3 a, Vector3 b)
         {
             LaserBeamGraphicCE graphic = ThingMaker.MakeThing(def.beamGraphic, null) as LaserBeamGraphicCE;
@@ -38,6 +43,16 @@ namespace OgsLasers
             graphic.Setup(launcher, a, b);
             GenSpawn.Spawn(graphic, Origin.ToIntVec3(), Map, WipeMode.Vanish);
         }
+        public void SpawnBeam(Vector3 a, Vector3 b, Thing hitThing = null)
+        {
+            LaserBeamGraphicCE graphic = ThingMaker.MakeThing(def.beamGraphic, null) as LaserBeamGraphicCE;
+            if (graphic == null) return;
+            graphic.ticksToDetonation = this.def.projectile.explosionDelay;
+            graphic.projDef = def;
+            graphic.Setup(launcher, a, b, hitThing, effecter, def.explosionEffect);
+            GenSpawn.Spawn(graphic, Origin.ToIntVec3(), Map, WipeMode.Vanish);
+        }
+
 
         void SpawnBeamReflections(Vector3 a, Vector3 b, int count)
         {
@@ -52,9 +67,6 @@ namespace OgsLasers
             }
         }
         //    public new ThingDef equipmentDef => base.equipmentDef
-        public Vector3 destination => new Vector3(Mathf.Clamp(base.Destination.x, 0, Map.Size.x), 0, Mathf.Clamp(base.Destination.y, 0, Map.Size.z));
-        public Vector3 Origin => new Vector3(base.origin.x,0, base.origin.y);
-
         protected override void Impact(Thing hitThing)
         {
             bool shielded = hitThing.IsShielded() && def.IsWeakToShields;
@@ -295,9 +307,23 @@ namespace OgsLasers
             Vector3 a = Origin + ShotLine.direction * (defWeapon == null ? 0.9f : defWeapon.barrelLength);
             Vector3 b = ExactPosition;
             a.y = b.y = def.Altitude;
-            SpawnBeam(a, b);
-            
+            SpawnBeam(a, b, hitThing);
+            if (this.def.impactReflection > 0)
+            {
+                Vector3 dir = (this.ExactRotation.eulerAngles - Origin).normalized;
+                Rand.PushState();
+                for (int i = 0; i < this.def.impactReflection; i++)
+                {
+                    Vector3 c = ExactPosition - dir.RotatedBy(Rand.Range(-35.5f, 35.5f)) * Rand.Range(-1.5f, 1.5f);// 0.8f;
+                    SpawnBeam(b, c);
+                }
+                Rand.PopState();
+            }
+
+
             base.DeSpawn(mode);
         }
+        Effecter effecter;
+        Thing hitThing;
     }
 }

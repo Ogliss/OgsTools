@@ -26,7 +26,7 @@ namespace AbilitesExtended
             {
                 if (((EquipmentAbility)this.ability).sourceEquipment!=null)
                 {
-                    return ((EquipmentAbility)this.ability).sourceEquipment.TryGetComp<CompAbilityItem>();
+                    return ((EquipmentAbility)this.ability).sourceEquipment.TryGetCompFast<CompAbilityItem>();
                 }
                 return null;
             }
@@ -98,10 +98,8 @@ namespace AbilitesExtended
             if (target.IsValid)
             {
                 GenDraw.DrawTargetHighlight(target);
-                bool flag;
-                float num = this.HighlightFieldRadiusAroundTarget(out flag);
-                ShootLine shootLine;
-                if (num > 0.2f && this.TryFindShootLineFromTo(this.caster.Position, target, out shootLine))
+                float num = this.HighlightFieldRadiusAroundTarget(out bool flag);
+                if (num > 0.2f && this.TryFindShootLineFromTo(this.caster.Position, target, out ShootLine shootLine))
                 {
                     if (flag)
                     {

@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using CompTurret.ExtensionMethods;
 using RimWorld;
 using UnityEngine;
 using Verse;
@@ -89,9 +90,7 @@ namespace CompTurret
 			{
 				return false;
 			}
-			ShootLine shootLine;
-			bool flag = base.TryFindShootLineFromTo(this.Caster.Position, this.currentTarget, out shootLine);
-			if (this.verbProps.stopBurstWithoutLos && !flag)
+			if (this.verbProps.stopBurstWithoutLos && !base.TryFindShootLineFromTo(this.Caster.Position, this.currentTarget, out ShootLine shootLine))
 			{
 				return false;
 			}
@@ -383,7 +382,7 @@ namespace CompTurret
 				}
 				if (this.verbProps.consumeFuelPerShot > 0f)
 				{
-					CompRefuelable compRefuelable = this.caster.TryGetComp<CompRefuelable>();
+					CompRefuelable compRefuelable = this.caster.TryGetCompFast<CompRefuelable>();
 					if (compRefuelable != null)
 					{
 						compRefuelable.ConsumeFuel(this.verbProps.consumeFuelPerShot);
@@ -488,12 +487,11 @@ namespace CompTurret
 
 		public override bool CanHitTargetFrom(IntVec3 root, LocalTargetInfo targ)
 		{
-			ShootLine shootLine;
 			if (targ.Thing != null && targ.Thing == this.Caster)
 			{
 				return this.targetParams.canTargetSelf;
 			}
-			return !this.ApparelPreventsShooting(root, targ) && this.TryFindShootLineFromTo(root, targ, out shootLine);
+			return !this.ApparelPreventsShooting(root, targ) && this.TryFindShootLineFromTo(root, targ, out ShootLine shootLine);
 		}
 
 		private bool CausesTimeSlowdown(LocalTargetInfo castTarg)
@@ -545,16 +543,15 @@ namespace CompTurret
 			}
 			if (this.CasterIsPawn)
 			{
-				IntVec3 dest;
-				if (this.CanHitFromCellIgnoringRange(root, targ, out dest))
-				{
-					resultingLine = new ShootLine(root, dest);
-					return true;
-				}
-				ShootLeanUtility.LeanShootingSourcesFromTo(root, cellRect.ClosestCellTo(root), this.Caster.Map, Verb_ShootCompMounted.tempLeanShootSources);
+                if (this.CanHitFromCellIgnoringRange(root, targ, out IntVec3 dest))
+                {
+                    resultingLine = new ShootLine(root, dest);
+                    return true;
+                }
+                ShootLeanUtility.LeanShootingSourcesFromTo(root, cellRect.ClosestCellTo(root), this.Caster.Map, Verb_ShootCompMounted.tempLeanShootSources);
 				for (int i = 0; i < Verb_ShootCompMounted.tempLeanShootSources.Count; i++)
 				{
-					IntVec3 intVec = Verb_ShootCompMounted.tempLeanShootSources[i];
+                    IntVec3 intVec = Verb_ShootCompMounted.tempLeanShootSources[i];
 					if (this.CanHitFromCellIgnoringRange(intVec, targ, out dest))
 					{
 						resultingLine = new ShootLine(intVec, dest);
@@ -567,13 +564,12 @@ namespace CompTurret
 				IntVec2 size = new IntVec2(Caster.def.size.x + 1, Caster.def.size.z + 1);
 				foreach (IntVec3 intVec2 in GenAdj.OccupiedRect(Caster.Position, Caster.Rotation, size))
 				{
-					IntVec3 dest;
-					if (this.CanHitFromCellIgnoringRange(intVec2, targ, out dest))
-					{
-						resultingLine = new ShootLine(intVec2, dest);
-						return true;
-					}
-				}
+                    if (this.CanHitFromCellIgnoringRange(intVec2, targ, out IntVec3 dest))
+                    {
+                        resultingLine = new ShootLine(intVec2, dest);
+                        return true;
+                    }
+                }
 			}
 			resultingLine = new ShootLine(root, targ.Cell);
 			return false;

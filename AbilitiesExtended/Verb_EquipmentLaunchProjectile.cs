@@ -43,8 +43,7 @@ namespace AbilitesExtended
             {
                 return false;
             }
-            ShootLine shootLine;
-            bool flag = base.TryFindShootLineFromTo(this.caster.Position, this.currentTarget, out shootLine);
+            bool flag = base.TryFindShootLineFromTo(this.caster.Position, this.currentTarget, out ShootLine shootLine);
             if (this.verbProps.stopBurstWithoutLos && !flag)
             {
                 return false;
@@ -59,7 +58,7 @@ namespace AbilitesExtended
             }
             Thing launcher = this.caster;
             Thing equipment = base.EquipmentSource;
-            CompMannable compMannable = this.caster.TryGetComp<CompMannable>();
+            CompMannable compMannable = this.caster.TryGetCompFast<CompMannable>();
             if (compMannable != null && compMannable.ManningPawn != null)
             {
                 launcher = compMannable.ManningPawn;
@@ -217,10 +216,8 @@ namespace AbilitesExtended
             if (target.IsValid)
             {
                 GenDraw.DrawTargetHighlight(target);
-                bool flag;
-                float num = this.HighlightFieldRadiusAroundTarget(out flag);
-                ShootLine shootLine;
-                if (num > 0.2f && this.TryFindShootLineFromTo(this.caster.Position, target, out shootLine))
+                float num = this.HighlightFieldRadiusAroundTarget(out bool flag);
+                if (num > 0.2f && this.TryFindShootLineFromTo(this.caster.Position, target, out ShootLine shootLine))
                 {
                     if (flag)
                     {

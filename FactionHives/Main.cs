@@ -30,7 +30,7 @@ namespace ExtraHives
                 }
                 if (CrashedShipsExtension)
                 {
-                //    Log.Message("CrashedShipsExtension Loaded");
+                    Log.Message("CrashedShipsExtension Loaded");
                     break;
                 }
             }

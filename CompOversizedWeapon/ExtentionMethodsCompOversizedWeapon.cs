@@ -15,9 +15,8 @@ namespace OgsCompOversizedWeapon
         public static bool TryGetOffHandEquipment(this Pawn_EquipmentTracker instance, out ThingWithComps result)
         {
             result = null;
-            bool flag = instance.pawn.HasMissingArmOrHand();
             bool result2;
-            if (flag)
+            if (instance.pawn.HasMissingArmOrHand())
             {
                 result2 = false;
             }
@@ -26,9 +25,7 @@ namespace OgsCompOversizedWeapon
                 ExtendedDataStorage extendedDataStorage = Base.Instance.GetExtendedDataStorage();
                 foreach (ThingWithComps thingWithComps in instance.AllEquipmentListForReading)
                 {
-                    ExtendedThingWithCompsData extendedThingWithCompsData;
-                    bool flag2 = extendedDataStorage.TryGetExtendedDataFor(thingWithComps, out extendedThingWithCompsData) && extendedThingWithCompsData.isOffHand;
-                    if (flag2)
+                    if (extendedDataStorage.TryGetExtendedDataFor(thingWithComps, out ExtendedThingWithCompsData extendedThingWithCompsData) && extendedThingWithCompsData.isOffHand)
                     {
                         result = thingWithComps;
                         return true;

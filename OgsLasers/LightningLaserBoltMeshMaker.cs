@@ -6,33 +6,21 @@ using Verse.Noise;
 
 namespace OgsLasers
 {
-    // Token: 0x0200045A RID: 1114
     public static class LightningLaserBoltMeshMaker
     {
-        // Token: 0x0600137D RID: 4989 RVA: 0x00095543 File Offset: 0x00093943
-        public static Mesh NewBoltMesh(float xMin = -50f, float xMax = 50f, float z = 200f, float str = 3f)
+        public static Mesh NewBoltMesh(Vector2 vector, float str = 3f, float width = 1f, float VertexInterval = 0.25f)
         {
-            LightningLaserBoltMeshMaker.lightningTop = new Vector2(Rand.Range(xMin, xMax), z);
-            LightningLaserBoltMeshMaker.MakeVerticesBase();
-            LightningLaserBoltMeshMaker.PeturbVerticesRandomly(str);
-            LightningLaserBoltMeshMaker.DoubleVertices();
-            return LightningLaserBoltMeshMaker.MeshFromVerts();
-        }
-
-        public static Mesh NewBoltMesh(Vector2 vector, float str = 3f, float width = 1f)
-        {
-            LightningLaserBoltMeshMaker.lightningTop = vector;
-            LightningLaserBoltMeshMaker.MakeVerticesBase();
+            LightningLaserBoltMeshMaker.lightningOrigin = vector;
+            LightningLaserBoltMeshMaker.MakeVerticesBase(VertexInterval);
             LightningLaserBoltMeshMaker.PeturbVerticesRandomly(str);
             LightningLaserBoltMeshMaker.DoubleVertices(width);
             return LightningLaserBoltMeshMaker.MeshFromVerts();
         }
-
-        // Token: 0x0600137E RID: 4990 RVA: 0x00095578 File Offset: 0x00093978
-        private static void MakeVerticesBase()
+        
+        private static void MakeVerticesBase(float VertexInterval = 0.25f)
         {
-            int num = (int)Math.Ceiling((double)((Vector2.zero - LightningLaserBoltMeshMaker.lightningTop).magnitude / 0.25f));
-            Vector2 b = LightningLaserBoltMeshMaker.lightningTop / (float)num;
+            int num = (int)Math.Ceiling((double)((Vector2.zero - LightningLaserBoltMeshMaker.lightningOrigin).magnitude / VertexInterval));
+            Vector2 b = LightningLaserBoltMeshMaker.lightningOrigin / (float)num;
             LightningLaserBoltMeshMaker.verts2D = new List<Vector2>();
             Vector2 vector = Vector2.zero;
             for (int i = 0; i < num; i++)
@@ -80,8 +68,10 @@ namespace OgsLasers
                     a = new Vector2(vector.y, vector.z);
                     a.Normalize();
                 }
-                Vector2 item = list[i] - width * a;
-                Vector2 item2 = list[i] + width * a;
+                float w = i == list.Count -1 ? width : Mathf.Lerp(width / 2, width * 2, Mathf.InverseLerp(0, list.Count, i));
+
+                Vector2 item = list[i] - w * a;
+                Vector2 item2 = list[i] + w * a;
                 LightningLaserBoltMeshMaker.verts2D.Add(item);
                 LightningLaserBoltMeshMaker.verts2D.Add(item2);
             }
@@ -110,10 +100,12 @@ namespace OgsLasers
         // Token: 0x06001381 RID: 4993 RVA: 0x0009578C File Offset: 0x00093B8C
         private static Mesh MeshFromVerts()
         {
+            float f = AltitudeLayer.MetaOverlays.AltitudeFor();
             Vector3[] array = new Vector3[LightningLaserBoltMeshMaker.verts2D.Count];
             for (int i = 0; i < array.Length; i++)
             {
-                array[i] = new Vector3(LightningLaserBoltMeshMaker.verts2D[i].x, 0f, LightningLaserBoltMeshMaker.verts2D[i].y);
+                float w = i == array.Length - 1 ? 0 : Mathf.Lerp(0, f, Mathf.InverseLerp(0, array.Length, i));
+                array[i] = new Vector3(LightningLaserBoltMeshMaker.verts2D[i].x, w, LightningLaserBoltMeshMaker.verts2D[i].y);
             }
             float num = 0f;
             Vector2[] array2 = new Vector2[LightningLaserBoltMeshMaker.verts2D.Count];
@@ -147,7 +139,8 @@ namespace OgsLasers
         private static List<Vector2> verts2D;
 
         // Token: 0x04000BED RID: 3053
-        private static Vector2 lightningTop;
+        private static Vector2 lightningOrigin;
+        private static Vector2 lightningEnd;
 
         // Token: 0x04000BEE RID: 3054
         private const float LightningHeight = 200f;

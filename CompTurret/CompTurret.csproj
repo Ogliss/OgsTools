@@ -33,6 +33,7 @@
   <ItemGroup>
     <Compile Include="CompTurret\AttackTargetFinder.cs" />
     <Compile Include="CompTurret\ApparelTurret.cs" />
+    <Compile Include="CompTurret\FastGetCompsExtensions.cs" />
     <Compile Include="CompTurret\Command_CompTurretReloadable.cs" />
     <Compile Include="CompTurret\Command_CompTurretVerbTarget.cs" />
     <Compile Include="CompTurret\Command_ToggleCompTurret.cs" />
@@ -42,7 +43,7 @@
     <Compile Include="CompTurret\CompTurretTop.cs" />
     <Compile Include="CompTurret\EffecterComp.cs" />
     <Compile Include="CompTurret\Harmony\MainHarmonyInstance.cs" />
-    <Compile Include="CompTurret\Harmony\Patches\Apparel_CheckPreAbsorbDamage_CompTurret_Patch.cs" />
+    <None Include="CompTurret\Harmony\Patches\Apparel_CheckPreAbsorbDamage_CompTurret_Patch.cs.bak" />
     <None Include="CompTurret\Harmony\Patches\Apparel_Tick_CompTurret_Patch.cs.bak" />
     <Compile Include="CompTurret\Harmony\Patches\Patch_GenerateImpliedDefs_PreResolve.cs" />
     <Compile Include="CompTurret\Harmony\Patches\FloatMenuMakerMap_AddHumanlikeOrders_CompTurret_Patch.cs" />

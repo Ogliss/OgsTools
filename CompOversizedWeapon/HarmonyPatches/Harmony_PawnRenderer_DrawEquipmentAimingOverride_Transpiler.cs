@@ -11,6 +11,7 @@ using Verse.Sound;
 using System.Reflection.Emit;
 using UnityEngine;
 using System.Reflection;
+using OgsCompOversizedWeapon.ExtentionMethods;
 
 namespace OgsCompOversizedWeapon
 {
@@ -34,8 +35,8 @@ namespace OgsCompOversizedWeapon
 
         private static void DrawMeshModified(Mesh mesh, Vector3 position, Quaternion rotation, Material mat, int layer, Thing eq, float aimAngle)
         {
-            CompOversizedWeapon compOversized = eq.TryGetComp<CompOversizedWeapon>();
-            CompEquippable equippable = eq.TryGetComp<CompEquippable>();
+            CompOversizedWeapon compOversized = eq.TryGetCompFast<CompOversizedWeapon>();
+            CompEquippable equippable = eq.TryGetCompFast<CompEquippable>();
             Pawn pawn = equippable.PrimaryVerb.CasterPawn;
             if (pawn == null) return;
             if (compOversized == null || (compOversized != null && compOversized.CompDeflectorIsAnimatingNow) || pawn == null || eq == null)

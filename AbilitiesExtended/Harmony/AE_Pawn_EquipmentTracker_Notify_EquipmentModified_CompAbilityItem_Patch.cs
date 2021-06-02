@@ -22,7 +22,7 @@ namespace AbilitesExtended.HarmonyInstance
             {
                 return;
             }
-            if (eq.TryGetComp<AbilitesExtended.CompAbilityItem>() != null && eq.TryGetComp<AbilitesExtended.CompAbilityItem>() is AbilitesExtended.CompAbilityItem abilityItem)
+            if (eq.TryGetCompFast<AbilitesExtended.CompAbilityItem>() != null && eq.TryGetCompFast<AbilitesExtended.CompAbilityItem>() is AbilitesExtended.CompAbilityItem abilityItem)
             {
                 Pawn pawn = __instance.pawn;
                 if (!pawn.RaceProps.Humanlike)
@@ -125,7 +125,7 @@ namespace AbilitesExtended.HarmonyInstance
             {
                 return;
             }
-            if (eq.TryGetComp<AbilitesExtended.CompAbilityItem>() != null && eq.TryGetComp<AbilitesExtended.CompAbilityItem>() is AbilitesExtended.CompAbilityItem abilityItem)
+            if (eq.TryGetCompFast<AbilitesExtended.CompAbilityItem>() != null && eq.TryGetCompFast<AbilitesExtended.CompAbilityItem>() is AbilitesExtended.CompAbilityItem abilityItem)
             {
                 Pawn pawn = __instance.pawn;
                 if (!pawn.RaceProps.Humanlike)

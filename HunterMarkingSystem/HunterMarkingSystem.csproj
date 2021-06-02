@@ -62,10 +62,8 @@
     <Compile Include="JobDriver_TakeTrophy.cs" />
     <Compile Include="Harmony\Harmony.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="ThoughtWorker_Unmarked.cs" />
+    <Compile Include="ThoughtWorker_BloodStatus.cs" />
     <None Include="ThoughtWorkers_Blooded.cs.bak" />
-    <Compile Include="ThoughtWorker_Unblooded.cs" />
-    <Compile Include="ThoughtWorker_Marked.cs" />
     <Compile Include="ThoughtWorker_MarkedMood.cs" />
     <Compile Include="HMSUtility.cs" />
     <Compile Include="HMSDefOf.cs" />

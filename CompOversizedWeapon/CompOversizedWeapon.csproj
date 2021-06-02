@@ -22,6 +22,7 @@
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
     <Prefer32Bit>false</Prefer32Bit>
+    <LangVersion>8.0</LangVersion>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
     <DebugType>none</DebugType>
@@ -31,9 +32,11 @@
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
     <Prefer32Bit>false</Prefer32Bit>
+    <LangVersion>8.0</LangVersion>
   </PropertyGroup>
   <ItemGroup>
     <Compile Include="AlienRaceUtility.cs" />
+    <Compile Include="FastGetCompsExtensions.cs" />
     <Compile Include="HarmonyPatches\Harmony_PawnRenderer_DrawEquipmentAiming_Transpiler.cs" />
     <Compile Include="CompActivatableEffectUtil.cs" />
     <Compile Include="HarmonyPatches\Harmony_PawnRenderer_DrawEquipmentAimingOverride_Transpiler.cs" />

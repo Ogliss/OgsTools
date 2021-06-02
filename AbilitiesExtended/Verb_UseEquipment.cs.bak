@@ -74,7 +74,7 @@ namespace AbilitesExtended
             {
                 if (((EquipmentAbility)this.ability).sourceEquipment!=null)
                 {
-                    return ((EquipmentAbility)this.ability).sourceEquipment.TryGetComp<CompAbilityItem>();
+                    return ((EquipmentAbility)this.ability).sourceEquipment.TryGetCompFast<CompAbilityItem>();
                 }
                 return null;
             }
@@ -142,7 +142,7 @@ namespace AbilitesExtended
             }
             Thing launcher = this.caster;
             Thing equipment = base.EquipmentSource;
-            CompMannable compMannable = this.caster.TryGetComp<CompMannable>();
+            CompMannable compMannable = this.caster.TryGetCompFast<CompMannable>();
             if (compMannable != null && compMannable.ManningPawn != null)
             {
                 launcher = compMannable.ManningPawn;

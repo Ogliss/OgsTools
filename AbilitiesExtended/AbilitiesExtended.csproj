@@ -21,6 +21,7 @@
     <DefineConstants>DEBUG;TRACE</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
+    <LangVersion>8.0</LangVersion>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
     <DebugType>pdbonly</DebugType>
@@ -29,10 +30,12 @@
     <DefineConstants>TRACE</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
+    <LangVersion>8.0</LangVersion>
   </PropertyGroup>
   <ItemGroup>
     <None Include="Command_EquipmentAbility - Copy.cs.bak" />
     <Compile Include="ExtentionMethods\AbilityTracker_Extentions.cs" />
+    <Compile Include="ExtentionMethods\FastGetCompsExtensions.cs" />
     <Compile Include="Harmony\AE_Pawn_EquipmentTracker_Notify_EquipmentModified_CompAbilityItem_Patch.cs" />
     <Compile Include="Harmony\AE_NeurotrainerDefGenerator_ImpliedThingDefs_Filter_Patch.cs" />
     <Compile Include="Harmony\AE_Pawn_ApparelTracker_Notify_ApparelModified_CompAbilityItem_Patch.cs" />

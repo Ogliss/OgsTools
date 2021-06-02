@@ -1,4 +1,5 @@
-﻿using RimWorld;
+﻿using CompTurret.ExtensionMethods;
+using RimWorld;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -29,7 +30,7 @@ namespace CompTurret
 				{
 					this.MakeGun();
 				}
-				return this.gun.TryGetComp<CompEquippable>();
+				return this.gun.TryGetCompFast<CompEquippable>();
 			}
 		}
 
@@ -111,7 +112,7 @@ namespace CompTurret
 				{
 					return false;
 				}
-				CompChangeableProjectile compChangeableProjectile = this.gun.TryGetComp<CompChangeableProjectile>();
+				CompChangeableProjectile compChangeableProjectile = this.gun.TryGetCompFast<CompChangeableProjectile>();
 				return compChangeableProjectile != null && compChangeableProjectile.Loaded;
 			}
 		}
@@ -243,7 +244,7 @@ namespace CompTurret
 			}
 			if (this.CanExtractShell && this.MannedByColonist)
 			{
-				CompChangeableProjectile compChangeableProjectile = this.gun.TryGetComp<CompChangeableProjectile>();
+				CompChangeableProjectile compChangeableProjectile = this.gun.TryGetCompFast<CompChangeableProjectile>();
 				if (!compChangeableProjectile.allowedShellsSettings.AllowedToAccept(compChangeableProjectile.LoadedShell))
 				{
 					this.ExtractShell();
@@ -376,16 +377,15 @@ namespace CompTurret
 			IAttackTargetSearcher attackTargetSearcher = this.TargSearcher();
 			Faction faction = attackTargetSearcher.Thing?.Faction ?? this.parent.Faction;
 			float range = this.AttackVerb.verbProps.range;
-			Building t;
-			Rand.PushState();
-			float tgtt = Rand.Value;
+            Rand.PushState();
+            float tgtt = Rand.Value;
 			Rand.PopState();
 			if (tgtt < 0.5f && this.AttackVerb.ProjectileFliesOverhead() && faction.HostileTo(Faction.OfPlayer) && Operator.Map.listerBuildings.allBuildingsColonist.Where(delegate (Building x)
 			{
 				float num = this.AttackVerb.verbProps.EffectiveMinRange(x, Operator);
 				float num2 = (float)x.Position.DistanceToSquared(Operator.Position);
 				return num2 > num * num && num2 < range * range;
-			}).TryRandomElement(out t))
+			}).TryRandomElement(out Building t))
 			{
 				return t;
 			}
@@ -527,7 +527,7 @@ namespace CompTurret
 			{
 				stringBuilder.AppendLine("CanFireIn".Translate() + ": " + this.burstCooldownTicksLeft.ToStringSecondsFromTicks());
 			}
-			CompChangeableProjectile compChangeableProjectile = this.gun.TryGetComp<CompChangeableProjectile>();
+			CompChangeableProjectile compChangeableProjectile = this.gun.TryGetCompFast<CompChangeableProjectile>();
 			if (compChangeableProjectile != null)
 			{
 				if (compChangeableProjectile.Loaded)
@@ -653,7 +653,7 @@ namespace CompTurret
 			/*
 			if (this.CanExtractShell)
 			{
-				CompChangeableProjectile compChangeableProjectile = this.gun.TryGetComp<CompChangeableProjectile>();
+				CompChangeableProjectile compChangeableProjectile = this.gun.TryGetCompFast<CompChangeableProjectile>();
 				yield return new Command_Action
 				{
 					defaultLabel = "CommandExtractShell".Translate(),
@@ -668,7 +668,7 @@ namespace CompTurret
 					}
 				};
 			}
-			CompChangeableProjectile compChangeableProjectile2 = this.gun.TryGetComp<CompChangeableProjectile>();
+			CompChangeableProjectile compChangeableProjectile2 = this.gun.TryGetCompFast<CompChangeableProjectile>();
 			if (compChangeableProjectile2 != null)
 			{
 				StorageSettings storeSettings = compChangeableProjectile2.GetStoreSettings();
@@ -995,7 +995,7 @@ namespace CompTurret
 
         private void ExtractShell()
 		{
-			GenPlace.TryPlaceThing(this.gun.TryGetComp<CompChangeableProjectile>().RemoveShell(), OperatorPawn.Position, OperatorPawn.Map, ThingPlaceMode.Near, null, null, default(Rot4));
+			GenPlace.TryPlaceThing(this.gun.TryGetCompFast<CompChangeableProjectile>().RemoveShell(), OperatorPawn.Position, OperatorPawn.Map, ThingPlaceMode.Near, null, null, default(Rot4));
 		}
 
 		private void ResetForcedTarget()
@@ -1030,7 +1030,7 @@ namespace CompTurret
 					return;
 				}
 			}
-			List<Verb> allVerbs = this.gun.TryGetComp<CompEquippable>().AllVerbs;
+			List<Verb> allVerbs = this.gun.TryGetCompFast<CompEquippable>().AllVerbs;
 			if (allVerbs.NullOrEmpty())
 			{
 				return;

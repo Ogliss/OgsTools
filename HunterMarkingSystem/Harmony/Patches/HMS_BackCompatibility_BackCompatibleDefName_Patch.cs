@@ -36,6 +36,21 @@ namespace HunterMarkingSystem
                 {
 
                 }
+                if (defType == typeof(ThoughtDef))
+                {
+                    if (defName.Contains("HMS_UnbloodedVs_ThoughtDef"))
+                    {
+                        __result = "HMS_BloodStatus_ThoughtDef";
+                    }
+                    if (defName.Contains("HMS_UnmarkedVs_ThoughtDef"))
+                    {
+                        __result = "HMS_BloodStatus_ThoughtDef";
+                    }
+                    if (defName == ("HMS_MarkedVs_ThoughtDef"))
+                    {
+                        __result = "HMS_BloodStatus_ThoughtDef";
+                    }
+                }
                 if (defType == typeof(HediffDef))
                 {
                     if (defName.Contains("AvP_Hediff_Unblooded"))

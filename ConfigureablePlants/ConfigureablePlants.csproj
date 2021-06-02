@@ -4,11 +4,11 @@
   <PropertyGroup>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
-    <ProjectGuid>{E5E3328F-5E90-4A6E-ADBC-311F5E8A3C74}</ProjectGuid>
+    <ProjectGuid>{13A7D1E2-B03C-460F-94D8-6051593E5AE3}</ProjectGuid>
     <OutputType>Library</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
-    <RootNamespace>OgsLasers</RootNamespace>
-    <AssemblyName>OgsLasers</AssemblyName>
+    <RootNamespace>ConfigureablePlants</RootNamespace>
+    <AssemblyName>ConfigureablePlants</AssemblyName>
     <TargetFrameworkVersion>v4.7.2</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
     <Deterministic>true</Deterministic>
@@ -17,7 +17,7 @@
     <DebugSymbols>true</DebugSymbols>
     <DebugType>full</DebugType>
     <Optimize>false</Optimize>
-    <OutputPath>..\..\..\..\..\Program Files %28x86%29\Steam\steamapps\common\RimWorld\Mods\OgsLasers\Assemblies\</OutputPath>
+    <OutputPath>bin\Debug\</OutputPath>
     <DefineConstants>DEBUG;TRACE</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
@@ -31,32 +31,12 @@
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
   <ItemGroup>
-    <Compile Include="Building_LaserGun.cs" />
-    <Compile Include="Harmony\HarmonyInstance.cs" />
-    <Compile Include="Harmony\Patches\Class1.cs" />
-    <Compile Include="LaserBeamGraphic.cs" />
-    <Compile Include="LightningLaserBoltMeshMaker.cs" />
-    <Compile Include="LaserBeamDecoration.cs" />
-    <Compile Include="LaserGunDef.cs" />
-    <None Include="LightningLaserBoltMeshPool.cs.bak" />
-    <Compile Include="MeshMakerLaser.cs" />
-    <Compile Include="MoteLaserDectoration.cs" />
-    <Compile Include="SpinningLaserGun.cs" />
-    <Compile Include="SpinningLaserGunBase.cs" />
-    <Compile Include="SpinningLaserGunDef.cs" />
-    <Compile Include="SpinningLaserGunTurret.cs" />
-    <Compile Include="ThingExtensions.cs" />
-    <Compile Include="Building_LaserGunDef.cs" />
-    <Compile Include="IBeamColorThing.cs" />
-    <Compile Include="IDrawnWeaponWithRotation.cs" />
-    <Compile Include="JobDriver_ChangeLaserColor.cs" />
-    <Compile Include="LaserBeam.cs" />
-    <Compile Include="LaserColor.cs" />
-    <Compile Include="LaserBeamDef.cs" />
-    <Compile Include="LaserGun.cs" />
-    <Compile Include="Harmony\Patches\OL_TuretTop_DrawTurret_LaserTurret_Patch.cs" />
-    <Compile Include="Harmony\Patches\OL_PawnRenderer_Draw_WquipmentAiming_GunDrawing_Patch.cs" />
+    <Compile Include="ConfigureablePlant.cs" />
+    <Compile Include="ConfigureablePlantProperties.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+  </ItemGroup>
+  <ItemGroup>
+    <Reference Include="System.Runtime.InteropServices.RuntimeInformation" />
   </ItemGroup>
   <ItemGroup>
     <PackageReference Include="Krafs.Rimworld.Ref">

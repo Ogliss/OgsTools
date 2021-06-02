@@ -28,6 +28,8 @@ namespace OgsCompActivatableEffect
 
         //public List<Verb> GetVerbs => GetEquippable.verbTracker.AllVerbs;
 
+        public static string ActivateSignal = "OgsCompActivatableEffect_Activate";
+        public static string DeactivateSignal = "OgsCompActivatableEffect_Deactivate";
         public float Altitude(Vector3 drawpos)
         {
             float alt = Props.altitudeLayer == 0 ? (Props.drawAboveItem ? drawpos.y + 0.00005f : drawpos.y - 0.00005f) : (float)Props.altitudeLayer * 0.46875f;
@@ -179,6 +181,19 @@ namespace OgsCompActivatableEffect
                     yield return current;
                 }
             }
+        }
+
+        public override void ReceiveCompSignal(string signal)
+        {
+            if (signal == ActivateSignal)
+            {
+                this.TryActivate();
+            }
+            if (signal == DeactivateSignal)
+            {
+                this.TryDeactivate();
+            }
+            base.ReceiveCompSignal(signal);
         }
 
         public override void PostExposeData()

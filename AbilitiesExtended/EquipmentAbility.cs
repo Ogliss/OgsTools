@@ -31,7 +31,7 @@ namespace AbilitesExtended
         }
 
         public ThingWithComps sourceEquipment;
-        public CompAbilityItem abilityItem => sourceEquipment?.TryGetComp<CompAbilityItem>();
+        public CompAbilityItem abilityItem => sourceEquipment?.TryGetCompFast<CompAbilityItem>();
 
         public int MaxCastingTicks => (int)(abilityDef.cooldown * GenTicks.TicksPerRealSecond);
         private int TicksUntilCasting = -1;
@@ -89,8 +89,7 @@ namespace AbilitesExtended
                     TryCastAbility(AbilityContext.Player, tInfo);
                 };
                 */
-                var reason = "";
-                if (!CanCastPowerCheck("Player", out reason))
+                if (!CanCastPowerCheck("Player", out string reason))
                     command_CastPower.Disable(reason);
                 this.gizmo = command_CastPower;
             }

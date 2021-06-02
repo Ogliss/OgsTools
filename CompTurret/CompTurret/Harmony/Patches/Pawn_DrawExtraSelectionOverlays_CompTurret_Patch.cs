@@ -1,4 +1,5 @@
-﻿using HarmonyLib;
+﻿using CompTurret.ExtensionMethods;
+using HarmonyLib;
 using System.Collections.Generic;
 using System.Linq;
 using Verse;
@@ -17,7 +18,7 @@ namespace CompTurret.HarmonyInstance
                 {
                     foreach (var item in __instance.apparel.WornApparel)
                     {
-                        CompTurret turret = item.TryGetComp<CompTurret>();
+                        CompTurret turret = item.TryGetCompFast<CompTurret>();
                         if (turret!=null)
                         {
                             foreach (CompTurret comp in item.GetComps<CompTurret>())

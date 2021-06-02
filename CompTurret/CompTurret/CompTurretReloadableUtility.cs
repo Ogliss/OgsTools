@@ -1,4 +1,5 @@
-﻿using RimWorld;
+﻿using CompTurret.ExtensionMethods;
+using RimWorld;
 using System;
 using System.Collections.Generic;
 using UnityEngine;
@@ -74,7 +75,7 @@ namespace CompTurret
 			int num;
 			for (int i = 0; i < worn.Count; i = num + 1)
 			{
-				CompTurret comp = worn[i].TryGetComp<CompTurret>();
+				CompTurret comp = worn[i].TryGetCompFast<CompTurret>();
 				
 				if (((comp != null) ? comp.AmmoDef : null) != null)
 				{
@@ -115,7 +116,7 @@ namespace CompTurret
 		// Token: 0x0600567A RID: 22138 RVA: 0x001CE860 File Offset: 0x001CCA60
 		public static int TotalChargesFromQueuedJobs(Pawn pawn, ThingWithComps gear)
 		{
-			CompTurret compReloadable = gear.TryGetComp<CompTurret>();
+			CompTurret compReloadable = gear.TryGetCompFast<CompTurret>();
 			int num = 0;
 			if (compReloadable != null && pawn != null)
 			{
@@ -134,7 +135,7 @@ namespace CompTurret
 		// Token: 0x0600567B RID: 22139 RVA: 0x001CE8D0 File Offset: 0x001CCAD0
 		public static bool CanUseConsideringQueuedJobs(Pawn pawn, ThingWithComps gear, bool showMessage = true)
 		{
-			CompTurret compReloadable = gear.TryGetComp<CompTurret>();
+			CompTurret compReloadable = gear.TryGetCompFast<CompTurret>();
 			if (compReloadable == null)
 			{
 				return true;

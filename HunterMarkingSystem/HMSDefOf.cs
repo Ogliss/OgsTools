@@ -38,10 +38,12 @@ namespace HunterMarkingSystem
         public static ThoughtDef HMS_Thought_BloodedM;
 
         // HunterMarkingSystem ThoughtDefs Thought_SituationalSocial
+        public static ThoughtDef HMS_BloodStatus_ThoughtDef;
+        /*
         public static ThoughtDef HMS_UnbloodedVs_ThoughtDef;
         public static ThoughtDef HMS_UnmarkedVs_ThoughtDef;
         public static ThoughtDef HMS_MarkedVs_ThoughtDef;
-
+        */
         // HunterMarkingSystem ThoughtDefs Memories
         public static ThoughtDef HMS_Thought_ThrillOfTheHunt;
 

@@ -9,38 +9,33 @@ using Verse.Sound;
 
 namespace OgsLasers
 {
-    public class LaserBeam : Projectile
+    public class LaserBeam : Bullet
     {
         new LaserBeamDef def => base.def as LaserBeamDef;
-
-        public override void Draw()
-        {
-
-        }
-
-        void TriggerEffect(EffecterDef effect, Vector3 position, Thing hitThing = null)
+        public override void Draw() { }
+        Effecter effecter;
+        Thing hitThing;
+        public void TriggerEffect(EffecterDef effect, Vector3 position, Thing hitThing = null)
         {
             if (effect == null) return;
-
             var targetInfo = hitThing != null ? new TargetInfo(hitThing) : new TargetInfo(IntVec3.FromVector3(position), Map, false);
-
-            Effecter effecter = effect.Spawn();
-            effecter.offset = position - targetInfo.CenterVector3;
-            effecter.Trigger(targetInfo, targetInfo);
-            effecter.Cleanup();
+            if (hitThing != null) effecter = effect.Spawn(hitThing, hitThing.Map);
+            else effecter = effect.Spawn();
+            effecter.Trigger(targetInfo, null);
+            //    effecter.Cleanup();
         }
 
-        void SpawnBeam(Vector3 a, Vector3 b)
+        public void SpawnBeam(Vector3 a, Vector3 b, Thing hitThing = null)
         {
             LaserBeamGraphic graphic = ThingMaker.MakeThing(def.beamGraphic, null) as LaserBeamGraphic;
             if (graphic == null) return;
             graphic.ticksToDetonation = this.def.projectile.explosionDelay;
             graphic.projDef = def;
-            graphic.Setup(launcher, a, b);
+            graphic.Setup(launcher, a, b, hitThing, effecter, def.explosionEffect);
             GenSpawn.Spawn(graphic, origin.ToIntVec3(), Map, WipeMode.Vanish);
         }
 
-        void SpawnBeamReflections(Vector3 a, Vector3 b, int count)
+        public void SpawnBeamReflections(Vector3 a, Vector3 b, int count)
         {
             for (int i = 0; i < count; i++)
             {
@@ -54,6 +49,7 @@ namespace OgsLasers
 
         protected override void Impact(Thing hitThing)
         {
+            this.hitThing = hitThing;
             bool shielded = hitThing.IsShielded() && def.IsWeakToShields;
 
             LaserGunDef defWeapon = equipmentDef as LaserGunDef;
@@ -85,8 +81,7 @@ namespace OgsLasers
 
         //    SpawnBeam(a, b);
             
-            bool createsExplosion = this.def.projectile.explosionRadius>0f;
-            if (createsExplosion)
+            if (this.def.projectile.explosionRadius > 0f)
             {
                 this.Explode(hitThing, false);
                 GenExplosion.NotifyNearbyPawnsOfDangerousExplosive(this, this.def.projectile.damageDef, this.launcher.Faction);
@@ -111,7 +106,6 @@ namespace OgsLasers
 
             if (hitThing == null)
             {
-                TriggerEffect(def.explosionEffect, b);
                 Rand.PushState();
                 bool flag2 = this.def.causefireChance > 0f && Rand.Chance(this.def.causefireChance);
                 Rand.PopState();
@@ -137,44 +131,109 @@ namespace OgsLasers
                 {
                     hitThing.TryAttachFire(0.01f);
                 }
-                TriggerEffect(def.explosionEffect, b);
+                AddeEffects(hitThing);
             }
-            if (def.HediffToAdd != null)
-            {
-                AddedEffect(hitThing);
-            }
+            //    TriggerEffect(def.explosionEffect, b, hitThing);
             Map map = base.Map;
-            base.Impact(hitThing);
+            IntVec3 position = base.Position;
+            GenClamor.DoClamor(this, 2.1f, ClamorDefOf.Impact);
+            this.Destroy(DestroyMode.Vanish);
             BattleLogEntry_RangedImpact battleLogEntry_RangedImpact = new BattleLogEntry_RangedImpact(this.launcher, hitThing, this.intendedTarget.Thing, this.equipmentDef, this.def, this.targetCoverDef);
             Find.BattleLog.Add(battleLogEntry_RangedImpact);
+            this.NotifyImpact(hitThing, map, position);
             if (hitThing != null)
             {
-                DamageDef damageDef = this.def.projectile.damageDef;
-                float amount = DamageAmount;
-                float armorPenetration = ArmorPenetration;
-                float y = this.ExactRotation.eulerAngles.y;
-                Thing launcher = this.launcher;
-                ThingDef equipmentDef = this.equipmentDef;
-                DamageInfo dinfo = new DamageInfo(damageDef, amount, armorPenetration, y, launcher, null, equipmentDef, DamageInfo.SourceCategory.ThingOrUnknown, this.intendedTarget.Thing);
+                DamageInfo dinfo = new DamageInfo(this.def.projectile.damageDef, (float)this.DamageAmount, this.ArmorPenetration, this.ExactRotation.eulerAngles.y, this.launcher, null, this.equipmentDef, DamageInfo.SourceCategory.ThingOrUnknown, this.intendedTarget.Thing);
                 hitThing.TakeDamage(dinfo).AssociateWithLog(battleLogEntry_RangedImpact);
-                Pawn hitPawn = hitThing as Pawn;
-                if (hitPawn != null && hitPawn.stances != null && hitPawn.BodySize <= this.def.projectile.StoppingPower + 0.001f)
+                if (pawn != null && pawn.stances != null && pawn.BodySize <= this.def.projectile.StoppingPower + 0.001f)
                 {
-                    hitPawn.stances.StaggerFor(95);
+                    pawn.stances.StaggerFor(95);
+                }
+                if (this.def.projectile.extraDamages == null)
+                {
+                    return;
+                }
+                using (List<ExtraDamage>.Enumerator enumerator = this.def.projectile.extraDamages.GetEnumerator())
+                {
+                    while (enumerator.MoveNext())
+                    {
+                        ExtraDamage extraDamage = enumerator.Current;
+                        if (Rand.Chance(extraDamage.chance))
+                        {
+                            DamageInfo dinfo2 = new DamageInfo(extraDamage.def, extraDamage.amount, extraDamage.AdjustedArmorPenetration(), this.ExactRotation.eulerAngles.y, this.launcher, null, this.equipmentDef, DamageInfo.SourceCategory.ThingOrUnknown, this.intendedTarget.Thing);
+                            hitThing.TakeDamage(dinfo2).AssociateWithLog(battleLogEntry_RangedImpact);
+                        }
+                    }
+                    return;
                 }
             }
-            else
+            SoundDefOf.BulletImpact_Ground.PlayOneShot(new TargetInfo(base.Position, map, false));
+            if (base.Position.GetTerrain(map).takeSplashes)
             {
-                SoundDefOf.BulletImpact_Ground.PlayOneShot(new TargetInfo(base.Position, map, false));
-                MoteMaker.MakeStaticMote(this.ExactPosition, map, ThingDefOf.Mote_ShotHit_Dirt, 1f);
-                if (base.Position.GetTerrain(map).takeSplashes)
-                {
-                    MoteMaker.MakeWaterSplash(this.ExactPosition, map, Mathf.Sqrt((float)base.DamageAmount) * 1f, 4f);
-                }
+                MoteMaker.MakeWaterSplash(this.ExactPosition, map, Mathf.Sqrt((float)base.DamageAmount) * 1f, 4f);
+                return;
             }
+        //    MoteMaker.MakeStaticMote(this.ExactPosition, map, ThingDefOf.Mote_ShotHit_Dirt, 1f);
         }
 
-        public new float DamageAmount
+        public virtual void Explode(Thing hitThing, bool destroy = false)
+        {
+            Map map = base.Map;
+            IntVec3 intVec = (hitThing != null) ? hitThing.PositionHeld : this.destination.ToIntVec3();
+            if (destroy)
+            {
+                this.Destroy(DestroyMode.Vanish);
+            }
+            bool flag = this.def.projectile.explosionEffect != null;
+            if (flag)
+            {
+                Effecter effecter = this.def.projectile.explosionEffect.Spawn();
+                effecter.Trigger(new TargetInfo(intVec, map, false), new TargetInfo(intVec, map, false));
+                effecter.Cleanup();
+            }
+            IntVec3 center = intVec;
+            Map map2 = map;
+            float explosionRadius = this.def.projectile.explosionRadius;
+            DamageDef damageDef = this.def.projectile.damageDef;
+            Thing launcher = this.launcher;
+            int damageAmount = this.def.projectile.GetDamageAmount(1f, null);
+            SoundDef soundExplode = this.def.projectile.soundExplode;
+            ThingDef equipmentDef = this.equipmentDef;
+            ThingDef def = this.def;
+            ThingDef postExplosionSpawnThingDef = this.def.projectile.postExplosionSpawnThingDef;
+            float postExplosionSpawnChance = this.def.projectile.postExplosionSpawnChance;
+            int postExplosionSpawnThingCount = this.def.projectile.postExplosionSpawnThingCount;
+            ThingDef preExplosionSpawnThingDef = this.def.projectile.preExplosionSpawnThingDef;
+            GenExplosion.DoExplosion(center, map2, explosionRadius, damageDef, launcher, damageAmount, 0f, soundExplode, equipmentDef, def, null, postExplosionSpawnThingDef, postExplosionSpawnChance, postExplosionSpawnThingCount, this.def.projectile.applyDamageToExplosionCellsNeighbors, preExplosionSpawnThingDef, this.def.projectile.preExplosionSpawnChance, this.def.projectile.preExplosionSpawnThingCount, this.def.projectile.explosionChanceToStartFire, this.def.projectile.explosionDamageFalloff);
+        }
+
+
+        public override void DeSpawn(DestroyMode mode = DestroyMode.Vanish)
+        {
+
+            LaserGunDef defWeapon = equipmentDef as LaserGunDef;
+            Vector3 a = origin + Velocity(this.ExactRotation.eulerAngles.y);
+            Vector3 b = ExactPosition;
+            a.y = b.y = def.Altitude;
+            SpawnBeam(a, b, hitThing);
+            /*
+            if (this.def.impactReflection > 0)
+            {
+                Vector3 dir = (this.ExactRotation.eulerAngles - origin).normalized;
+                Rand.PushState();
+                for (int i = 0; i < this.def.impactReflection; i++)
+                {
+                    Vector3 c = ExactPosition - dir.RotatedBy(Rand.Range(-35.5f, 35.5f)) * Rand.Range(-1.5f, 1.5f);// 0.8f;
+                    SpawnBeam(b, c);
+                }
+                Rand.PopState();
+            }
+            */
+
+            base.DeSpawn(mode);
+        }
+        #region Methods
+        public new virtual float DamageAmount
         {
             get
             {
@@ -190,7 +249,7 @@ namespace OgsLasers
             }
         }
 
-        public new float ArmorPenetration
+        public new virtual float ArmorPenetration
         {
             get
             {
@@ -244,42 +303,45 @@ namespace OgsLasers
             }
         }
 
-        protected virtual void Explode(Thing hitThing, bool destroy = false)
+        public void NotifyImpact(Thing hitThing, Map map, IntVec3 position)
         {
-            Map map = base.Map;
-            IntVec3 intVec = (hitThing != null) ? hitThing.PositionHeld : this.destination.ToIntVec3();
-            if (destroy)
+            BulletImpactData impactData = new BulletImpactData
             {
-                this.Destroy(DestroyMode.Vanish);
-            }
-            bool flag = this.def.projectile.explosionEffect != null;
-            if (flag)
+                bullet = this,
+                hitThing = hitThing,
+                impactPosition = position
+            };
+            if (hitThing != null)
             {
-                Effecter effecter = this.def.projectile.explosionEffect.Spawn();
-                effecter.Trigger(new TargetInfo(intVec, map, false), new TargetInfo(intVec, map, false));
-                effecter.Cleanup();
+                hitThing.Notify_BulletImpactNearby(impactData);
             }
-            IntVec3 center = intVec;
-            Map map2 = map;
-            float explosionRadius = this.def.projectile.explosionRadius;
-            DamageDef damageDef = this.def.projectile.damageDef;
-            Thing launcher = this.launcher;
-            int damageAmount = this.def.projectile.GetDamageAmount(1f, null);
-            SoundDef soundExplode = this.def.projectile.soundExplode;
-            ThingDef equipmentDef = this.equipmentDef;
-            ThingDef def = this.def;
-            ThingDef postExplosionSpawnThingDef = this.def.projectile.postExplosionSpawnThingDef;
-            float postExplosionSpawnChance = this.def.projectile.postExplosionSpawnChance;
-            int postExplosionSpawnThingCount = this.def.projectile.postExplosionSpawnThingCount;
-            ThingDef preExplosionSpawnThingDef = this.def.projectile.preExplosionSpawnThingDef;
-            GenExplosion.DoExplosion(center, map2, explosionRadius, damageDef, launcher, damageAmount, 0f, soundExplode, equipmentDef, def, null, postExplosionSpawnThingDef, postExplosionSpawnChance, postExplosionSpawnThingCount, this.def.projectile.applyDamageToExplosionCellsNeighbors, preExplosionSpawnThingDef, this.def.projectile.preExplosionSpawnChance, this.def.projectile.preExplosionSpawnThingCount, this.def.projectile.explosionChanceToStartFire, this.def.projectile.explosionDamageFalloff);
+            int num = 9;
+            for (int i = 0; i < num; i++)
+            {
+                IntVec3 c = position + GenRadial.RadialPattern[i];
+                if (c.InBounds(map))
+                {
+                    List<Thing> thingList = c.GetThingList(map);
+                    for (int j = 0; j < thingList.Count; j++)
+                    {
+                        if (thingList[j] != hitThing)
+                        {
+                            thingList[j].Notify_BulletImpactNearby(impactData);
+                        }
+                    }
+                }
+            }
         }
 
-
-        protected void AddedEffect(Thing hitThing)
+        public Vector3 Velocity(float angle)
         {
-            if (def != null && hitThing != null && hitThing is Pawn hitPawn)
+            return Quaternion.AngleAxis(angle, Vector3.up) * Vector3.forward;
+        }
+        protected virtual void AddeEffects(Thing hitThing)
+        {
+            if (def != null && def.HediffToAdd != null && hitThing != null && hitThing is Pawn hitPawn)
             {
+                Rand.PushState();
                 var rand = Rand.Value; // This is a random percentage between 0% and 100%
 
                 StatDef ResistHediffStat = def.ResistHediffStat;
@@ -327,30 +389,9 @@ namespace OgsLasers
                     MoteMaker.ThrowText(hitThing.PositionHeld.ToVector3(), hitThing.MapHeld, "TST_PlagueBullet_FailureMote".Translate(Def.AddHediffChance), 12f);
                     */
                 }
-            }
-        }
-        public override void DeSpawn(DestroyMode mode = DestroyMode.Vanish)
-        {
-
-            LaserGunDef defWeapon = equipmentDef as LaserGunDef;
-            Vector3 a = origin + Velocity(this.ExactRotation.eulerAngles.y) * (defWeapon == null ? 0.9f : defWeapon.barrelLength);
-            Vector3 b = ExactPosition;
-            a.y = b.y = def.Altitude;
-            SpawnBeam(a, b);
-            if (this.def.impactReflection > 0)
-            {
-                Vector3 dir = (destination - origin).normalized;
-                Rand.PushState();
-                Vector3 c = ExactPosition - dir.RotatedBy(Rand.Range(-22.5f, 22.5f)) * 0.8f;
                 Rand.PopState();
-                SpawnBeamReflections(b, c, this.def.impactReflection);
             }
-
-            base.DeSpawn(mode);
         }
-        public Vector3 Velocity(float angle)
-        {
-            return Quaternion.AngleAxis(angle, Vector3.up) * Vector3.forward;
-        }
+        #endregion Methods
     }
 }

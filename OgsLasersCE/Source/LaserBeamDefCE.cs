@@ -16,6 +16,7 @@ namespace OgsLasers
 
         public int lifetime = 30;
         public int flickerFrameTime = 5;
+        public int impactReflection = -1;
         public float impulse = 4.0f;
 
         public float beamWidth = 1.0f;

@@ -19,7 +19,6 @@ namespace OgsLasers
             return LightningLaserBoltMeshMaker.MeshFromVerts();
         }
 
-        // Token: 0x0600137D RID: 4989 RVA: 0x00095543 File Offset: 0x00093943
         public static Mesh NewBoltMesh(Vector2 vector, float str = 3f, float width = 1f)
         {
             LightningLaserBoltMeshMaker.lightningTop = vector;
@@ -81,8 +80,10 @@ namespace OgsLasers
                     a = new Vector2(vector.y, vector.z);
                     a.Normalize();
                 }
-                Vector2 item = list[i] - width * a;
-                Vector2 item2 = list[i] + width * a;
+                float w = i == list.Count -1 ? width : Mathf.Lerp(width /2, width * 2, Mathf.InverseLerp(0, list.Count, i));
+
+                Vector2 item = list[i] - w * a;
+                Vector2 item2 = list[i] + w * a;
                 LightningLaserBoltMeshMaker.verts2D.Add(item);
                 LightningLaserBoltMeshMaker.verts2D.Add(item2);
             }

@@ -11,15 +11,13 @@ using Verse.Sound;
 using System.Reflection.Emit;
 using UnityEngine;
 using System.Reflection;
+using OgsCompOversizedWeapon.ExtentionMethods;
 
 namespace OgsCompOversizedWeapon
 {
-	//    [HarmonyPatch(typeof(PawnRenderer), "DrawEquipmentAiming")]
-	// Token: 0x020000FB RID: 251
 	[HarmonyPatch(typeof(PawnRenderer), "DrawEquipmentAiming")]
 	public static class Harmony_PawnRenderer_DrawEquipmentAiming_Transpiler
 	{
-		// Token: 0x060004A1 RID: 1185 RVA: 0x0002500C File Offset: 0x0002320C
 		public static bool enabled_CombatExtended = ModsConfig.ActiveModsInLoadOrder.Any((ModMetaData m) => m.PackageIdPlayerFacing == "CETeam.CombatExtended");
 		internal static IEnumerable<CodeInstruction> Transpiler(IEnumerable<CodeInstruction> instructions)
 		{
@@ -43,8 +41,8 @@ namespace OgsCompOversizedWeapon
 		public static void DrawMeshModified(Mesh mesh, Vector3 position, Quaternion rotation, Material mat, int layer, Thing eq, float aimAngle)
 		{
 
-			CompOversizedWeapon compOversized = eq.TryGetComp<CompOversizedWeapon>();
-			CompEquippable equippable = eq.TryGetComp<CompEquippable>();
+			CompOversizedWeapon compOversized = eq.TryGetCompFast<CompOversizedWeapon>();
+			CompEquippable equippable = eq.TryGetCompFast<CompEquippable>();
 			Pawn pawn = equippable.PrimaryVerb.CasterPawn;
 			if (pawn == null) return;
 			if (compOversized == null || (compOversized != null && compOversized.CompDeflectorIsAnimatingNow) || pawn == null || eq == null)
@@ -113,8 +111,8 @@ namespace OgsCompOversizedWeapon
 		public static bool DrawMeshModifiedCE(Mesh mesh, Vector3 position, Quaternion rotation, Material mat, int layer, Thing eq, float aimAngle)
 		{
 
-			CompOversizedWeapon compOversized = eq.TryGetComp<CompOversizedWeapon>();
-			CompEquippable equippable = eq.TryGetComp<CompEquippable>();
+			CompOversizedWeapon compOversized = eq.TryGetCompFast<CompOversizedWeapon>();
+			CompEquippable equippable = eq.TryGetCompFast<CompEquippable>();
 			Pawn pawn = equippable.PrimaryVerb.CasterPawn;
 			if (pawn == null) return true;
 			if (compOversized == null || (compOversized != null && compOversized.CompDeflectorIsAnimatingNow) || pawn == null || eq == null)
@@ -252,7 +250,7 @@ namespace OgsCompOversizedWeapon
 		// Token: 0x0600007D RID: 125 RVA: 0x00006190 File Offset: 0x00004390
 		public static void SetAnglesAndOffsets(Thing eq, ThingWithComps offHandEquip, float aimAngle, Thing thing, ref Vector3 offsetMainHand, ref Vector3 offsetOffHand, ref float mainHandAngle, ref float offHandAngle, bool mainHandAiming, bool offHandAiming)
 		{
-			CompOversizedWeapon compOversized = eq.TryGetComp<CompOversizedWeapon>();
+			CompOversizedWeapon compOversized = eq.TryGetCompFast<CompOversizedWeapon>();
 
 			CompProperties_OversizedWeapon PropsOversized = compOversized.Props;
 
@@ -400,7 +398,7 @@ namespace OgsCompOversizedWeapon
 			}
 			else
 			{
-				CompEquippable compEquippable = eq.TryGetComp<CompEquippable>();
+				CompEquippable compEquippable = eq.TryGetCompFast<CompEquippable>();
 				bool flag2 = compEquippable != null;
 				if (flag2)
 				{
