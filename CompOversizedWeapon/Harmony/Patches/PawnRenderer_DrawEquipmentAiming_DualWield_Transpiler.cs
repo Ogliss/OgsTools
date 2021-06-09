@@ -15,22 +15,24 @@ using OgsCompOversizedWeapon.ExtentionMethods;
 
 namespace OgsCompOversizedWeapon
 {
-    public static class Harmony_PawnRenderer_DrawEquipmentAimingOverride_Transpiler
+    public static class PawnRenderer_DrawEquipmentAiming_DualWield_Transpiler
     {
         public static IEnumerable<CodeInstruction> Transpiler(IEnumerable<CodeInstruction> instructions)
         {
             List<CodeInstruction> list = instructions.ToList<CodeInstruction>();
 
-            int t = list.Count - 3;
-            
-            list[t].operand = AccessTools.Method(typeof(Harmony_PawnRenderer_DrawEquipmentAimingOverride_Transpiler), "DrawMeshModified", null, null);
-            list.InsertRange(t, new CodeInstruction[]
+            for (int i = 0; i < list.Count; i++)
             {
-                new CodeInstruction(OpCodes.Ldarg_0, null),
-                new CodeInstruction(OpCodes.Ldarg_2, null)
-            });
-            
-            return list;
+                CodeInstruction instruction = list[i];
+                if (instruction.OperandIs(AccessTools.Method(type: typeof(Graphics), name: nameof(Graphics.DrawMesh), parameters: new[] { typeof(Mesh), typeof(Vector3), typeof(Quaternion), typeof(Material), typeof(Int32) })))
+                {
+                    yield return new CodeInstruction(OpCodes.Ldarg_0);
+                    yield return new CodeInstruction(OpCodes.Ldarg_2);
+                    instruction = new CodeInstruction(OpCodes.Call, AccessTools.Method(typeof(PawnRenderer_DrawEquipmentAiming_DualWield_Transpiler), "DrawMeshModified", null, null));
+                    if (Prefs.DevMode) Log.Message("Oversized: DrawEquipmentAiming_DualWield_Transpiled");
+                }
+                yield return instruction;
+            }
         }
 
         private static void DrawMeshModified(Mesh mesh, Vector3 position, Quaternion rotation, Material mat, int layer, Thing eq, float aimAngle)
@@ -41,13 +43,13 @@ namespace OgsCompOversizedWeapon
             if (pawn == null) return;
             if (compOversized == null || (compOversized != null && compOversized.CompDeflectorIsAnimatingNow) || pawn == null || eq == null)
             {
-                Harmony_PawnRenderer_DrawEquipmentAiming_Transpiler.draw(mesh, default(Matrix4x4), mat, layer, eq, pawn, position, rotation);
+                OversizedUtil.Draw(mesh, default(Matrix4x4), mat, layer, eq, pawn, position, rotation);
                 return;
             }
             Vector3 s;
             if (pawn.RaceProps.Humanlike)
             {
-                if (HarmonyCompOversizedWeapon.enabled_AlienRaces)
+                if (HarmonyPatches_OversizedWeapon.enabled_AlienRaces)
                 {
                     Vector2 v = AlienRaceUtility.AlienRacesPatch(pawn, eq);
                     float f = Mathf.Max(v.x, v.y);
@@ -65,7 +67,7 @@ namespace OgsCompOversizedWeapon
             }
             Matrix4x4 matrix = default(Matrix4x4);
             matrix.SetTRS(position, rotation, s);
-            Harmony_PawnRenderer_DrawEquipmentAiming_Transpiler.draw(mesh, matrix, mat, 0, eq, pawn, position, rotation);
+            OversizedUtil.Draw(mesh, matrix, mat, 0, eq, pawn, position, rotation);
         }
 
     }

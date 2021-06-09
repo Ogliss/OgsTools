@@ -7,16 +7,28 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using UnityEngine;
 using Verse;
 
 namespace OgsCompOversizedWeapon
 {
+    // OgsCompOversizedWeapon.OversizedUtil.Draw
     [StaticConstructorOnStartup]
-    public static class OgsCompOversizedWeaponUtil 
+    public static class OversizedUtil
     {
 
-        // Token: 0x06000021 RID: 33 RVA: 0x000037B0 File Offset: 0x000019B0
-        public static void COWAddOffHandEquipment(this Pawn_EquipmentTracker instance, ThingWithComps newEq)
+        public static void Draw(Mesh mesh, Matrix4x4 matrix, Material mat, int layer, Thing eq, Pawn pawn, Vector3 position, Quaternion rotation)
+        {
+            if (matrix == default(Matrix4x4))
+            {
+                Graphics.DrawMesh(mesh, position, rotation, mat, layer);
+            }
+            else Graphics.DrawMesh(mesh, matrix, mat, layer);
+        }
+
+
+        #region DualWield
+        public static void AddOffHandEquipment(this Pawn_EquipmentTracker instance, ThingWithComps newEq)
         {
             ThingOwner<ThingWithComps> value = Traverse.Create(instance).Field("equipment").GetValue<ThingOwner<ThingWithComps>>();
             ExtendedDataStorage extendedDataStorage = Base.Instance.GetExtendedDataStorage();
@@ -30,9 +42,7 @@ namespace OgsCompOversizedWeapon
             }
         }
 
-
-        // Token: 0x06000022 RID: 34 RVA: 0x00003818 File Offset: 0x00001A18
-        public static bool COWTryGetOffHandEquipment(this Pawn_EquipmentTracker instance, out ThingWithComps result)
+        public static bool TryGetOffHandEquipment(this Pawn_EquipmentTracker instance, out ThingWithComps result)
         {
             result = null;
             bool flag = instance.pawn.HasMissingArmOrHand();
@@ -58,6 +68,7 @@ namespace OgsCompOversizedWeapon
             }
             return result2;
         }
+        #endregion
 
     }
 }

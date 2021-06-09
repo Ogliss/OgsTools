@@ -14,33 +14,28 @@ using System.Reflection;
 
 namespace OgsCompActivatableEffect
 {
-	//    [HarmonyPatch(typeof(PawnRenderer), "DrawEquipmentAiming")]
-	// Token: 0x020000FB RID: 251
 //	[HarmonyPatch(typeof(PawnRenderer), "DrawEquipmentAiming")]
-	public static class Harmony_PawnRenderer_DrawEquipmentAiming_Transpiler
+    public static class PawnRenderer_DrawEquipmentAiming_Vanilla_Transpiler
 	{
-		// Token: 0x060004A1 RID: 1185 RVA: 0x0002500C File Offset: 0x0002320C
 		public static bool enabled_CombatExtended = ModsConfig.ActiveModsInLoadOrder.Any((ModMetaData m) => m.PackageIdPlayerFacing == "CETeam.CombatExtended");
 		internal static IEnumerable<CodeInstruction> Transpiler(IEnumerable<CodeInstruction> instructions)
 		{
 			List<CodeInstruction> list = instructions.ToList<CodeInstruction>();
-            if (enabled_CombatExtended)
+
+			for (int i = 0; i < list.Count; i++)
 			{
-			//	list[list.Count - 2].operand = AccessTools.Method(typeof(Harmony_PawnRenderer_DrawEquipmentAiming_Transpiler), "DrawMeshModified", null, null);
-			}
-            else
-			{
-				list[list.Count - 2].operand = AccessTools.Method(typeof(Harmony_PawnRenderer_DrawEquipmentAiming_Transpiler), "DrawMeshModified", null, null);
-				list.InsertRange(list.Count - 2, new CodeInstruction[]
+				CodeInstruction instruction = list[i];
+				if (instruction.OperandIs(AccessTools.Method(type: typeof(Graphics), name: nameof(Graphics.DrawMesh), parameters: new[] { typeof(Mesh), typeof(Vector3), typeof(Quaternion), typeof(Material), typeof(Int32) })))
 				{
-				new CodeInstruction(OpCodes.Ldarg_1, null),
-				new CodeInstruction(OpCodes.Ldarg_3, null)
-				});
+					yield return new CodeInstruction(OpCodes.Ldarg_1);
+					instruction = new CodeInstruction(OpCodes.Call, AccessTools.Method(typeof(PawnRenderer_DrawEquipmentAiming_Vanilla_Transpiler), "DrawMeshModified", null, null));
+					if (Prefs.DevMode) Log.Message("ActivatableEffect: DrawEquipmentAiming_Vanilla_Transpiled");
+				}
+				yield return instruction;
 			}
-			return list;
 		}
 
-		public static void DrawMeshModified(Mesh mesh, Vector3 position, Quaternion rotation, Material mat, int layer, Thing eq, float aimAngle)
+		public static void DrawMeshModified(Mesh mesh, Vector3 position, Quaternion rotation, Material mat, int layer, Thing eq)
 		{
 			CompEquippable equippable = eq.TryGetComp<CompEquippable>();
 			Pawn pawn = equippable.PrimaryVerb.CasterPawn;
@@ -55,7 +50,7 @@ namespace OgsCompActivatableEffect
 				Graphics.DrawMesh(mesh, position, rotation, mat, layer);
 			}
             else Graphics.DrawMesh(mesh, matrix, mat, layer);
-			HarmonyCompActivatableEffect.DrawMeshModified(mesh, matrix, mat, layer, eq,pawn, position, rotation);
+			HarmonyPatches_ActivatableEffect.DrawMeshModified(mesh, matrix, mat, layer, eq,pawn, position, rotation);
 		}
 
 	}

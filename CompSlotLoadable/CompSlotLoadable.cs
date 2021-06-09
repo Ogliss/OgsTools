@@ -1,6 +1,7 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using OgsCompSlotLoadable.ExtentionMethods;
 using RimWorld;
 using UnityEngine;
 using Verse;
@@ -283,16 +284,16 @@ namespace OgsCompSlotLoadable
                 }
                 if (((SlotLoadableDef) slot.def).doesChangeStats)
                 {
-                    var slotBonus = slot.SlotOccupant.TryGetComp<CompSlottedBonus>();
+                    var slotBonus = slot.SlotOccupant.def.GetModExtension<SlottedBonusExtension>();
                     if (slotBonus != null)
-                        if (slotBonus.Props != null)
+                        if (slotBonus != null)
                         {
-                            if (slotBonus.Props.statModifiers != null && slotBonus.Props.statModifiers.Count > 0)
+                            if (slotBonus.statModifiers != null && slotBonus.statModifiers.Count > 0)
                             {
                                 s.AppendLine();
                                 s.AppendLine(StringOf.StatModifiers);
 
-                                foreach (var mod in slotBonus.Props.statModifiers)
+                                foreach (var mod in slotBonus.statModifiers)
                                 {
                                     var v = SlotLoadableUtility.DetermineSlottableStatAugment(slot.SlotOccupant, mod.stat);
                                     var modstring = mod.stat.ValueToString(v, ToStringNumberSense.Offset);
@@ -316,13 +317,13 @@ namespace OgsCompSlotLoadable
                                 }
                                 */
                             }
-                            var damageDef = slotBonus.Props.damageDef;
+                            var damageDef = slotBonus.damageDef;
                             if (damageDef != null)
                             {
                                 s.AppendLine();
                                 s.AppendLine(string.Format(StringOf.DamageType, new object[] {damageDef.LabelCap}));
                             }
-                            var defHealChance = slotBonus.Props.defensiveHealChance;
+                            var defHealChance = slotBonus.defensiveHealChance;
                             if (defHealChance != null)
                             {
                                 var healText = StringOf.all;
@@ -333,7 +334,7 @@ namespace OgsCompSlotLoadable
                                     defHealChance.chance.ToStringPercent()
                                 }));
                             }
-                            var vampChance = slotBonus.Props.vampiricHealChance;
+                            var vampChance = slotBonus.vampiricHealChance;
                             if (vampChance != null)
                             {
                                 var vampText = StringOf.all;

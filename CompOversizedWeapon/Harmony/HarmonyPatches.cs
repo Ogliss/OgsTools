@@ -8,38 +8,67 @@ using Verse;
 namespace OgsCompOversizedWeapon
 {
     [StaticConstructorOnStartup]
-    public static class HarmonyCompOversizedWeapon
+    public static class HarmonyPatches_OversizedWeapon
     {
         public static bool enabled_AlienRaces;
         public static bool enabled_rooloDualWield;
-        static HarmonyCompOversizedWeapon()
+        public static bool enabled_YayosCombat;
+        static HarmonyPatches_OversizedWeapon()
         {
             enabled_AlienRaces = ModsConfig.ActiveModsInLoadOrder.Any((ModMetaData m) => m.PackageIdPlayerFacing == "erdelf.HumanoidAlienRaces");
             enabled_rooloDualWield = ModsConfig.ActiveModsInLoadOrder.Any((ModMetaData m) => m.PackageIdPlayerFacing == "Roolo.DualWield");
+            enabled_YayosCombat = ModsConfig.ActiveModsInLoadOrder.Any((ModMetaData m) => m.PackageIdPlayerFacing == "com.yayo.combat3");
 
             var harmony = new Harmony("rimworld.Ogliss.comps.oversized");
             harmony.PatchAll(Assembly.GetExecutingAssembly());
-            MethodInfo target = AccessTools.Method(GenTypes.GetTypeInAnyAssembly("DualWield.Harmony.PawnRenderer_DrawEquipmentAiming", "DualWield.Harmony"), "DrawEquipmentAimingOverride", null, null);
-            if (target == null && enabled_rooloDualWield)
+            if (enabled_rooloDualWield)
             {
-                Log.Warning("Target: DualWield.Harmony.PawnRenderer_DrawEquipmentAiming.DrawEquipmentAimingOverride Not found");
-            }
-            MethodInfo patch = typeof(Harmony_PawnRenderer_DrawEquipmentAimingOverride_Transpiler).GetMethod("Transpiler");
-            if (patch == null && enabled_rooloDualWield)
-            {
-                Log.Warning("Patch is null Harmony_PawnRenderer_DrawEquipmentAimingOverride_Transpiler.Transpiler");
-            }
-            if (target != null && patch != null && enabled_rooloDualWield)
-            {
-                if (harmony.Patch(target, null, null, new HarmonyMethod(patch)) == null)
+                MethodInfo target = AccessTools.Method(GenTypes.GetTypeInAnyAssembly("DualWield.Harmony.PawnRenderer_DrawEquipmentAiming", "DualWield.Harmony"), "DrawEquipmentAimingOverride", null, null);
+                if (target == null)
                 {
-                    Log.Warning("OgsCompOversizedWeapon: DualWield Patch Failed to apply");
+                    Log.Warning("Target: DualWield.Harmony.PawnRenderer_DrawEquipmentAiming.DrawEquipmentAimingOverride Not found");
+                }
+                MethodInfo patch = typeof(PawnRenderer_DrawEquipmentAiming_DualWield_Transpiler).GetMethod("Transpiler");
+                if (patch == null)
+                {
+                    Log.Warning("Patch is null PawnRenderer_DrawEquipmentAiming_DualWield_Transpiler.Transpiler");
+                }
+                if (target != null && patch != null)
+                {
+                    if (harmony.Patch(target, null, null, new HarmonyMethod(patch)) == null)
+                    {
+                        Log.Warning("OgsCompOversizedWeapon: DualWield Patch Failed to apply");
+                    }
+                }
+            }
+            if (enabled_YayosCombat)
+            {
+                MethodInfo target = AccessTools.Method(GenTypes.GetTypeInAnyAssembly("yayoCombat.patch_DrawEquipmentAiming", "yayoCombat"), "Prefix", null, null);
+                if (target == null)
+                {
+                    Log.Warning("Target: yayoCombat.patch_DrawEquipmentAiming.Prefix Not found");
+                }
+                MethodInfo patch = typeof(PawnRenderer_DrawEquipmentAiming_Yayo_Transpiler).GetMethod("Transpiler");
+                if (patch == null)
+                {
+                    Log.Warning("Patch is null PawnRenderer_DrawEquipmentAiming_Yayo_Transpiler.Transpiler");
+                }
+                if (target != null && patch != null)
+                {
+                    if (harmony.Patch(target, null, null, new HarmonyMethod(patch)) == null)
+                    {
+                        Log.Warning("OgsCompOversizedWeapon: YayosCombat Patch Failed to apply");
+                    }
+                    else
+                    {
+                        Log.Message("OgsCompOversizedWeapon: YayosCombat Patch applied!");
+                    }
                 }
             }
             harmony.Patch(AccessTools.Method(typeof(Thing), "get_DefaultGraphic"), null,
-                new HarmonyMethod(typeof(HarmonyCompOversizedWeapon), nameof(get_DefaultGraphic_PostFix)));
+                new HarmonyMethod(typeof(HarmonyPatches_OversizedWeapon), nameof(get_DefaultGraphic_PostFix)));
         }
-
+       
         public static void get_DefaultGraphic_PostFix(Thing __instance, Graphic ___graphicInt, ref Graphic __result)
         {
             if (___graphicInt == null) return;

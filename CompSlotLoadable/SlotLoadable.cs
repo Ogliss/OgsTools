@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using OgsCompSlotLoadable.ExtentionMethods;
 using RimWorld;
 using UnityEngine;
 using Verse;
@@ -172,7 +173,7 @@ namespace OgsCompSlotLoadable
                 Pawn result = null;
                 if (owner != null)
                 {
-                    var eq = owner.TryGetComp<CompEquippable>();
+                    var eq = owner.TryGetCompFast<CompEquippable>();
                     if (eq != null)
                         if (eq.PrimaryVerb != null)
                         {

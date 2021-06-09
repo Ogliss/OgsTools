@@ -237,7 +237,7 @@ namespace CompTurret
 			}
             if (OperatorPawn!=null)
 			{
-				if (OperatorPawn.Downed || !OperatorPawn.Awake())
+				if (OperatorPawn.Downed || !OperatorPawn.Awake() || OperatorPawn.InMentalState)
 				{
 					return;
 				}
@@ -274,7 +274,7 @@ namespace CompTurret
 					return;
 				}
 			}
-			//	Log.Message("tick Active: " + this.Active + ", Worn: " + (this.Wearer != null) + ", Wearer Spawned: " + Wearer.Spawned);
+			//	Log.Message("tick Active: " + this.Active + ", Worn: " + (this.Operator != null) + ", Wearer Spawned: " + Operator.Spawned);
 			if (this.Active && (this.Operator != null) && Operator.Spawned)
 			{
 				this.GunCompEq.verbTracker.VerbsTick();
@@ -308,7 +308,7 @@ namespace CompTurret
 								mote.offsetZ = -0.8f;
 							}
 						}
-					//	if (Wearer.IsHashIntervalTick(10)) Log.Message("tick 2 1 b2 interval: "+ Wearer.IsHashIntervalTick(10));
+					//	if (Operator.IsHashIntervalTick(10)) Log.Message("tick 2 1 b2 interval: "+ Operator.IsHashIntervalTick(10));
 						if (this.burstCooldownTicksLeft <= 0 && Operator.IsHashIntervalTick(10) && HasAmmo)
 						{
 							this.TryStartShootSomething(true);
@@ -329,51 +329,60 @@ namespace CompTurret
 
 		protected void TryStartShootSomething(bool canBeginBurstImmediately)
 		{
-		//	Log.Messageage("TryStartShootSomething");
+		//	Log.Message("TryStartShootSomething");
 			if (this.progressBarEffecter != null)
 			{
 				this.progressBarEffecter.Cleanup();
 				this.progressBarEffecter = null;
 			}
+		//	Log.Message("TryStartShootSomething 0");
 			if (!Operator.Spawned || (this.holdFire && this.CanToggleHoldFire) || (this.AttackVerb.ProjectileFliesOverhead() && Operator.Map.roofGrid.Roofed(Operator.Position)) || !this.AttackVerb.Available())
 			{
 				this.ResetCurrentTarget();
 				return;
 			}
+		//	Log.Message("TryStartShootSomething 1");
 			bool isValid = this.currentTargetInt.IsValid;
 			if (this.forcedTarget.IsValid)
 			{
+			//	Log.Message("TryStartShootSomething 1 A");
 				this.currentTargetInt = this.forcedTarget;
 			}
 			else
 			{
+			//	Log.Message("TryStartShootSomething 1 B");
 				this.currentTargetInt = this.TryFindNewTarget();
 			}
+		//	Log.Message("TryStartShootSomething 2");
 			if (!isValid && this.currentTargetInt.IsValid)
 			{
 				SoundDefOf.TurretAcquireTarget.PlayOneShot(new TargetInfo(Operator.Position, Operator.Map, false));
 			}
+		//	Log.Message("TryStartShootSomething 3");
 			if (!this.currentTargetInt.IsValid)
 			{
 				this.ResetCurrentTarget();
 				return;
 			}
+		//	Log.Message("TryStartShootSomething 4");
 			if (this.Props.TurretDef.building.turretBurstWarmupTime > 0f)
 			{
 				this.burstWarmupTicksLeft = this.Props.TurretDef.building.turretBurstWarmupTime.SecondsToTicks();
 				return;
 			}
+		//	Log.Message("TryStartShootSomething 5");
 			if (canBeginBurstImmediately)
 			{
 				this.BeginBurst();
 				return;
 			}
+		//	Log.Message("TryStartShootSomething 6");
 			this.burstWarmupTicksLeft = 1;
 		}
 
 		protected LocalTargetInfo TryFindNewTarget()
 		{
-		//	Log.Messageage("TryFindNewTarget");
+		
 			IAttackTargetSearcher attackTargetSearcher = this.TargSearcher();
 			Faction faction = attackTargetSearcher.Thing?.Faction ?? this.parent.Faction;
 			float range = this.AttackVerb.verbProps.range;
@@ -408,10 +417,10 @@ namespace CompTurret
 			if (tgt == null && OperatorPawn?.verbTracker.PrimaryVerb.CurrentTarget != null && OperatorPawn.verbTracker.PrimaryVerb.CurrentTarget.HasThing)
 			{
 				tgt = OperatorPawn.verbTracker.PrimaryVerb.CurrentTarget.Thing;
-				Log.Message("TryFindNewTarget OperatorPawntgt found: " + (tgt != null));
+			//	Log.Message("TryFindNewTarget OperatorPawntgt found: " + (tgt != null));
 			}
 
-		//	Log.Messageage("TryFindNewTarget tgt found: " + (tgt != null));
+			//	Log.Message("TryFindNewTarget tgt found: " + (tgt != null));
 			return tgt;
 		}
 		public static IAttackTarget BestShootTargetFromCurrentPosition(IAttackTargetSearcher searcher, Verb currentEffectiveVerb, TargetScanFlags flags, Predicate<Thing> validator = null, float minDistance = 0f, float maxDistance = 9999f, bool building = false)
@@ -473,7 +482,7 @@ namespace CompTurret
 
 		protected void BeginBurst()
 		{
-		//	Log.Messageage(AttackVerb+" BeginBurst " + CurrentTarget);
+		//	Log.Message(AttackVerb+" BeginBurst " + CurrentTarget);
 			this.AttackVerb.TryStartCastOn(this.CurrentTarget, false, true);
 			base.OnAttackedTarget(this.CurrentTarget);
 		}
@@ -743,17 +752,24 @@ namespace CompTurret
 				*/
 				yield return command_VerbTarget;
 			}
-			if (this.forcedTarget.IsValid)
+			if (this.forcedTarget.IsValid || (this.CurrentTarget.IsValid && this.CanToggleHoldFire))
 			{
 				num += 100;
 				Command_Action command_Action = new Command_Action();
-				command_Action.defaultLabel = Props.TurretDef.building.turretGunDef.LabelCap + " " + "CommandStopForceAttack".Translate();
+				command_Action.defaultLabel = Props.TurretDef.building.turretGunDef.LabelCap + " " +  (this.forcedTarget.IsValid ? "CommandStopForceAttack".Translate() : "CommandHoldFire".Translate());
 				command_Action.defaultDesc = "CommandStopForceAttackDesc".Translate();
 				command_Action.icon = ContentFinder<Texture2D>.Get("UI/Commands/Halt", true);
 				command_Action.groupKey = num + Props.gizmoID;
 				command_Action.action = delegate ()
 				{
-					this.ResetForcedTarget();
+                    if (this.forcedTarget.IsValid)
+					{
+						this.ResetForcedTarget();
+					}
+                    else
+                    {
+						this.ResetCurrentTarget();
+                    }
 					SoundDefOf.Tick_Low.PlayOneShotOnCamera(null);
 				};
 				if (!this.forcedTarget.IsValid)
@@ -817,6 +833,7 @@ namespace CompTurret
 			}
 		//	yield break;
 		}
+
         public override IEnumerable<Gizmo> CompGetGizmosExtra()
 		{
 			if (Building != null || Pawn != null)

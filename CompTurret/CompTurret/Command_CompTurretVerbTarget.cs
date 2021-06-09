@@ -84,6 +84,7 @@ namespace CompTurret
 			}
 			else
 			{
+			//	Log.Message("BeginTargeting: ");
 				Find.Targeter.BeginTargeting(gunTurret, null);
 			}
 			/*

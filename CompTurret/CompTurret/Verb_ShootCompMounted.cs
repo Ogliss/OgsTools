@@ -90,182 +90,183 @@ namespace CompTurret
 			{
 				return false;
 			}
-			if (this.verbProps.stopBurstWithoutLos && base.TryFindShootLineFromTo(this.Caster.Position, this.currentTarget, out ShootLine shootLine))
+			bool flag = base.TryFindShootLineFromTo(this.Caster.Position, this.currentTarget, out ShootLine shootLine);
+			if (this.verbProps.stopBurstWithoutLos && !flag)
 			{
-				Vector3 muzzlePos;
-				if (turretGun != null)
+				return false;
+			}
+			Vector3 muzzlePos;
+			if (turretGun != null)
+			{
+				if (turretGun.UseAmmo)
 				{
-					if (turretGun.UseAmmo)
+					bool playerpawn = this.CasterIsPawn && this.Caster.Faction == Faction.OfPlayer;
+					if (turretGun.HasAmmo)
 					{
-						bool playerpawn = this.CasterIsPawn && this.Caster.Faction == Faction.OfPlayer;
-						if (turretGun.HasAmmo)
+						turretGun.UsedOnce();
+					}
+					else
+					{
+						return false;
+					}
+					if (turretGun.RemainingCharges == 0)
+					{
+						if (turretGun.Props.soundEmptyWarning != null && playerpawn)
 						{
-							turretGun.UsedOnce();
+							turretGun.Props.soundEmptyWarning.PlayOneShot(new TargetInfo(this.Caster.Position, this.Caster.Map, false));
 						}
-						else
+						if (!turretGun.Props.messageEmptyWarning.NullOrEmpty() && playerpawn)
 						{
-							return false;
+							MoteMaker.ThrowText(Caster.Position.ToVector3(), Caster.Map, turretGun.Props.messageEmptyWarning.Translate(EquipmentSource.LabelCap, Caster.LabelShortCap), 3f);
 						}
-						if (turretGun.RemainingCharges == 0)
+					}
+					float a = turretGun.RemainingCharges;
+					float b = turretGun.MaxCharges;
+					int remaining = (int)(a / b * 100f);
+					if (remaining == 50 && warningticks == 0)
+					{
+						warningticks = this.verbProps.ticksBetweenBurstShots+1;
+						if (turretGun.Props.soundHalfRemaningWarning != null && playerpawn)
 						{
-							if (turretGun.Props.soundEmptyWarning != null && playerpawn)
-							{
-								turretGun.Props.soundEmptyWarning.PlayOneShot(new TargetInfo(this.Caster.Position, this.Caster.Map, false));
-							}
-							if (!turretGun.Props.messageEmptyWarning.NullOrEmpty() && playerpawn)
-							{
-								MoteMaker.ThrowText(Caster.Position.ToVector3(), Caster.Map, turretGun.Props.messageEmptyWarning.Translate(EquipmentSource.LabelCap, Caster.LabelShortCap), 3f);
-							}
+							turretGun.Props.soundHalfRemaningWarning.PlayOneShot(new TargetInfo(this.Caster.Position, this.Caster.Map, false));
 						}
-						float a = turretGun.RemainingCharges;
-						float b = turretGun.MaxCharges;
-						int remaining = (int)(a / b * 100f);
-						if (remaining == 50 && warningticks == 0)
+						if (!turretGun.Props.messageHalfRemaningWarning.NullOrEmpty() && playerpawn)
 						{
-							warningticks = this.verbProps.ticksBetweenBurstShots + 1;
-							if (turretGun.Props.soundHalfRemaningWarning != null && playerpawn)
-							{
-								turretGun.Props.soundHalfRemaningWarning.PlayOneShot(new TargetInfo(this.Caster.Position, this.Caster.Map, false));
-							}
-							if (!turretGun.Props.messageHalfRemaningWarning.NullOrEmpty() && playerpawn)
-							{
-								MoteMaker.ThrowText(Caster.Position.ToVector3(), Caster.Map, turretGun.Props.messageHalfRemaningWarning.Translate(EquipmentSource.LabelCap, Caster.LabelShortCap, remaining), 3f);
-							}
+							MoteMaker.ThrowText(Caster.Position.ToVector3(), Caster.Map, turretGun.Props.messageHalfRemaningWarning.Translate(EquipmentSource.LabelCap, Caster.LabelShortCap, remaining), 3f);
 						}
-						if (remaining == 25 && warningticks == 0)
+					}
+					if (remaining == 25 && warningticks == 0)
+					{
+						warningticks = this.verbProps.ticksBetweenBurstShots + 1;
+						if (turretGun.Props.soundQuaterRemaningWarning != null && playerpawn)
 						{
-							warningticks = this.verbProps.ticksBetweenBurstShots + 1;
-							if (turretGun.Props.soundQuaterRemaningWarning != null && playerpawn)
-							{
-								turretGun.Props.soundQuaterRemaningWarning.PlayOneShot(new TargetInfo(this.Caster.Position, this.Caster.Map, false));
-							}
-							if (!turretGun.Props.messageQuaterRemaningWarning.NullOrEmpty() && playerpawn)
-							{
-								MoteMaker.ThrowText(Caster.Position.ToVector3(), Caster.Map, turretGun.Props.messageQuaterRemaningWarning.Translate(EquipmentSource.LabelCap, Caster.LabelShortCap, remaining), 3f);
-							}
+							turretGun.Props.soundQuaterRemaningWarning.PlayOneShot(new TargetInfo(this.Caster.Position, this.Caster.Map, false));
+						}
+						if (!turretGun.Props.messageQuaterRemaningWarning.NullOrEmpty() && playerpawn)
+						{
+							MoteMaker.ThrowText(Caster.Position.ToVector3(), Caster.Map, turretGun.Props.messageQuaterRemaningWarning.Translate(EquipmentSource.LabelCap, Caster.LabelShortCap, remaining), 3f);
+						}
+					}
+					muzzlePos = MuzzlePosition(this.Caster, this.currentTarget, offset);
+				}
+			}
+			else
+			{
+				Log.Error(Caster+"'s "+this +" has no Comp_Turret");
+				return false;
+			}
+			Thing launcher = this.Caster;
+			Thing equipment = base.EquipmentSource;
+			Vector3 drawPos = this.Caster.DrawPos;
+			Projectile projectile2 = (Projectile)GenSpawn.Spawn(projectile, shootLine.Source, this.Caster.Map, WipeMode.Vanish);
+			if (this.verbProps.forcedMissRadius > 0.5f)
+			{
+				float num = VerbUtility.CalculateAdjustedForcedMiss(this.verbProps.forcedMissRadius, this.currentTarget.Cell - this.Caster.Position);
+				if (num > 0.5f)
+				{
+					int max = GenRadial.NumCellsInRadius(num);
+					Rand.PushState();
+					int num2 = Rand.Range(0, max);
+					Rand.PopState();
+					if (num2 > 0)
+					{
+						IntVec3 c = this.currentTarget.Cell + GenRadial.RadialPattern[num2];
+						this.ThrowDebugText("ToRadius");
+						this.ThrowDebugText("Rad\nDest", c);
+						ProjectileHitFlags projectileHitFlags = ProjectileHitFlags.NonTargetWorld;
+						Rand.PushState();
+						if (Rand.Chance(0.5f))
+						{
+							projectileHitFlags = ProjectileHitFlags.All;
+						}
+						Rand.PopState();
+						if (!this.canHitNonTargetPawnsNow)
+						{
+							projectileHitFlags &= ~ProjectileHitFlags.NonTargetPawns;
 						}
 						muzzlePos = MuzzlePosition(this.Caster, this.currentTarget, offset);
-					}
-				}
-				else
-				{
-					Log.Error(Caster + "'s " + this + " has no Comp_Turret");
-					return false;
-				}
-				Thing launcher = this.Caster;
-				Thing equipment = base.EquipmentSource;
-				Vector3 drawPos = this.Caster.DrawPos;
-				Projectile projectile2 = (Projectile)GenSpawn.Spawn(projectile, shootLine.Source, this.Caster.Map, WipeMode.Vanish);
-				if (this.verbProps.forcedMissRadius > 0.5f)
-				{
-					float num = VerbUtility.CalculateAdjustedForcedMiss(this.verbProps.forcedMissRadius, this.currentTarget.Cell - this.Caster.Position);
-					if (num > 0.5f)
-					{
-						int max = GenRadial.NumCellsInRadius(num);
-						Rand.PushState();
-						int num2 = Rand.Range(0, max);
-						Rand.PopState();
-						if (num2 > 0)
+						projectile2.Launch(launcher, muzzlePos, c, this.currentTarget, projectileHitFlags, equipment, null);
+						if (this.CasterIsPawn)
 						{
-							IntVec3 c = this.currentTarget.Cell + GenRadial.RadialPattern[num2];
-							this.ThrowDebugText("ToRadius");
-							this.ThrowDebugText("Rad\nDest", c);
-							ProjectileHitFlags projectileHitFlags = ProjectileHitFlags.NonTargetWorld;
-							Rand.PushState();
-							if (Rand.Chance(0.5f))
-							{
-								projectileHitFlags = ProjectileHitFlags.All;
-							}
-							Rand.PopState();
-							if (!this.canHitNonTargetPawnsNow)
-							{
-								projectileHitFlags &= ~ProjectileHitFlags.NonTargetPawns;
-							}
-							muzzlePos = MuzzlePosition(this.Caster, this.currentTarget, offset);
-							projectile2.Launch(launcher, muzzlePos, c, this.currentTarget, projectileHitFlags, equipment, null);
-							if (this.CasterIsPawn)
-							{
-								this.CasterPawn.records.Increment(RecordDefOf.ShotsFired);
-							}
-							return true;
+							this.CasterPawn.records.Increment(RecordDefOf.ShotsFired);
 						}
+						return true;
 					}
 				}
-				ShotReport shotReport = ShotReport.HitReportFor(this.Caster, this, this.currentTarget);
-				Thing randomCoverToMissInto = shotReport.GetRandomCoverToMissInto();
-				ThingDef targetCoverDef = (randomCoverToMissInto != null) ? randomCoverToMissInto.def : null;
+			}
+			ShotReport shotReport = ShotReport.HitReportFor(this.Caster, this, this.currentTarget);
+			Thing randomCoverToMissInto = shotReport.GetRandomCoverToMissInto();
+			ThingDef targetCoverDef = (randomCoverToMissInto != null) ? randomCoverToMissInto.def : null;
+			Rand.PushState();
+			bool f = !Rand.Chance(shotReport.AimOnTargetChance_IgnoringPosture);
+			Rand.PopState();
+			if (f)
+			{
+				shootLine.ChangeDestToMissWild(shotReport.AimOnTargetChance_StandardTarget);
+				this.ThrowDebugText("ToWild" + (this.canHitNonTargetPawnsNow ? "\nchntp" : ""));
+				this.ThrowDebugText("Wild\nDest", shootLine.Dest);
+				ProjectileHitFlags projectileHitFlags2 = ProjectileHitFlags.NonTargetWorld;
 				Rand.PushState();
-				bool f = !Rand.Chance(shotReport.AimOnTargetChance_IgnoringPosture);
+				if (Rand.Chance(0.5f) && this.canHitNonTargetPawnsNow)
+				{
+					projectileHitFlags2 |= ProjectileHitFlags.NonTargetPawns;
+				}
 				Rand.PopState();
-				if (f)
-				{
-					shootLine.ChangeDestToMissWild(shotReport.AimOnTargetChance_StandardTarget);
-					this.ThrowDebugText("ToWild" + (this.canHitNonTargetPawnsNow ? "\nchntp" : ""));
-					this.ThrowDebugText("Wild\nDest", shootLine.Dest);
-					ProjectileHitFlags projectileHitFlags2 = ProjectileHitFlags.NonTargetWorld;
-					Rand.PushState();
-					if (Rand.Chance(0.5f) && this.canHitNonTargetPawnsNow)
-					{
-						projectileHitFlags2 |= ProjectileHitFlags.NonTargetPawns;
-					}
-					Rand.PopState();
-					muzzlePos = MuzzlePosition(this.Caster, this.currentTarget, offset);
-					projectile2.Launch(launcher, muzzlePos, shootLine.Dest, this.currentTarget, projectileHitFlags2, equipment, targetCoverDef);
-					if (this.CasterIsPawn)
-					{
-						this.CasterPawn.records.Increment(RecordDefOf.ShotsFired);
-					}
-					return true;
-				}
-				Rand.PushState();
-				bool f2 = !Rand.Chance(shotReport.PassCoverChance);
-				Rand.PopState();
-				if (this.currentTarget.Thing != null && this.currentTarget.Thing.def.category == ThingCategory.Pawn && f2)
-				{
-					this.ThrowDebugText("ToCover" + (this.canHitNonTargetPawnsNow ? "\nchntp" : ""));
-					this.ThrowDebugText("Cover\nDest", randomCoverToMissInto.Position);
-					ProjectileHitFlags projectileHitFlags3 = ProjectileHitFlags.NonTargetWorld;
-					if (this.canHitNonTargetPawnsNow)
-					{
-						projectileHitFlags3 |= ProjectileHitFlags.NonTargetPawns;
-					}
-					muzzlePos = MuzzlePosition(this.Caster, this.currentTarget, offset);
-					projectile2.Launch(launcher, muzzlePos, randomCoverToMissInto, this.currentTarget, projectileHitFlags3, equipment, targetCoverDef);
-					if (this.CasterIsPawn)
-					{
-						this.CasterPawn.records.Increment(RecordDefOf.ShotsFired);
-					}
-					return true;
-				}
-				ProjectileHitFlags projectileHitFlags4 = ProjectileHitFlags.IntendedTarget;
-				if (this.canHitNonTargetPawnsNow)
-				{
-					projectileHitFlags4 |= ProjectileHitFlags.NonTargetPawns;
-				}
-				if (!this.currentTarget.HasThing || this.currentTarget.Thing.def.Fillage == FillCategory.Full)
-				{
-					projectileHitFlags4 |= ProjectileHitFlags.NonTargetWorld;
-				}
-				this.ThrowDebugText("ToHit" + (this.canHitNonTargetPawnsNow ? "\nchntp" : ""));
 				muzzlePos = MuzzlePosition(this.Caster, this.currentTarget, offset);
-				if (this.currentTarget.Thing != null)
-				{
-					projectile2.Launch(launcher, muzzlePos, this.currentTarget, this.currentTarget, projectileHitFlags4, equipment, targetCoverDef);
-					this.ThrowDebugText("Hit\nDest", this.currentTarget.Cell);
-				}
-				else
-				{
-					projectile2.Launch(launcher, muzzlePos, shootLine.Dest, this.currentTarget, projectileHitFlags4, equipment, targetCoverDef);
-					this.ThrowDebugText("Hit\nDest", shootLine.Dest);
-				}
-
+				projectile2.Launch(launcher, muzzlePos, shootLine.Dest, this.currentTarget, projectileHitFlags2, equipment, targetCoverDef);
 				if (this.CasterIsPawn)
 				{
 					this.CasterPawn.records.Increment(RecordDefOf.ShotsFired);
 				}
 				return true;
 			}
-			return false;
+			Rand.PushState();
+			bool f2 = !Rand.Chance(shotReport.PassCoverChance);
+			Rand.PopState();
+			if (this.currentTarget.Thing != null && this.currentTarget.Thing.def.category == ThingCategory.Pawn && f2)
+			{
+				this.ThrowDebugText("ToCover" + (this.canHitNonTargetPawnsNow ? "\nchntp" : ""));
+				this.ThrowDebugText("Cover\nDest", randomCoverToMissInto.Position);
+				ProjectileHitFlags projectileHitFlags3 = ProjectileHitFlags.NonTargetWorld;
+				if (this.canHitNonTargetPawnsNow)
+				{
+					projectileHitFlags3 |= ProjectileHitFlags.NonTargetPawns;
+				}
+				muzzlePos = MuzzlePosition(this.Caster, this.currentTarget, offset);
+				projectile2.Launch(launcher, muzzlePos, randomCoverToMissInto, this.currentTarget, projectileHitFlags3, equipment, targetCoverDef);
+				if (this.CasterIsPawn)
+				{
+					this.CasterPawn.records.Increment(RecordDefOf.ShotsFired);
+				}
+				return true;
+			}
+			ProjectileHitFlags projectileHitFlags4 = ProjectileHitFlags.IntendedTarget;
+			if (this.canHitNonTargetPawnsNow)
+			{
+				projectileHitFlags4 |= ProjectileHitFlags.NonTargetPawns;
+			}
+			if (!this.currentTarget.HasThing || this.currentTarget.Thing.def.Fillage == FillCategory.Full)
+			{
+				projectileHitFlags4 |= ProjectileHitFlags.NonTargetWorld;
+			}
+			this.ThrowDebugText("ToHit" + (this.canHitNonTargetPawnsNow ? "\nchntp" : ""));
+			muzzlePos = MuzzlePosition(this.Caster, this.currentTarget, offset);
+			if (this.currentTarget.Thing != null)
+			{
+				projectile2.Launch(launcher, muzzlePos, this.currentTarget, this.currentTarget, projectileHitFlags4, equipment, targetCoverDef);
+				this.ThrowDebugText("Hit\nDest", this.currentTarget.Cell);
+			}
+			else
+			{
+				projectile2.Launch(launcher, muzzlePos, shootLine.Dest, this.currentTarget, projectileHitFlags4, equipment, targetCoverDef);
+				this.ThrowDebugText("Hit\nDest", shootLine.Dest);
+			}
+
+			if (this.CasterIsPawn)
+			{
+				this.CasterPawn.records.Increment(RecordDefOf.ShotsFired);
+			}
+			return true;
 		}
 
 		public override bool TryStartCastOn(LocalTargetInfo castTarg, LocalTargetInfo destTarg, bool surpriseAttack = false, bool canHitNonTargetPawns = true)

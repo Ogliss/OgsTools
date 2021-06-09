@@ -18,11 +18,11 @@ namespace ExtraApparelLayers
             var harmony = new Harmony("com.ogliss.rimworld.mod.ExtraApparelLayers");
             harmony.PatchAll(Assembly.GetExecutingAssembly());
             shellApparelDefs = new List<ThingDef>();
-            shellApparelDefs = DefDatabase<ThingDef>.AllDefsListForReading.FindAll(x => x.IsApparel && LastLayerShellOrHigher(x.apparel.LastLayer, ApparelLayerDefOf.Shell));
+            shellApparelDefs = DefDatabase<ThingDef>.AllDefsListForReading.FindAll(x => x.IsApparel && LastLayerShellOrHigher(x.apparel.LastLayer, ApparelLayerDefOf.Shell) && !x.apparel.LastLayer.IsUtilityLayer);
         }
         public static bool LastLayerShellOrHigher(ApparelLayerDef LastLayer, ApparelLayerDef Shell)
         {
-            return LastLayer.drawOrder >= Shell.drawOrder;
+            return LastLayer.drawOrder >= Shell.drawOrder && LastLayer.drawOrder < ApparelLayerDefOf.Overhead.drawOrder && !(LastLayer.defName.Contains("Head") || LastLayer.defName.Contains("head")) && !LastLayer.IsUtilityLayer;
         }
 
         public static List<ThingDef> shellApparelDefs;

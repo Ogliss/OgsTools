@@ -35,15 +35,17 @@
     <LangVersion>8.0</LangVersion>
   </PropertyGroup>
   <ItemGroup>
-    <Compile Include="AlienRaceUtility.cs" />
-    <Compile Include="FastGetCompsExtensions.cs" />
-    <Compile Include="HarmonyPatches\Harmony_PawnRenderer_DrawEquipmentAiming_Transpiler.cs" />
-    <Compile Include="CompActivatableEffectUtil.cs" />
-    <Compile Include="HarmonyPatches\Harmony_PawnRenderer_DrawEquipmentAimingOverride_Transpiler.cs" />
-    <Compile Include="ExtentionMethodsCompOversizedWeapon.cs" />
+    <Compile Include="CompProperties_OversizedWeapon.cs" />
+    <Compile Include="Utilities\AlienRaceUtility.cs" />
+    <Compile Include="Utilities\FastGetCompsExtensions.cs" />
+    <Compile Include="Harmony\Patches\PawnRenderer_DrawEquipmentAiming_Yayo_Transpiler.cs" />
+    <Compile Include="Harmony\Patches\PawnRenderer_DrawEquipmentAiming_Vanilla_Transpiler.cs" />
+    <Compile Include="Utilities\OversizedUtil.cs" />
+    <Compile Include="Harmony\Patches\PawnRenderer_DrawEquipmentAiming_DualWield_Transpiler.cs" />
+    <Compile Include="Utilities\ExtentionMethodsCompOversizedWeapon.cs" />
     <Compile Include="CompOversizedWeapon.cs" />
-    <Compile Include="HarmonyPatches\HarmonyCompOversizedWeapon.cs" />
-    <Compile Include="HarmonyPatches\Pawn_EquipmentTracker_Notify_EquipmentAdded_ActivatableEffect_Patch.cs" />
+    <Compile Include="Harmony\HarmonyPatches.cs" />
+    <Compile Include="Harmony\Patches\Pawn_EquipmentTracker_Notify_EquipmentAdded_ActivatableEffect_Patch.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>
@@ -77,6 +79,7 @@
       <Private>False</Private>
     </Reference>
   </ItemGroup>
+  <ItemGroup />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
        Other similar extension points exist, see Microsoft.Common.targets.

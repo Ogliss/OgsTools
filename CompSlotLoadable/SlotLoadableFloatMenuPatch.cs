@@ -15,7 +15,7 @@ namespace OgsCompSlotLoadable
         {
             var FloatMenus = new List<KeyValuePair<_Condition, Func<Vector3, Pawn, Thing, List<FloatMenuOption>>>>();
 
-            var curCondition = new _Condition(_ConditionType.ThingHasComp, typeof(CompSlottedBonus));
+            var curCondition = new _Condition(_ConditionType.HasDefExt, typeof(SlottedBonusExtension));
 
             List<FloatMenuOption> CurFunc(Vector3 clickPos, Pawn pawn, Thing curThing)
             {
@@ -97,7 +97,7 @@ namespace OgsCompSlotLoadable
     {
         IsType,
         IsTypeStringMatch,
-        ThingHasComp,
+        HasDefExt,
         HediffHasComp
     }
 
@@ -144,11 +144,9 @@ namespace OgsCompSlotLoadable
                     if (toCheck.GetType().ToString() == (string)toCheck)
                         return true;
                     break;
-                case _ConditionType.ThingHasComp:
+                case _ConditionType.HasDefExt:
                     var dataType = Data;
-                    if (toCheck is ThingWithComps t && t?.AllComps?.Count > 0 && Enumerable.Any(t.AllComps, comp =>
-                            comp?.props?.compClass?.ToString() == dataType?.ToString() ||
-                            comp?.props?.compClass?.BaseType?.ToString() == dataType?.ToString()))
+                    if (toCheck is Thing t && t.def.HasModExtension<SlottedBonusExtension>())
                         return true;
                     break;
             }

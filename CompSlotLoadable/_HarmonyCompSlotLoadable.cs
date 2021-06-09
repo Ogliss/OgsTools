@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using HarmonyLib;
+using OgsCompSlotLoadable.ExtentionMethods;
 using RimWorld;
 using UnityEngine;
 using Verse;
@@ -52,17 +53,18 @@ namespace OgsCompSlotLoadable
 
         public static void PrimaryVerb_PostFix(CompEquippable __instance, ref Verb __result)
         {
-            if (__instance.parent.TryGetComp<OgsCompSlotLoadable.CompSlotLoadable>() != null)
+            CompSlotLoadable slotLoadable = __instance.parent.TryGetCompFast<OgsCompSlotLoadable.CompSlotLoadable>();
+            if (slotLoadable != null)
             {
 
-                foreach (SlotLoadable slot in __instance.parent.TryGetComp<OgsCompSlotLoadable.CompSlotLoadable>().Slots)
+                foreach (SlotLoadable slot in slotLoadable.Slots)
                 {
                     if (slot.SlotOccupant!=null)
                     {
-                        CompSlottedBonus bonus = slot.SlotOccupant.TryGetComp<CompSlottedBonus>();
-                        if (bonus.Props.verbReplacer!=null)
+                        SlottedBonusExtension bonus = slot.SlotOccupant.def.GetModExtension<SlottedBonusExtension>();
+                        if (bonus.verbReplacer!=null)
                         {
-                            __result.verbProps = bonus.Props.verbReplacer;
+                            __result.verbProps = bonus.verbReplacer;
                             return;
                         }
                     }
@@ -111,24 +113,23 @@ namespace OgsCompSlotLoadable
                         foreach (var slot in compSlotLoadable.Slots)
                             if (!slot.IsEmpty())
                             {
-                                var slotBonus = slot.SlotOccupant.TryGetComp<OgsCompSlotLoadable.CompSlottedBonus>();
+                                var slotBonus = slot.SlotOccupant.def.GetModExtension<SlottedBonusExtension>();
                                 if (slotBonus != null)
-                                    if (slotBonus.Props != null)
+                                {
+                                    var defensiveHealChance = slotBonus.defensiveHealChance;
+                                    if (defensiveHealChance != null)
                                     {
-                                        var defensiveHealChance = slotBonus.Props.defensiveHealChance;
-                                        if (defensiveHealChance != null)
+                                        //Log.Message("defensiveHealingCalled");
+                                        var randValue = Rand.Value;
+                                        //Log.Message("randValue = " + randValue.ToString());
+                                        if (randValue <= defensiveHealChance.chance)
                                         {
-                                            //Log.Message("defensiveHealingCalled");
-                                            var randValue = Rand.Value;
-                                            //Log.Message("randValue = " + randValue.ToString());
-                                            if (randValue <= defensiveHealChance.chance)
-                                            {
-                                                MoteMaker.ThrowText(__instance.DrawPos, __instance.Map,
-                                                    "Heal Chance: Success", 6f);
-                                                ApplyHealing(__instance, defensiveHealChance.woundLimit);
-                                            }
+                                            MoteMaker.ThrowText(__instance.DrawPos, __instance.Map,
+                                                "Heal Chance: Success", 6f);
+                                            ApplyHealing(__instance, defensiveHealChance.woundLimit);
                                         }
                                     }
+                                }
                             }
                 }
             }
@@ -234,14 +235,14 @@ namespace OgsCompSlotLoadable
                             foreach (var slot in statSlots)
                             {
                                 //Log.Message("5");
-                                var slotBonus = slot.SlotOccupant.TryGetComp<OgsCompSlotLoadable.CompSlottedBonus>();
+                                var slotBonus = slot.SlotOccupant.def.GetModExtension<SlottedBonusExtension>();
                                 if (slotBonus != null)
                                 {
                                     //Log.Message("6");
                                     var superClass = __instance.GetType().BaseType;
-                                    if (slotBonus.Props.projectileReplacer != null)
+                                    if (slotBonus.projectileReplacer != null)
                                     {
-                                        __result = slotBonus.Props.projectileReplacer;
+                                        __result = slotBonus.projectileReplacer;
                                     }
                                 }
                             }
@@ -274,12 +275,12 @@ namespace OgsCompSlotLoadable
                             foreach (var slot in statSlots)
                             {
                                 //Log.Message("5");
-                                var slotBonus = slot.SlotOccupant.TryGetComp<OgsCompSlotLoadable.CompSlottedBonus>();
+                                var slotBonus = slot.SlotOccupant.def.GetModExtension<SlottedBonusExtension>();
                                 if (slotBonus != null)
                                 {
                                     //Log.Message("6");
                                     var superClass = __instance.GetType().BaseType;
-                                    if (slotBonus.Props.damageDef != null)
+                                    if (slotBonus.damageDef != null)
                                     {
                                         //Log.Message("7");
                                         var num = __instance.verbProps.AdjustedMeleeDamageAmount(__instance,
@@ -317,7 +318,7 @@ namespace OgsCompSlotLoadable
                                         //Log.Message("12");
                                         var newdamage = GenMath.RoundRandom(num);
 //                                        Log.Message("applying damage "+newdamage+" out of "+num);
-                                        var damageInfo = new DamageInfo(slotBonus.Props.damageDef, newdamage, slotBonus.Props.armorPenetration, -1f,
+                                        var damageInfo = new DamageInfo(slotBonus.damageDef, newdamage, slotBonus.armorPenetration, -1f,
                                             caster, null, def2);
                                         damageInfo.SetBodyRegion(BodyPartHeight.Undefined, BodyPartDepth.Outside);
                                         damageInfo.SetWeaponBodyPartGroup(weaponBodyPartGroup);
@@ -329,7 +330,7 @@ namespace OgsCompSlotLoadable
 
                                         __result = newList.AsEnumerable();
                                     }
-                                    var vampiricEffect = slotBonus.Props.vampiricHealChance;
+                                    var vampiricEffect = slotBonus.vampiricHealChance;
                                     if (vampiricEffect != null)
                                     {
                                         //Log.Message("vampiricHealingCalled");
@@ -356,7 +357,7 @@ namespace OgsCompSlotLoadable
             var c = IntVec3.FromVector3(clickPos);
 
             var slotLoadable =
-                pawn.equipment.AllEquipmentListForReading.FirstOrDefault(x => x.TryGetComp<OgsCompSlotLoadable.CompSlotLoadable>() != null);
+                pawn.equipment.AllEquipmentListForReading.FirstOrDefault(x => x.TryGetCompFast<OgsCompSlotLoadable.CompSlotLoadable>() != null);
             if (slotLoadable != null)
             {
                 CompSlotLoadable compSlotLoadable = slotLoadable.GetComp<OgsCompSlotLoadable.CompSlotLoadable>();
@@ -425,12 +426,12 @@ namespace OgsCompSlotLoadable
             __result += retValue;
         }
 
-        public static void Get_Graphic_PostFix(Thing __instance, ref Graphic __result)
+        public static void Get_Graphic_PostFix(Thing __instance, ref Graphic ___graphicInt, ref Graphic __result)
         {
             if (__instance is ThingWithComps thingWithComps)
             {
                 //Log.Message("3");
-                var CompSlotLoadable = thingWithComps.GetComp<OgsCompSlotLoadable.CompSlotLoadable>();
+                var CompSlotLoadable = thingWithComps.TryGetCompFast<OgsCompSlotLoadable.CompSlotLoadable>();
                 if (CompSlotLoadable != null)
                 {
                     //ThingComp activatableEffect = thingWithComps.AllComps.FirstOrDefault<ThingComp>((ThingComp y) => y.GetType().ToString() == "CompActivatableEffect.CompActivatableEffect");
@@ -439,7 +440,7 @@ namespace OgsCompSlotLoadable
                     if (slot != null)
                         if (!slot.IsEmpty())
                         {
-                            var slotBonus = slot.SlotOccupant.TryGetComp<OgsCompSlotLoadable.CompSlottedBonus>();
+                            var slotBonus = slot.SlotOccupant.def.GetModExtension<SlottedBonusExtension>();
                             if (slotBonus != null)
                             {
                                 //if (activatableEffect != null)
@@ -449,14 +450,14 @@ namespace OgsCompSlotLoadable
                                 //}
                                 //else
                                 //{
-                                var tempGraphic = (Graphic) AccessTools.Field(typeof(Thing), "graphicInt")
-                                    .GetValue(__instance);
+                                var tempGraphic = ___graphicInt;
+                            //    var tempGraphic = (Graphic) AccessTools.Field(typeof(Thing), "graphicInt").GetValue(__instance);
                                 if (tempGraphic != null)
                                     if (tempGraphic.Shader != null)
                                     {
                                         tempGraphic = tempGraphic.GetColoredVersion(tempGraphic.Shader,
-                                            slotBonus.Props.color,
-                                            slotBonus.Props.color); //slot.SlotOccupant.DrawColor;
+                                            slotBonus.color,
+                                            slotBonus.color); //slot.SlotOccupant.DrawColor;
                                         __result = tempGraphic;
                                         //Log.Message("SlotLoadableDraw");
                                     }
@@ -537,7 +538,7 @@ namespace OgsCompSlotLoadable
                 if (thingWithComps != null)
                 {
                     //Log.Message("3");
-                    var CompSlotLoadable = thingWithComps.GetComp<OgsCompSlotLoadable.CompSlotLoadable>();
+                    var CompSlotLoadable = thingWithComps.TryGetCompFast<OgsCompSlotLoadable.CompSlotLoadable>();
                     if (CompSlotLoadable != null)
                         if (GizmoGetter(CompSlotLoadable).Count() > 0)
                             if (__instance != null)

@@ -16,38 +16,41 @@ using OgsCompOversizedWeapon.ExtentionMethods;
 namespace OgsCompOversizedWeapon
 {
 	[HarmonyPatch(typeof(PawnRenderer), "DrawEquipmentAiming")]
-	public static class Harmony_PawnRenderer_DrawEquipmentAiming_Transpiler
+    public static class PawnRenderer_DrawEquipmentAiming_Vanilla_Transpiler
 	{
 		public static bool enabled_CombatExtended = ModsConfig.ActiveModsInLoadOrder.Any((ModMetaData m) => m.PackageIdPlayerFacing == "CETeam.CombatExtended");
-		internal static IEnumerable<CodeInstruction> Transpiler(IEnumerable<CodeInstruction> instructions)
+		public static bool enabled_YayosCombat = ModsConfig.ActiveModsInLoadOrder.Any((ModMetaData m) => m.PackageIdPlayerFacing == "com.yayo.combat3");
+		public static IEnumerable<CodeInstruction> Transpiler(IEnumerable<CodeInstruction> instructions)
 		{
 			List<CodeInstruction> list = instructions.ToList<CodeInstruction>();
-            if (enabled_CombatExtended)
+
+			for (int i = 0; i < list.Count; i++)
 			{
-			//	list[list.Count - 2].operand = AccessTools.Method(typeof(Harmony_PawnRenderer_DrawEquipmentAiming_Transpiler), "DrawMeshModified", null, null);
-			}
-            else
-			{
-				list[list.Count - 2].operand = AccessTools.Method(typeof(Harmony_PawnRenderer_DrawEquipmentAiming_Transpiler), "DrawMeshModified", null, null);
-				list.InsertRange(list.Count - 2, new CodeInstruction[]
+				CodeInstruction instruction = list[i];
+				if (instruction.OperandIs(AccessTools.Method(type: typeof(Graphics), name: nameof(Graphics.DrawMesh), parameters: new[] { typeof(Mesh), typeof(Vector3), typeof(Quaternion), typeof(Material), typeof(Int32) })))
 				{
-				new CodeInstruction(OpCodes.Ldarg_1, null),
-				new CodeInstruction(OpCodes.Ldarg_3, null)
-				});
+					yield return new CodeInstruction(OpCodes.Ldarg_1);
+					yield return new CodeInstruction(OpCodes.Ldarg_3);
+					instruction = new CodeInstruction(OpCodes.Call, AccessTools.Method(typeof(PawnRenderer_DrawEquipmentAiming_Vanilla_Transpiler), "DrawMeshModified", null, null));
+					if (Prefs.DevMode) Log.Message("Oversized: DrawEquipmentAiming_Vanilla_Transpiled");
+				}
+				yield return instruction;
 			}
-			return list;
 		}
 
 		public static void DrawMeshModified(Mesh mesh, Vector3 position, Quaternion rotation, Material mat, int layer, Thing eq, float aimAngle)
 		{
-
+            if (enabled_YayosCombat)
+            {
+				Log.Message("Yayos Oversized");
+            }
 			CompOversizedWeapon compOversized = eq.TryGetCompFast<CompOversizedWeapon>();
 			CompEquippable equippable = eq.TryGetCompFast<CompEquippable>();
 			Pawn pawn = equippable.PrimaryVerb.CasterPawn;
 			if (pawn == null) return;
 			if (compOversized == null || (compOversized != null && compOversized.CompDeflectorIsAnimatingNow) || pawn == null || eq == null)
 			{
-				draw(mesh, default(Matrix4x4), mat, layer, eq, pawn, position, rotation);
+				OversizedUtil.Draw(mesh, default(Matrix4x4), mat, layer, eq, pawn, position, rotation);
 				return;
 			}
 			ThingWithComps thingWithComps = eq as ThingWithComps;
@@ -60,12 +63,12 @@ namespace OgsCompOversizedWeapon
 			{
 				localTargetInfo = stance_Busy.focusTarg;
 			}
-			bool Aiming = Harmony_PawnRenderer_DrawEquipmentAiming_Transpiler.CurrentlyAiming(stance_Busy);
+			bool Aiming = PawnRenderer_DrawEquipmentAiming_Vanilla_Transpiler.CurrentlyAiming(stance_Busy);
 			Vector3 offsetMainHand = default(Vector3);
 			Vector3 offsetOffHand = default(Vector3);
             if (compOversized.Props != null)
 			{
-				Harmony_PawnRenderer_DrawEquipmentAiming_Transpiler.SetAnglesAndOffsets(eq, thingWithComps, aimAngle, pawn, ref offsetMainHand, ref offsetOffHand, ref offHandAngle, ref mainHandAngle, Aiming, DualWeapon && Aiming);
+				PawnRenderer_DrawEquipmentAiming_Vanilla_Transpiler.SetAnglesAndOffsets(eq, thingWithComps, aimAngle, pawn, ref offsetMainHand, ref offsetOffHand, ref offHandAngle, ref mainHandAngle, Aiming, DualWeapon && Aiming);
 
 			}
 			if (DualWeapon)
@@ -73,13 +76,13 @@ namespace OgsCompOversizedWeapon
 
 				Vector3 drawLoc = position + offsetMainHand;
 				compOversized.renderPos = drawLoc;
-				Harmony_PawnRenderer_DrawEquipmentAiming_Transpiler.DrawEquipmentAimingOverride(mesh, eq, drawLoc, offHandAngle, compOversized, equippable, pawn);
+				PawnRenderer_DrawEquipmentAiming_Vanilla_Transpiler.DrawEquipmentAimingOverride(mesh, eq, drawLoc, offHandAngle, compOversized, equippable, pawn);
 
 			}
 
 			if (Aiming && localTargetInfo != null)
 			{
-				mainHandAngle = Harmony_PawnRenderer_DrawEquipmentAiming_Transpiler.GetAimingRotation(pawn, localTargetInfo);
+				mainHandAngle = PawnRenderer_DrawEquipmentAiming_Vanilla_Transpiler.GetAimingRotation(pawn, localTargetInfo);
 				offsetMainHand.y += 0.1f;
 				Vector3 drawLoc2 = pawn.DrawPos + new Vector3(0f, 0f, 0.4f).RotatedBy(mainHandAngle) + (DualWeapon ? offsetOffHand : offsetMainHand);
 				if (DualWeapon)
@@ -90,7 +93,7 @@ namespace OgsCompOversizedWeapon
 				{
 					compOversized.renderPos = drawLoc2;
 				}
-				Harmony_PawnRenderer_DrawEquipmentAiming_Transpiler.DrawEquipmentAimingOverride(mesh, thingWithComps, drawLoc2, (DualWeapon ? mainHandAngle : aimAngle), compOversized, equippable, pawn, DualWeapon);
+				PawnRenderer_DrawEquipmentAiming_Vanilla_Transpiler.DrawEquipmentAimingOverride(mesh, thingWithComps, drawLoc2, (DualWeapon ? mainHandAngle : aimAngle), compOversized, equippable, pawn, DualWeapon);
 			}
 			else
 			{
@@ -103,83 +106,11 @@ namespace OgsCompOversizedWeapon
 				{
 					compOversized.renderPos = drawLoc2;
 				}
-				Harmony_PawnRenderer_DrawEquipmentAiming_Transpiler.DrawEquipmentAimingOverride(mesh, thingWithComps,  drawLoc2, (DualWeapon ? mainHandAngle : aimAngle), compOversized, equippable, pawn, false);
+				PawnRenderer_DrawEquipmentAiming_Vanilla_Transpiler.DrawEquipmentAimingOverride(mesh, thingWithComps,  drawLoc2, (DualWeapon ? mainHandAngle : aimAngle), compOversized, equippable, pawn, false);
 			}
 
 		}
-		
-		public static bool DrawMeshModifiedCE(Mesh mesh, Vector3 position, Quaternion rotation, Material mat, int layer, Thing eq, float aimAngle)
-		{
 
-			CompOversizedWeapon compOversized = eq.TryGetCompFast<CompOversizedWeapon>();
-			CompEquippable equippable = eq.TryGetCompFast<CompEquippable>();
-			Pawn pawn = equippable.PrimaryVerb.CasterPawn;
-			if (pawn == null) return true;
-			if (compOversized == null || (compOversized != null && compOversized.CompDeflectorIsAnimatingNow) || pawn == null || eq == null)
-			{
-				Graphics.DrawMesh(mesh, position, rotation, mat, layer);
-				return true;
-			}
-			ThingWithComps thingWithComps = eq as ThingWithComps;
-			bool DualWeapon = compOversized.Props != null && compOversized.Props.isDualWeapon;
-			float offHandAngle = aimAngle;
-			float mainHandAngle = aimAngle;
-			Stance_Busy stance_Busy = pawn.stances.curStance as Stance_Busy;
-			LocalTargetInfo localTargetInfo = null;
-			if (stance_Busy != null && !stance_Busy.neverAimWeapon)
-			{
-				localTargetInfo = stance_Busy.focusTarg;
-			}
-			bool Aiming = Harmony_PawnRenderer_DrawEquipmentAiming_Transpiler.CurrentlyAiming(stance_Busy);
-			Vector3 offsetMainHand = default(Vector3);
-			Vector3 offsetOffHand = default(Vector3);
-            if (compOversized.Props != null)
-			{
-				Harmony_PawnRenderer_DrawEquipmentAiming_Transpiler.SetAnglesAndOffsets(eq, thingWithComps, aimAngle, pawn, ref offsetMainHand, ref offsetOffHand, ref offHandAngle, ref mainHandAngle, Aiming, DualWeapon && Aiming);
-
-			}
-			if (DualWeapon)
-			{
-
-				Vector3 drawLoc = position + offsetMainHand;
-				compOversized.renderPos = drawLoc;
-				Harmony_PawnRenderer_DrawEquipmentAiming_Transpiler.DrawEquipmentAimingOverride(mesh, eq, drawLoc, offHandAngle, compOversized, equippable, pawn);
-
-			}
-
-			if (Aiming && localTargetInfo != null)
-			{
-				mainHandAngle = Harmony_PawnRenderer_DrawEquipmentAiming_Transpiler.GetAimingRotation(pawn, localTargetInfo);
-				offsetMainHand.y += 0.1f;
-				Vector3 drawLoc2 = pawn.DrawPos + new Vector3(0f, 0f, 0.4f).RotatedBy(mainHandAngle) + (DualWeapon ? offsetOffHand : offsetMainHand);
-				if (DualWeapon)
-				{
-					compOversized.renderPosDual = drawLoc2;
-				}
-				else
-				{
-					compOversized.renderPos = drawLoc2;
-				}
-				Harmony_PawnRenderer_DrawEquipmentAiming_Transpiler.DrawEquipmentAimingOverride(mesh, thingWithComps, drawLoc2, (DualWeapon ? mainHandAngle : aimAngle), compOversized, equippable, pawn, DualWeapon);
-			}
-			else
-			{
-				Vector3 drawLoc2 = position + (DualWeapon ? offsetOffHand : offsetMainHand);
-				if (DualWeapon)
-				{
-					compOversized.renderPosDual = drawLoc2;
-				}
-				else
-				{
-					compOversized.renderPos = drawLoc2;
-				}
-				Harmony_PawnRenderer_DrawEquipmentAiming_Transpiler.DrawEquipmentAimingOverride(mesh, thingWithComps,  drawLoc2, (DualWeapon ? mainHandAngle : aimAngle), compOversized, equippable, pawn, false);
-			}
-			return false;
-
-		}
-
-		// Token: 0x0600007C RID: 124 RVA: 0x000060A0 File Offset: 0x000042A0
 		public static void DrawEquipmentAimingOverride(Mesh mesh, Thing eq, Vector3 drawLoc, float aimAngle, CompOversizedWeapon compOversized, CompEquippable equippable, Pawn pawn, bool offhand = false)
 		{
 			float num = aimAngle - 90f;
@@ -206,7 +137,7 @@ namespace OgsCompOversizedWeapon
 			Vector3 s;
 			if (pawn.RaceProps.Humanlike)
 			{
-				if (HarmonyCompOversizedWeapon.enabled_AlienRaces)
+				if (HarmonyPatches_OversizedWeapon.enabled_AlienRaces)
 				{
 					Vector2 v = AlienRaceUtility.AlienRacesPatch(pawn, eq);
 					float f = Mathf.Max(v.x, v.y);
@@ -236,7 +167,7 @@ namespace OgsCompOversizedWeapon
 			{
 				matSingle = eq.Graphic.MatSingle;
 			}
-			draw(mesh, matrix, matSingle, 0, eq, pawn, drawLoc, rotation);
+			OversizedUtil.Draw(mesh, matrix, matSingle, 0, eq, pawn, drawLoc, rotation);
 		}
 
 		public static float meleeXOffset = 0.4f;
@@ -247,7 +178,7 @@ namespace OgsCompOversizedWeapon
 		public static bool meleeMirrored = true;
 		public static float rangedAngle = 135f;
 		public static bool rangedMirrored = true;
-		// Token: 0x0600007D RID: 125 RVA: 0x00006190 File Offset: 0x00004390
+
 		public static void SetAnglesAndOffsets(Thing eq, ThingWithComps offHandEquip, float aimAngle, Thing thing, ref Vector3 offsetMainHand, ref Vector3 offsetOffHand, ref float mainHandAngle, ref float offHandAngle, bool mainHandAiming, bool offHandAiming)
 		{
 			CompOversizedWeapon compOversized = eq.TryGetCompFast<CompOversizedWeapon>();
@@ -259,7 +190,7 @@ namespace OgsCompOversizedWeapon
 			bool Melee = pawn != null;
 			if (Melee)
 			{
-				Melee = Harmony_PawnRenderer_DrawEquipmentAiming_Transpiler.IsMeleeWeapon(pawn.equipment.Primary);
+				Melee = PawnRenderer_DrawEquipmentAiming_Vanilla_Transpiler.IsMeleeWeapon(pawn.equipment.Primary);
 			}
 
 			bool Dual = false;
@@ -412,14 +343,7 @@ namespace OgsCompOversizedWeapon
 			}
 			return result;
 		}
-		public static void draw(Mesh mesh, Matrix4x4 matrix, Material mat, int layer, Thing eq, Pawn pawn, Vector3 position, Quaternion rotation)
-		{
-            if (matrix == default(Matrix4x4))
-            {
-				Graphics.DrawMesh(mesh, position, rotation, mat, layer);
-			}
-            else Graphics.DrawMesh(mesh, matrix, mat, layer);
-		}
+
 
 		private static float AdjustOffsetAtPeace(Thing eq, Pawn pawn, CompOversizedWeapon compOversizedWeapon, float num)
 		{

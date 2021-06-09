@@ -1,11 +1,13 @@
-﻿using System.Collections.Generic;
-using RimWorld;
+﻿using RimWorld;
+using System;
+using System.Collections.Generic;
 using UnityEngine;
 using Verse;
 
 namespace OgsCompSlotLoadable
 {
-    public class CompProperties_SlottedBonus : CompProperties
+    // OgsCompSlotLoadable.SlottedBonusExtension
+    public class SlottedBonusExtension : DefModExtension
     {
         public List<ThingDef> additionalProjectiles = new List<ThingDef>();
 
@@ -29,10 +31,5 @@ namespace OgsCompSlotLoadable
         public SlotBonusProps_VampiricEffect vampiricHealChance = null;
 
         public float weaponRangeMod = 0.0f;
-
-        public CompProperties_SlottedBonus()
-        {
-            compClass = typeof(CompSlottedBonus);
-        }
     }
 }

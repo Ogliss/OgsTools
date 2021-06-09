@@ -1,5 +1,6 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
+using OgsCompSlotLoadable.ExtentionMethods;
 using RimWorld;
 using Verse;
 
@@ -15,7 +16,7 @@ namespace OgsCompSlotLoadable
 
             if (someThing is ThingWithComps thingWithComps)
             {
-                var comp = thingWithComps.AllComps.FirstOrDefault(x => x is CompSlotLoadable);
+                var comp = thingWithComps.TryGetCompFast<CompSlotLoadable>();
                 if (comp != null)
                 {
                     var compSlotLoadable = comp as CompSlotLoadable;
@@ -49,11 +50,11 @@ namespace OgsCompSlotLoadable
         public static float DetermineSlottableStatAugment(Thing slottable, StatDef stat)
         {
             var retval = 0.0f;
-            var slotBonus = slottable.TryGetComp<CompSlottedBonus>();
+            var slotBonus = slottable.def.GetModExtension<SlottedBonusExtension>();
             if (slotBonus != null)
-                if (slotBonus.Props != null)
-                    if (slotBonus.Props.statModifiers != null && slotBonus.Props.statModifiers.Count > 0)
-                        foreach (var thisStat in slotBonus.Props.statModifiers)
+                if (slotBonus != null)
+                    if (slotBonus.statModifiers != null && slotBonus.statModifiers.Count > 0)
+                        foreach (var thisStat in slotBonus.statModifiers)
                             //Log.Message("Check for modding "+stat+"  against "+thisStat.stat);
                             if (thisStat.stat == stat)
                             {

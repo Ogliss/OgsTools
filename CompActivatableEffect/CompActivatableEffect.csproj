@@ -33,10 +33,6 @@
     <Prefer32Bit>false</Prefer32Bit>
   </PropertyGroup>
   <ItemGroup>
-    <Reference Include="1CompOversizedWeapon">
-      <HintPath>..\CompOversizedWeapon\bin\Debug\1CompOversizedWeapon.dll</HintPath>
-      <Private>False</Private>
-    </Reference>
     <Reference Include="AlienRace">
       <HintPath>..\..\..\..\..\Program Files (x86)\Steam\steamapps\workshop\content\294100\839005762\1.1\Assemblies\AlienRace.dll</HintPath>
       <Private>False</Private>
@@ -47,13 +43,13 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="AlienRaceUtility.cs" />
-    <Compile Include="CompActivatableEffectUtil.cs" />
+    <Compile Include="Utilities\AlienRaceUtility.cs" />
+    <Compile Include="Utilities\CompActivatableEffectUtil.cs" />
     <Compile Include="CompActivatableEffect.cs" />
     <Compile Include="CompProperties_ActivatableEffect.cs" />
-    <Compile Include="HarmonyCompActivatableEffect.cs" />
-    <Compile Include="Harmony_PawnRenderer_DrawEquipmentAimingOverride_Transpiler.cs" />
-    <Compile Include="Harmony_PawnRenderer_DrawEquipmentAiming_Transpiler.cs" />
+    <Compile Include="Harmony\HarmonyPatches_ActivatableEffect.cs" />
+    <Compile Include="Harmony\Patches\PawnRenderer_DrawEquipmentAiming_DualWield_Transpiler.cs" />
+    <Compile Include="Harmony\Patches\PawnRenderer_DrawEquipmentAiming_Vanilla_Transpiler.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>

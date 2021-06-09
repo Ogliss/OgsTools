@@ -10,26 +10,29 @@ using Verse;
 namespace OgsCompActivatableEffect
 {
     [StaticConstructorOnStartup]
-    public static class HarmonyCompActivatableEffect
+    public static class HarmonyPatches_ActivatableEffect
     {
         public static bool enabled_AlienRaces;
         public static bool enabled_rooloDualWield;
-        static HarmonyCompActivatableEffect()
+        public static bool enabled_YayosCombat;
+        static HarmonyPatches_ActivatableEffect()
         {
             enabled_AlienRaces = ModsConfig.ActiveModsInLoadOrder.Any((ModMetaData m) => m.PackageIdPlayerFacing == "erdelf.HumanoidAlienRaces");
             enabled_rooloDualWield = ModsConfig.ActiveModsInLoadOrder.Any((ModMetaData m) => m.PackageIdPlayerFacing == "Roolo.DualWield");
+            enabled_YayosCombat = ModsConfig.ActiveModsInLoadOrder.Any((ModMetaData m) => m.PackageIdPlayerFacing == "com.yayo.combat3");
+
 
             var harmony = new Harmony("rimworld.Ogliss.comps.activator");
             
             harmony.Patch(typeof(Pawn).GetMethod("GetGizmos"), null,
-                new HarmonyMethod(typeof(HarmonyCompActivatableEffect).GetMethod("GetGizmosPrefix")));
+                new HarmonyMethod(typeof(HarmonyPatches_ActivatableEffect).GetMethod("GetGizmosPrefix")));
 
-            MethodInfo target = AccessTools.Method(GenTypes.GetTypeInAnyAssembly("OgsCompOversizedWeapon.Harmony_PawnRenderer_DrawEquipmentAiming_Transpiler", "OgsCompOversizedWeapon"), "draw", null, null);
+            MethodInfo target = AccessTools.Method(GenTypes.GetTypeInAnyAssembly("OgsCompOversizedWeapon.OversizedUtil", "OgsCompOversizedWeapon"), "Draw", null, null);
             if (target == null)
             {
-                Log.Warning("Target: Harmony_PawnRenderer_DrawEquipmentAiming_Transpiler.draw Not found");
+                Log.Warning("Target: OversizedUtil.Draw Not found");
             }
-            MethodInfo patch = typeof(HarmonyCompActivatableEffect).GetMethod("DrawMeshModified");
+            MethodInfo patch = typeof(HarmonyPatches_ActivatableEffect).GetMethod("DrawMeshModified");
             if (patch == null)
             {
                 Log.Warning("Patch is null HarmonyCompActivatableEffect.DrawMeshModified");
@@ -48,7 +51,7 @@ namespace OgsCompActivatableEffect
                 {
                     Log.Warning("Target: DualWield.Harmony.PawnRenderer_DrawEquipmentAiming.DrawEquipmentAimingOverride Not found");
                 }
-                MethodInfo patch2 = typeof(Harmony_PawnRenderer_DrawEquipmentAimingOverride_Transpiler).GetMethod("Transpiler");
+                MethodInfo patch2 = typeof(PawnRenderer_DrawEquipmentAiming_DualWield_Transpiler).GetMethod("Transpiler");
                 if (patch2 == null && enabled_rooloDualWield)
                 {
                     Log.Warning("Patch is null Harmony_PawnRenderer_DrawEquipmentAimingOverride_Transpiler.Transpiler");
@@ -67,7 +70,7 @@ namespace OgsCompActivatableEffect
                     {
                         Log.Warning("Target: PawnRenderer.DrawEquipmentAiming Not found");
                     }
-                    MethodInfo patch3 = typeof(Harmony_PawnRenderer_DrawEquipmentAiming_Transpiler).GetMethod("Transpiler");
+                    MethodInfo patch3 = typeof(PawnRenderer_DrawEquipmentAiming_Vanilla_Transpiler).GetMethod("Transpiler");
                     if (patch3 == null)
                     {
                         Log.Warning("Patch is null Harmony_PawnRenderer_DrawEquipmentAiming_Transpiler.Transpiler");
@@ -82,13 +85,13 @@ namespace OgsCompActivatableEffect
                 }
             }
             harmony.Patch(typeof(Verb).GetMethod("TryStartCastOn", new Type[] { typeof(LocalTargetInfo), typeof(LocalTargetInfo), typeof(bool), typeof(bool) }),
-                new HarmonyMethod(typeof(HarmonyCompActivatableEffect), nameof(TryStartCastOnPrefix)), null);
+                new HarmonyMethod(typeof(HarmonyPatches_ActivatableEffect), nameof(TryStartCastOnPrefix)), null);
             harmony.Patch(typeof(Pawn).GetMethod("ExitMap"),
-                new HarmonyMethod(typeof(HarmonyCompActivatableEffect).GetMethod("ExitMap_PreFix")), null);
+                new HarmonyMethod(typeof(HarmonyPatches_ActivatableEffect).GetMethod("ExitMap_PreFix")), null);
             harmony.Patch(typeof(Pawn_EquipmentTracker).GetMethod("TryDropEquipment"),
-                new HarmonyMethod(typeof(HarmonyCompActivatableEffect).GetMethod("TryDropEquipment_PreFix")), null);
+                new HarmonyMethod(typeof(HarmonyPatches_ActivatableEffect).GetMethod("TryDropEquipment_PreFix")), null);
             harmony.Patch(typeof(Pawn_DraftController).GetMethod("set_Drafted"), null,
-                new HarmonyMethod(typeof(HarmonyCompActivatableEffect).GetMethod("set_DraftedPostFix")));
+                new HarmonyMethod(typeof(HarmonyPatches_ActivatableEffect).GetMethod("set_DraftedPostFix")));
         }
 
 
@@ -211,8 +214,8 @@ namespace OgsCompActivatableEffect
         {
             //    Log.Message("DrawMeshModified");
             ThingWithComps thingWithComps = eq as ThingWithComps;
-            CompEquippable equippable = eq.TryGetComp<CompEquippable>();
-            OgsCompOversizedWeapon.CompOversizedWeapon compOversized = thingWithComps.TryGetComp<OgsCompOversizedWeapon.CompOversizedWeapon>();
+        //    CompEquippable equippable = eq.TryGetComp<CompEquippable>();
+            var compOversized = thingWithComps.def.comps.FirstOrDefault(x=> x.compClass.Name.Contains("CompOversizedWeapon"));
             var compActivatableEffect = thingWithComps?.GetComp<CompActivatableEffect>();
             if (compActivatableEffect?.Graphic == null) return;
             if (!compActivatableEffect.IsActiveNow) return;
@@ -222,7 +225,7 @@ namespace OgsCompActivatableEffect
             {
                 if (pawn.RaceProps.Humanlike)
                 {
-                    if (HarmonyCompActivatableEffect.enabled_AlienRaces)
+                    if (HarmonyPatches_ActivatableEffect.enabled_AlienRaces)
                     {
                         Vector2 v = AlienRaceUtility.AlienRacesPatch(pawn, eq);
                         float f = Mathf.Max(v.x, v.y);
@@ -247,15 +250,11 @@ namespace OgsCompActivatableEffect
         }
         public static IEnumerable<Gizmo> GizmoGetter(OgsCompActivatableEffect.CompActivatableEffect compActivatableEffect)
         {
-            //Log.Message("5");
             if (compActivatableEffect.GizmosOnEquip)
             {
-                //Log.Message("6");
-                //Iterate EquippedGizmos
                 var enumerator = compActivatableEffect.EquippedGizmos().GetEnumerator();
                 while (enumerator.MoveNext())
                 {
-                    //Log.Message("7");
                     var current = enumerator.Current;
                     yield return current;
                 }
@@ -264,17 +263,13 @@ namespace OgsCompActivatableEffect
 
         public static void GetGizmosPrefix(Pawn __instance, ref IEnumerable<Gizmo> __result)
         {
-            //Log.Message("1");
             var pawn_EquipmentTracker = __instance.equipment;
             if (pawn_EquipmentTracker != null)
             {
-                //Log.Message("2");
-                //ThingWithComps thingWithComps = (ThingWithComps)AccessTools.Field(typeof(Pawn_EquipmentTracker), "primaryInt").GetValue(pawn_EquipmentTracker);
                 var thingWithComps = pawn_EquipmentTracker.Primary;
 
                 if (thingWithComps != null)
                 {
-                    //Log.Message("3");
                     var compActivatableEffect = thingWithComps.GetComp<OgsCompActivatableEffect.CompActivatableEffect>();
                     if (compActivatableEffect != null)
                         if (__instance != null)

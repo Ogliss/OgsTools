@@ -34,10 +34,10 @@
   </PropertyGroup>
   <ItemGroup>
     <Compile Include="CompProperties_SlotLoadable.cs" />
-    <Compile Include="CompProperties_SlottedBonus.cs" />
     <Compile Include="CompSlotLoadable.cs" />
     <Compile Include="CompSlotLoadableDefOf.cs" />
-    <Compile Include="CompSlottedBonus.cs" />
+    <Compile Include="FastGetCompsExtensions.cs" />
+    <Compile Include="ScenarioExtension.cs" />
     <Compile Include="SlotLoadableUtility.cs" />
     <Compile Include="_HarmonyCompSlotLoadable.cs" />
     <Compile Include="SlotBonusProps_DefensiveHealChance.cs" />

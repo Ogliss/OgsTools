@@ -43,20 +43,17 @@ namespace ExtraApparelLayers
                     instruction = new CodeInstruction(opcode: OpCodes.Call, operand: underShell);
                 }
 
-                if (!overShellYPatched && i > 1 && i < instructionsList.Count -2)
+                if (!overShellYPatched && i > 1 && i < instructionsList.Count -2 && instructionsList[index: i].opcode == OpCodes.Ldloc_2)
                 {
-                    if (instructionsList[index: i + 1].opcode == OpCodes.Ldloc_0 && instructionsList[index: i].opcode == OpCodes.Ldloc_2 && instructionsList[index: i -1 ].opcode == OpCodes.Ldloc_1)
-                    {
-                        //    Log.Message("overShellYPatched "+i + " opcode: " + instruction.opcode + " operand: " + instruction.operand);
-                        overShellYPatched = true;
-                        yield return instruction;
-                        yield return new CodeInstruction(OpCodes.Ldloc_3);
-                        yield return new CodeInstruction(OpCodes.Ldloc_S, 19);
-                        yield return new CodeInstruction(OpCodes.Ldloc_S, 22);
-                        yield return new CodeInstruction(OpCodes.Ldloc_S, 5);
-                        yield return new CodeInstruction(OpCodes.Ldarg_S, 4);
-                        instruction = new CodeInstruction(OpCodes.Call, overShell);
-                    }
+                    //    Log.Message("overShellYPatched "+i + " opcode: " + instruction.opcode + " operand: " + instruction.operand);
+                    overShellYPatched = true;
+                    yield return instruction;
+                    yield return new CodeInstruction(OpCodes.Ldloc_3);
+                    yield return new CodeInstruction(OpCodes.Ldloc_S, 19);
+                    yield return new CodeInstruction(OpCodes.Ldloc_S, 22);
+                    yield return new CodeInstruction(OpCodes.Ldloc_S, 5);
+                    yield return new CodeInstruction(OpCodes.Ldarg_S, 4);
+                    instruction = new CodeInstruction(OpCodes.Call, overShell);
                 }
                 yield return instruction;
             }
