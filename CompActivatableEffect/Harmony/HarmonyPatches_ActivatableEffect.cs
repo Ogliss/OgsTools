@@ -32,16 +32,20 @@ namespace OgsCompActivatableEffect
             {
                 Log.Warning("Target: OversizedUtil.Draw Not found");
             }
-            MethodInfo patch = typeof(HarmonyPatches_ActivatableEffect).GetMethod("DrawMeshModified");
+            MethodInfo patch = typeof(ActivatableEffectUtil).GetMethod("DrawMeshExtra");
             if (patch == null)
             {
-                Log.Warning("Patch is null HarmonyCompActivatableEffect.DrawMeshModified");
+                Log.Warning("Patch is null ActivatableEffectUtil.DrawMeshExtra");
             }
             if (target != null && patch != null)
             {
                 if (harmony.Patch(target, null, new HarmonyMethod(patch)) == null)
                 {
                     Log.Warning("OgsCompActivatableEffect: OgsCompOversizedWeapon Patch Failed to apply");
+                }
+                else
+                {
+                    if (Prefs.DevMode) Log.Message("ActivatableEffect: OversizedUtil.Draw Patched");
                 }
             }
             else
@@ -210,44 +214,6 @@ namespace OgsCompActivatableEffect
         ///     Adds another "layer" to the equipment aiming if they have a
         ///     weapon with a CompActivatableEffect.
         /// </summary>
-        public static void DrawMeshModified(Mesh mesh, Matrix4x4 matrix, Material mat, int layer, Thing eq, Pawn pawn, Vector3 position, Quaternion rotation)
-        {
-            //    Log.Message("DrawMeshModified");
-            ThingWithComps thingWithComps = eq as ThingWithComps;
-        //    CompEquippable equippable = eq.TryGetComp<CompEquippable>();
-            var compOversized = thingWithComps.def.comps.FirstOrDefault(x=> x.compClass.Name.Contains("CompOversizedWeapon"));
-            var compActivatableEffect = thingWithComps?.GetComp<CompActivatableEffect>();
-            if (compActivatableEffect?.Graphic == null) return;
-            if (!compActivatableEffect.IsActiveNow) return;
-            var matSingle = compActivatableEffect.Graphic.MatSingle;
-            Vector3 s = new Vector3(eq.def.graphicData.drawSize.x, 1f, eq.def.graphicData.drawSize.y);
-            if (compOversized != null)
-            {
-                if (pawn.RaceProps.Humanlike)
-                {
-                    if (HarmonyPatches_ActivatableEffect.enabled_AlienRaces)
-                    {
-                        Vector2 v = AlienRaceUtility.AlienRacesPatch(pawn, eq);
-                        float f = Mathf.Max(v.x, v.y);
-                        s = new Vector3(eq.def.graphicData.drawSize.x * f, 1f, eq.def.graphicData.drawSize.y * f);
-                    }
-                    else
-                    {
-                        s = new Vector3(eq.def.graphicData.drawSize.x, 1f, eq.def.graphicData.drawSize.y);
-                    }
-                }
-                else
-                {
-                    Vector2 v = pawn.ageTracker.CurKindLifeStage.bodyGraphicData.drawSize;
-                    s = new Vector3(eq.def.graphicData.drawSize.x + v.x / 10, 1f, eq.def.graphicData.drawSize.y + v.y / 10);
-                }
-                //    Log.Message("DrawEquipmentAimingPostFix compOversized offset: "+ offset + " Rotation: "+rotation + " size: " + s);
-            }
-            Vector3 vector3 = position;
-            vector3.y -= 0.0005f;
-            matrix.SetTRS(vector3, rotation, s);
-            Graphics.DrawMesh(mesh, matrix, matSingle, 0);
-        }
         public static IEnumerable<Gizmo> GizmoGetter(OgsCompActivatableEffect.CompActivatableEffect compActivatableEffect)
         {
             if (compActivatableEffect.GizmosOnEquip)

@@ -44,7 +44,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Utilities\AlienRaceUtility.cs" />
-    <Compile Include="Utilities\CompActivatableEffectUtil.cs" />
+    <Compile Include="Utilities\ActivatableEffectUtil.cs" />
     <Compile Include="CompActivatableEffect.cs" />
     <Compile Include="CompProperties_ActivatableEffect.cs" />
     <Compile Include="Harmony\HarmonyPatches_ActivatableEffect.cs" />
