@@ -23,21 +23,50 @@ namespace OgsCompOversizedWeapon
             harmony.PatchAll(Assembly.GetExecutingAssembly());
             if (enabled_rooloDualWield)
             {
-                MethodInfo target = AccessTools.Method(GenTypes.GetTypeInAnyAssembly("DualWield.Harmony.PawnRenderer_DrawEquipmentAiming", "DualWield.Harmony"), "DrawEquipmentAimingOverride", null, null);
-                if (target == null)
                 {
-                    Log.Warning("Target: DualWield.Harmony.PawnRenderer_DrawEquipmentAiming.DrawEquipmentAimingOverride Not found");
-                }
-                MethodInfo patch = typeof(PawnRenderer_DrawEquipmentAiming_DualWield_Transpiler).GetMethod("Transpiler");
-                if (patch == null)
-                {
-                    Log.Warning("Patch is null PawnRenderer_DrawEquipmentAiming_DualWield_Transpiler.Transpiler");
-                }
-                if (target != null && patch != null)
-                {
-                    if (harmony.Patch(target, null, null, new HarmonyMethod(patch)) == null)
+                    MethodInfo target = AccessTools.Method(GenTypes.GetTypeInAnyAssembly("DualWield.Harmony.PawnRenderer_DrawEquipmentAiming", "DualWield.Harmony"), "DrawEquipmentAimingOverride", null, null);
+                    if (target == null)
                     {
-                        Log.Warning("OgsCompOversizedWeapon: DualWield Patch Failed to apply");
+                        Log.Warning("Target: DualWield.Harmony.PawnRenderer_DrawEquipmentAiming.DrawEquipmentAimingOverride Not found");
+                    }
+                    MethodInfo patch = typeof(PawnRenderer_DrawEquipmentAiming_DualWield_Transpiler).GetMethod("Transpiler");
+                    if (patch == null)
+                    {
+                        Log.Warning("Patch is null PawnRenderer_DrawEquipmentAiming_DualWield_Transpiler.Transpiler");
+                    }
+                    if (target != null && patch != null)
+                    {
+                        if (harmony.Patch(target, null, null, new HarmonyMethod(patch)) == null)
+                        {
+                            Log.Warning("OgsCompOversizedWeapon: DualWield Patch Failed to apply");
+                        }
+                        else
+                        {
+                            Log.Message("OgsCompOversizedWeapon: DualWield Patch applied!");
+                        }
+                    }
+                }
+                {
+                    MethodInfo target = AccessTools.Method(GenTypes.GetTypeInAnyAssembly("DualWield.Harmony.PawnRenderer_DrawEquipmentAiming", "DualWield.Harmony"), "Prefix", null, null);
+                    if (target == null)
+                    {
+                        Log.Warning("Target: DualWield.Harmony.PawnRenderer_DrawEquipmentAiming.Prefix Not found");
+                    }
+                    MethodInfo patch = typeof(PawnRenderer_DrawEquipmentAiming_DualWieldPrefix_Transpiler).GetMethod("Transpiler");
+                    if (patch == null)
+                    {
+                        Log.Warning("Patch is null PawnRenderer_DrawEquipmentAiming_DualWieldPrefix_Transpiler.Transpiler");
+                    }
+                    if (target != null && patch != null)
+                    {
+                        if (harmony.Patch(target, null, null, new HarmonyMethod(patch)) == null)
+                        {
+                            Log.Warning("OgsCompOversizedWeapon: DualWieldPrefix Patch Failed to apply");
+                        }
+                        else
+                        {
+                            Log.Message("OgsCompOversizedWeapon: DualWieldPrefix Patch applied!");
+                        }
                     }
                 }
             }
@@ -48,7 +77,7 @@ namespace OgsCompOversizedWeapon
                 {
                     Log.Warning("Target: yayoCombat.patch_DrawEquipmentAiming.Prefix Not found");
                 }
-                MethodInfo patch = typeof(PawnRenderer_DrawEquipmentAiming_Yayo_Transpiler).GetMethod("Transpiler");
+                MethodInfo patch = typeof(PawnRenderer_DrawEquipmentAiming_YayoPrefix_Transpiler).GetMethod("Transpiler");
                 if (patch == null)
                 {
                     Log.Warning("Patch is null PawnRenderer_DrawEquipmentAiming_Yayo_Transpiler.Transpiler");

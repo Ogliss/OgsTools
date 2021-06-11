@@ -17,7 +17,7 @@
     <DebugSymbols>true</DebugSymbols>
     <DebugType>full</DebugType>
     <Optimize>false</Optimize>
-    <OutputPath>bin\Debug\</OutputPath>
+    <OutputPath>..\..\..\..\..\Program Files %28x86%29\Steam\steamapps\common\RimWorld\Mods\EasyApparelLayers\Assemblies\</OutputPath>
     <DefineConstants>DEBUG;TRACE</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
@@ -31,6 +31,7 @@
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
   <ItemGroup>
+    <Compile Include="ApparelGraphicRecordGetter_TryGetGraphicApparel_EasyApparelLayers_Transpiler.cs" />
     <Compile Include="PawnGraphicSet_MatsBodyBaseAt_EasyApparelLayers_Transpiler.cs" />
     <Compile Include="PawnRenderer_RenderPawnInternal_EasyApparelLayers_Transpiler.cs" />
     <Compile Include="PawnGraphicSet_ResolveApparelGraphics_ApparelLayerDrawOrder_Patch.cs" />

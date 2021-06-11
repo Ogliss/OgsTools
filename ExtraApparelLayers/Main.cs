@@ -19,12 +19,20 @@ namespace ExtraApparelLayers
             harmony.PatchAll(Assembly.GetExecutingAssembly());
             shellApparelDefs = new List<ThingDef>();
             shellApparelDefs = DefDatabase<ThingDef>.AllDefsListForReading.FindAll(x => x.IsApparel && LastLayerShellOrHigher(x.apparel.LastLayer, ApparelLayerDefOf.Shell) && !x.apparel.LastLayer.IsUtilityLayer);
+            overheadApparelDefs = new List<ThingDef>();
+            overheadApparelDefs = DefDatabase<ThingDef>.AllDefsListForReading.FindAll(x => x.IsApparel && LastLayerOverheadOrHigher(x.apparel.LastLayer, ApparelLayerDefOf.Shell) && !x.apparel.LastLayer.IsUtilityLayer);
+
         }
-        public static bool LastLayerShellOrHigher(ApparelLayerDef LastLayer, ApparelLayerDef Shell)
+        public static bool LastLayerShellOrHigher(ApparelLayerDef LastLayer, ApparelLayerDef Shell = null)
         {
-            return LastLayer.drawOrder >= Shell.drawOrder && LastLayer.drawOrder < ApparelLayerDefOf.Overhead.drawOrder && !(LastLayer.defName.Contains("Head") || LastLayer.defName.Contains("head")) && !LastLayer.IsUtilityLayer;
+            return LastLayer.drawOrder >= ApparelLayerDefOf.Shell.drawOrder && LastLayer.drawOrder < ApparelLayerDefOf.Overhead.drawOrder && !(LastLayer.defName.Contains("Head") || LastLayer.defName.Contains("head")) && !LastLayer.IsUtilityLayer;
+        }
+        public static bool LastLayerOverheadOrHigher(ApparelLayerDef LastLayer, ApparelLayerDef Overhead = null)
+        {
+            return LastLayer.drawOrder >= ApparelLayerDefOf.Overhead.drawOrder && !LastLayer.IsUtilityLayer;
         }
 
         public static List<ThingDef> shellApparelDefs;
+        public static List<ThingDef> overheadApparelDefs;
     }
 }

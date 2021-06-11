@@ -40,10 +40,6 @@ namespace OgsCompOversizedWeapon
 
 		public static void DrawMeshModified(Mesh mesh, Vector3 position, Quaternion rotation, Material mat, int layer, Thing eq, float aimAngle)
 		{
-            if (enabled_YayosCombat)
-            {
-				Log.Message("Yayos Oversized");
-            }
 			CompOversizedWeapon compOversized = eq.TryGetCompFast<CompOversizedWeapon>();
 			CompEquippable equippable = eq.TryGetCompFast<CompEquippable>();
 			Pawn pawn = equippable.PrimaryVerb.CasterPawn;
@@ -71,6 +67,7 @@ namespace OgsCompOversizedWeapon
 				OversizedUtil.SetAnglesAndOffsets(eq, thingWithComps, aimAngle, pawn, ref offsetMainHand, ref offsetOffHand, ref offHandAngle, ref mainHandAngle, Aiming, DualWeapon && Aiming);
 
 			}
+
 			if (DualWeapon)
 			{
 
@@ -167,6 +164,7 @@ namespace OgsCompOversizedWeapon
 			{
 				matSingle = eq.Graphic.MatSingle;
 			}
+
 			OversizedUtil.Draw(mesh, matrix, matSingle, 0, eq, pawn, drawLoc, rotation);
 		}
 

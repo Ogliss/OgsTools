@@ -1,9 +1,9 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
-# Visual Studio 15
-VisualStudioVersion = 15.0.27130.2027
+# Visual Studio Version 16
+VisualStudioVersion = 16.0.30503.244
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CompOversizedWeapon", "CompOversizedWeapon\CompOversizedWeapon.csproj", "{08E20D0E-4493-4DFE-9212-DEC323F26E89}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CompOversizedWeapon", "CompOversizedWeapon.csproj", "{08E20D0E-4493-4DFE-9212-DEC323F26E89}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -20,6 +20,6 @@ Global
 		HideSolutionNode = FALSE
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
-		SolutionGuid = {1D7584E1-5EBD-4351-81E6-8DB8CC37A0E1}
+		SolutionGuid = {176078F9-18AD-436A-9F2C-ABCC1E100BAA}
 	EndGlobalSection
 EndGlobal

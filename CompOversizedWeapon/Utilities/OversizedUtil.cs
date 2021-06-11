@@ -228,8 +228,11 @@ namespace OgsCompOversizedWeapon
 		#region DualWield
 		public static void AddOffHandEquipment(this Pawn_EquipmentTracker instance, ThingWithComps newEq)
         {
-            ThingOwner<ThingWithComps> value = Traverse.Create(instance).Field("equipment").GetValue<ThingOwner<ThingWithComps>>();
-            ExtendedDataStorage extendedDataStorage = Base.Instance.GetExtendedDataStorage();
+
+			ThingOwner<ThingWithComps> value; // = Traverse.Create(instance).Field("equipment").GetValue<ThingOwner<ThingWithComps>>();
+			value = instance.equipment;
+
+			ExtendedDataStorage extendedDataStorage = Base.Instance.GetExtendedDataStorage();
             bool flag = extendedDataStorage != null;
             if (flag)
             {
