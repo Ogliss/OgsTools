@@ -50,9 +50,9 @@ namespace RimWorld
                 return -(score / 10) + base.CurStage.baseOpinionOffset;
             }
         }
-        
+
         // Token: 0x06001987 RID: 6535 RVA: 0x0004F055 File Offset: 0x0004D455
-        protected override ThoughtState CurrentStateInternal()
+        public override ThoughtState CurrentStateInternal()
         {
             return this.def.Worker.CurrentSocialState(this.pawn, this.otherPawn);
         }

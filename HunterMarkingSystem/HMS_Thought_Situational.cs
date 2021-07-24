@@ -85,7 +85,7 @@ namespace RimWorld
         {
             return base.MoodOffset();
         }
-        
+
         /*
         public new string Description
         {
@@ -113,7 +113,7 @@ namespace RimWorld
             }
         }
         */
-        protected override float BaseMoodOffset
+        public override float BaseMoodOffset
         {
             get
             {

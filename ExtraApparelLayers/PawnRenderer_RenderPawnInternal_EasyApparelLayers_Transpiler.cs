@@ -31,6 +31,7 @@ namespace ExtraApparelLayers
             for (int i = 0; i < instructionsList.Count; i++)
             {
                 CodeInstruction instruction = instructionsList[i];
+                // cut y space between layers
                 if (!underShellYPatched && instruction.opcode == OpCodes.Ldc_R4 && instruction.OperandIs((float)3f / 980f))
                 {
                     underShellYPatched = true;
@@ -39,7 +40,7 @@ namespace ExtraApparelLayers
                     yield return new CodeInstruction(opcode: OpCodes.Ldloc_S, 7); // List<Material> list
                     instruction = new CodeInstruction(opcode: OpCodes.Call, operand: underShell);
                 }
-
+                // extra Overhead layers
                 if (i > 1 && instruction.opcode == OpCodes.Bne_Un && instructionsList[i - 1].OperandIs(overhead) && instructionsList[i - 2].OperandIs(lastLayer))
                 {
                 //    Log.Message("LastLayer overhead" + i + " opcode: " + instruction.opcode + " operand: " + instruction.operand);
@@ -53,7 +54,6 @@ namespace ExtraApparelLayers
                 //    Log.Message("overOverheadYPatched " + i + " opcode: " + instruction.opcode + " operand: " + instruction.operand);
                     yield return instruction; // Vector3 loc2
                     yield return new CodeInstruction(OpCodes.Ldarg_1); // Vector3 Rootloc
-                //    yield return new CodeInstruction(OpCodes.Ldloc_S, 22); // ApparelGraphicRecord apparelGraphicRecord
                     yield return new CodeInstruction(OpCodes.Ldloc_S, 16); // int j
                     yield return new CodeInstruction(OpCodes.Ldloc_S, 5); // List<ApparelGraphicRecord> list
                     yield return new CodeInstruction(OpCodes.Ldarg_S, 4); // Rot4 bodyFacing
@@ -66,14 +66,12 @@ namespace ExtraApparelLayers
                 //    Log.Message("overInFrontOfFacePatched " + i + " opcode: " + instruction.opcode + " operand: " + instruction.operand);
                     yield return instruction; // Vector3 loc2
                     yield return new CodeInstruction(OpCodes.Ldarg_1); // Vector3 Rootloc
-                                                                       //    yield return new CodeInstruction(OpCodes.Ldloc_S, 22); // ApparelGraphicRecord apparelGraphicRecord
                     yield return new CodeInstruction(OpCodes.Ldloc_S, 16); // int j
                     yield return new CodeInstruction(OpCodes.Ldloc_S, 5); // List<ApparelGraphicRecord> list
                     yield return new CodeInstruction(OpCodes.Ldarg_S, 4); // Rot4 bodyFacing
 
                     instruction = new CodeInstruction(opcode: OpCodes.Call, operand: overOverhead);
                 }
-
 
                 if (i > 1 && instruction.opcode == OpCodes.Bne_Un_S && instructionsList[i - 1].OperandIs(shell) && instructionsList[i - 2].OperandIs(lastLayer))
                 {

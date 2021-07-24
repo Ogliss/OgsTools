@@ -9,7 +9,7 @@ namespace HunterMarkingSystem
     // Token: 0x0200021E RID: 542
     public class ThoughtWorker_MarkedMood : ThoughtWorker
     {
-        protected override ThoughtState CurrentStateInternal(Pawn p)
+        public override ThoughtState CurrentStateInternal(Pawn p)
         {
         //    Log.Message(string.Format("{0}, {1}", this, p.LabelShortCap));
             Comp_Markable Markable = p.TryGetComp<Comp_Markable>();

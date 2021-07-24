@@ -1,0 +1,83 @@
+﻿using RimWorld;
+using Verse;
+using HarmonyLib;
+using System.Reflection;
+using System.Collections.Generic;
+using System;
+using Verse.AI;
+using System.Text;
+using System.Linq;
+using Verse.AI.Group;
+using RimWorld.Planet;
+using UnityEngine;
+
+namespace ExtraHives.HarmonyInstance
+{
+	[HarmonyPatch(typeof(PawnGroupMakerUtility), "ChoosePawnGenOptionsByPoints")]
+    public static class PawnGroupMakerUtility_ChoosePawnGenOptionsByPoints_NoPawnPointCurve_Patch
+    {
+		[HarmonyPrefix]
+		public static bool Prefix(float pointsTotal, List<PawnGenOption> options, PawnGroupMakerParms groupParms, IEnumerable<PawnGenOption> __result)
+		{
+			Faction faction = groupParms.faction;
+			HiveFactionEvolutionTracker evolutionTracker = Find.World.GetComponent<HiveFactionEvolutionTracker>();
+			if (faction != null)
+			{
+				HiveFactionExtension hive = faction.def.GetModExtension<HiveFactionExtension>();
+				if (evolutionTracker != null && hive != null && hive.noPawnPointsCurve)
+				{
+
+					if (groupParms.seed.HasValue)
+					{
+						Rand.PushState(groupParms.seed.Value);
+					}
+					float num = PawnGroupMakerUtility.MaxPawnCost(groupParms.faction, pointsTotal, groupParms.raidStrategy, groupParms.groupKind);
+					List<PawnGenOption> list = new List<PawnGenOption>();
+					List<PawnGenOption> list2 = new List<PawnGenOption>();
+					float num2 = pointsTotal;
+					bool flag = false;
+					float highestCost = -1f;
+					while (true)
+					{
+						list.Clear();
+						for (int i = 0; i < options.Count; i++)
+						{
+							PawnGenOption pawnGenOption = options[i];
+							if (!(pawnGenOption.Cost > num2) && !(pawnGenOption.Cost > num) && (!groupParms.generateFightersOnly || pawnGenOption.kind.isFighter) && (groupParms.raidStrategy == null || groupParms.raidStrategy.Worker.CanUsePawnGenOption(pawnGenOption, list2)) && (!groupParms.dontUseSingleUseRocketLaunchers || pawnGenOption.kind.weaponTags == null || !pawnGenOption.kind.weaponTags.Contains("GunSingleUse")) && (!flag || !pawnGenOption.kind.factionLeader))
+							{
+								if (pawnGenOption.Cost > highestCost)
+								{
+									highestCost = pawnGenOption.Cost;
+								}
+								list.Add(pawnGenOption);
+							}
+						}
+						if (list.Count == 0)
+						{
+							break;
+						}
+						Func<PawnGenOption, float> weightSelector = (PawnGenOption gr) => gr.selectionWeight;
+						PawnGenOption pawnGenOption2 = list.RandomElementByWeight(weightSelector);
+						list2.Add(pawnGenOption2);
+						num2 -= pawnGenOption2.Cost;
+						if (pawnGenOption2.kind.factionLeader)
+						{
+							flag = true;
+						}
+					}
+					if (list2.Count == 1 && num2 > pointsTotal / 2f)
+					{
+						Log.Warning("Used only " + (pointsTotal - num2) + " / " + pointsTotal + " points generating for " + groupParms.faction);
+					}
+					if (groupParms.seed.HasValue)
+					{
+						Rand.PopState();
+					}
+					__result = list2;
+					return false;
+				}
+			}
+			return true;
+		}
+	}
+}

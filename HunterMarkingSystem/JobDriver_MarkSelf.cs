@@ -33,7 +33,7 @@ namespace HunterMarkingSystem
         }
 
         // Token: 0x06000393 RID: 915 RVA: 0x000245C8 File Offset: 0x000229C8
-        protected override IEnumerable<Toil> MakeNewToils()
+        public override IEnumerable<Toil> MakeNewToils()
         {
             this.FailOnIncapable(PawnCapacityDefOf.Manipulation);
             yield return Toils_Goto.GotoThing(TargetIndex.A, PathEndMode.Touch);

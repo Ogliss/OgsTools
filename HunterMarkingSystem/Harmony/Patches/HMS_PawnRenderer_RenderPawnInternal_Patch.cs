@@ -16,11 +16,14 @@ using HunterMarkingSystem.ExtensionMethods;
 namespace HunterMarkingSystem
 {
     // Hediff_Implant Drawer
-    [HarmonyPatch(typeof(PawnRenderer), "RenderPawnInternal", new Type[] { typeof(Vector3), typeof(float), typeof(bool), typeof(Rot4), typeof(Rot4), typeof(RotDrawMode), typeof(bool), typeof(bool), typeof(bool) })]
+    [HarmonyPatch(typeof(PawnRenderer), "RenderPawnInternal", new Type[] { typeof(Vector3), typeof(float), typeof(bool), typeof(Rot4), typeof(RotDrawMode), typeof(PawnRenderFlags) })]
     static class HMS_PawnRenderer_RenderPawnInternal_Patch
     {
-        static void Prefix(PawnRenderer __instance, Pawn ___pawn, ref Vector3 rootLoc, ref float angle, ref bool renderBody, ref Rot4 bodyFacing, ref Rot4 headFacing, ref RotDrawMode bodyDrawType, ref bool portrait, ref bool headStump, ref bool invisible)
+        static void Prefix(PawnRenderer __instance, Pawn ___pawn, Vector3 rootLoc, float angle, bool renderBody, Rot4 bodyFacing, RotDrawMode bodyDrawType, PawnRenderFlags flags)
         {
+            bool portrait = flags.FlagSet(PawnRenderFlags.Portrait);
+            bool headStump = flags.FlagSet(PawnRenderFlags.HeadStump);
+            bool invisible = flags.FlagSet(PawnRenderFlags.Invisible);
             if (invisible)
             {
                 return;
@@ -39,7 +42,7 @@ namespace HunterMarkingSystem
                         {
                             if (comp != null && comp.hasMat && !portrait)
                             {
-                                DrawMark(comp, pawn, __instance, rootLoc, angle, renderBody, bodyFacing, headFacing, bodyDrawType, portrait, headStump);
+                                DrawMark(comp, pawn, __instance, rootLoc, angle, renderBody, bodyFacing, bodyFacing, bodyDrawType, portrait, headStump);
                             }
                         }
                     }

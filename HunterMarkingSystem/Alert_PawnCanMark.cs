@@ -179,12 +179,12 @@ namespace HunterMarkingSystem
             return AlertReport.CulpritsAre(this.SickPawns.ToList());
         }
 
-        protected override void OnClick()
+        public override void OnClick()
         {
             base.OnClick();
 
         }
 
-        protected override Color BGColor => base.BGColor;
+        public override Color BGColor => base.BGColor;
     }
 }

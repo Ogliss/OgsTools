@@ -8,7 +8,7 @@ namespace HunterMarkingSystem
     public class ThoughtWorker_BloodStatus : ThoughtWorker
     {
         int stageIndex;
-        protected override ThoughtState CurrentSocialStateInternal(Pawn p, Pawn other)
+        public override ThoughtState CurrentSocialStateInternal(Pawn p, Pawn other)
         {
             if (p == null || other == null)
             {

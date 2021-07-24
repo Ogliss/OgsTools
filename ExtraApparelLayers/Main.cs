@@ -10,10 +10,9 @@ using Verse;
 
 namespace ExtraApparelLayers
 {
-    [StaticConstructorOnStartup]
-    public class Main
+    public class Main : Mod
     {
-        static Main()
+        public Main(ModContentPack content) : base(content)
         {
             var harmony = new Harmony("com.ogliss.rimworld.mod.ExtraApparelLayers");
             harmony.PatchAll(Assembly.GetExecutingAssembly());

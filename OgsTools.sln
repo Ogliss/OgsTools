@@ -89,6 +89,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ProjectileImpactFXCE", "Pro
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ConfigureablePlants", "ConfigureablePlants\ConfigureablePlants.csproj", "{13A7D1E2-B03C-460F-94D8-6051593E5AE3}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "RimUniques", "RimUniques\RimUniques.csproj", "{BEF6E1DB-0453-4500-84DA-5B81B4712C8C}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -251,6 +253,10 @@ Global
 		{13A7D1E2-B03C-460F-94D8-6051593E5AE3}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{13A7D1E2-B03C-460F-94D8-6051593E5AE3}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{13A7D1E2-B03C-460F-94D8-6051593E5AE3}.Release|Any CPU.Build.0 = Release|Any CPU
+		{BEF6E1DB-0453-4500-84DA-5B81B4712C8C}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{BEF6E1DB-0453-4500-84DA-5B81B4712C8C}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{BEF6E1DB-0453-4500-84DA-5B81B4712C8C}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{BEF6E1DB-0453-4500-84DA-5B81B4712C8C}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
