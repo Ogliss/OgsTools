@@ -3,18 +3,18 @@
   <PropertyGroup>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
-    <ProjectGuid>{99F78F0B-7600-45BC-BD6E-8E935C05E66B}</ProjectGuid>
+    <ProjectGuid>{73FB35FC-7C81-4BEC-8EE0-E3DFCF826003}</ProjectGuid>
     <OutputType>Library</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
-    <RootNamespace>HunterMarkingSystem</RootNamespace>
-    <AssemblyName>HunterMarkingSystem</AssemblyName>
+    <RootNamespace>RecruitShips</RootNamespace>
+    <AssemblyName>RecruitShips</AssemblyName>
     <TargetFrameworkVersion>v4.7.2</TargetFrameworkVersion>
     <TargetFramework>net472</TargetFramework>
     <FileAlignment>512</FileAlignment>
     <EnableDefaultCompileItems>false</EnableDefaultCompileItems>
     <AppendTargetFrameworkToOutputPath>false</AppendTargetFrameworkToOutputPath>
     <AppendRuntimeIdentifierToOutputPath>false</AppendRuntimeIdentifierToOutputPath>
-    <TargetFrameworkProfile />
+    <Deterministic>true</Deterministic>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
     <DebugSymbols>true</DebugSymbols>
@@ -24,7 +24,6 @@
     <DefineConstants>DEBUG;TRACE</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
-    <Prefer32Bit>false</Prefer32Bit>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
     <DebugType>pdbonly</DebugType>
@@ -33,51 +32,21 @@
     <DefineConstants>TRACE</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
-    <Prefer32Bit>false</Prefer32Bit>
   </PropertyGroup>
   <ItemGroup>
-    <Compile Include="Alert_PawnCanMark.cs" />
-    <Compile Include="Harmony\Patches\HMS_BackCompatibility_BackCompatibleDefName_Patch.cs" />
-    <Compile Include="MarkData.cs" />
-    <Compile Include="StatWorker_MarkScore.cs" />
-    <Compile Include="Harmony\Patches\HMS_ThingWithComps_get_DescriptionFlavor_Patch.cs" />
-    <Compile Include="MarkHediff.cs" />
-    <Compile Include="HunterCultureDef.cs" />
-    <Compile Include="Comp_UsableCorpse.cs" />
-    <Compile Include="Comp_KillMarker.cs" />
-    <Compile Include="CompUseEffect_MarkSelf.cs" />
-    <Compile Include="Extensions.cs" />
-    <Compile Include="Harmony\Patches\HMS_PawnRenderer_RenderPawnInternal_Patch.cs" />
-    <Compile Include="Harmony\Patches\HMS_RecordsUtility_Notify_PawnDowned_Patch.cs" />
-    <Compile Include="HMS_Thought_Situational.cs" />
-    <Compile Include="HMS_Thought_SituationalSocial.cs" />
-    <Compile Include="DefExtensions\MarkDefExtension.cs" />
-    <Compile Include="DefExtensions\TrophyPartDefExtension.cs" />
-    <Compile Include="DefExtensions\MarkOffsetDefExtension.cs" />
-    <Compile Include="IntergrationUtils.cs" />
-    <Compile Include="Settings\HMSSettings.cs" />
-    <Compile Include="Harmony\Patches\HMS_RecordsUtility_Notify_PawnKilled_Patch.cs" />
-    <Compile Include="Comp_Markable.cs" />
-    <Compile Include="HunterMarkingSystem.cs" />
-    <Compile Include="HediffComp_HunterMark.cs" />
-    <Compile Include="JobDriver_MarkOther.cs" />
-    <Compile Include="JobDriver_MarkSelf.cs" />
-    <Compile Include="JobDriver_TakeTrophy.cs" />
-    <Compile Include="Harmony\Harmony.cs" />
-    <Compile Include="ThoughtWorker_BloodStatus.cs" />
-    <None Include="ThoughtWorkers_Blooded.cs.bak" />
-    <Compile Include="ThoughtWorker_MarkedMood.cs" />
-    <Compile Include="HMSUtility.cs" />
-    <Compile Include="HMSDefOf.cs" />
+    <Compile Include="StockGenerator_BuyWeapon.cs" />
+    <Compile Include="StockGenerator_BuyArmor.cs" />
+    <Compile Include="Harmony\Recruiter_Caravan_GiveSoldThingToPlayer_Patch.cs" />
+    <Compile Include="Harmony\Recruiter_Pawn_GiveSoldThingToPlayer_Patch.cs" />
+    <Compile Include="Harmony\Recruiter_TradeShip_GiveSoldThingToPlayer_Patch.cs" />
+    <Compile Include="Harmony\Patches.cs" />
+    <Compile Include="IncidentWorker_OrbitalMercenaryArrival.cs" />
+    <Compile Include="StockGenerator_Mercs.cs" />
+    <Compile Include="StockGenerator_Recruits.cs" />
+    <Compile Include="IncidentWorker_OrbitalRecruiterArrival.cs" />
   </ItemGroup>
   <ItemGroup>
-    <Reference Include="AlienRace">
-      <HintPath>..\..\..\..\..\Program Files (x86)\Steam\steamapps\workshop\content\294100\839005762\1.3\Assemblies\AlienRace.dll</HintPath>
-      <Private>False</Private>
-    </Reference>
-  </ItemGroup>
-  <ItemGroup>
-    <PackageReference Include="Krafs.Rimworld.Ref" Version="1.3.3074" GeneratePathProperty="true" />
+    <PackageReference Include="Krafs.Rimworld.Ref" Version="1.3.3087" GeneratePathProperty="true" />
     <PackageReference Include="Lib.Harmony">
       <Version>2.1.1</Version>
     </PackageReference>

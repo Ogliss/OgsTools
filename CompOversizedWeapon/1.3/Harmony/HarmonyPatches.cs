@@ -10,7 +10,7 @@ namespace OgsCompOversizedWeapon
     [StaticConstructorOnStartup]
     public static class HarmonyPatches_OversizedWeapon
     {
-        public static bool enabled_AlienRaces;
+        public static bool enabled_AlienRaces = ModsConfig.ActiveModsInLoadOrder.Any((ModMetaData m) => m.PackageIdPlayerFacing == "erdelf.HumanoidAlienRaces");
         public static bool enabled_rooloDualWield;
         public static bool enabled_YayosCombat;
         static HarmonyPatches_OversizedWeapon()

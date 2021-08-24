@@ -1,4 +1,5 @@
-﻿using HarmonyLib;
+﻿
+using HarmonyLib;
 using OgsCompOversizedWeapon.ExtentionMethods;
 using System;
 using System.Linq;

@@ -10,14 +10,20 @@ namespace ExtraHives //ExtraHives.IncidentWorker_Infestation
 	public class IncidentWorker_Infestation : IncidentWorker
 	{
 		public const float HivePoints = 220f;
-
+		private Faction Faction = null; 
 		public override bool CanFireNowSub(IncidentParms parms)
 		{
+			Faction = null;
 			Map map = (Map)parms.target;
 			bool result = false;
 			if (def.mechClusterBuilding == null)
 			{
-				Log.Warning("ExtraHives.IncidentWorker_Infestation tried CanFireNowSub with no mechClusterBuilding");
+				Log.Warning("ExtraHives Infestation tried CanFireNowSub "+this.def.defName+" with no mechClusterBuilding");
+				return false;
+			}
+			if (this.GetFactionFromParms(parms) == null)
+			{
+				Log.Warning("ExtraHives Infestation tried GetFactionFromParms " + this.def.defName+" but found not matching faction");
 				return false;
 			}
             if (def is HivelikeIncidentDef incidentDef)
@@ -31,7 +37,7 @@ namespace ExtraHives //ExtraHives.IncidentWorker_Infestation
 					}
 					else
 					{
-						Log.Warning("ExtraHives.IncidentWorker_Infestation tried CanFireNowSub with HivelikeIncidentDef but TryFindCell failed");
+						Log.Warning("ExtraHives.IncidentWorker_Infestation tried CanFireNowSub " + this.def.defName + " with HivelikeIncidentDef but TryFindCell failed");
 					}
 				}
 			}
@@ -39,7 +45,7 @@ namespace ExtraHives //ExtraHives.IncidentWorker_Infestation
 			{
 				if (!def.mechClusterBuilding.HasModExtension<HiveDefExtension>())
 				{
-					Log.Warning("ExtraHives.IncidentWorker_Infestation tried CanFireNowSub with a mechClusterBuilding with no HiveDefExtension");
+					Log.Warning("ExtraHives.IncidentWorker_Infestation tried CanFireNowSub " + this.def.defName + " with a mechClusterBuilding with no HiveDefExtension");
 					return false;
 				}
 				HiveDefExtension HiveExt = def.mechClusterBuilding.GetModExtension<HiveDefExtension>();
@@ -52,7 +58,7 @@ namespace ExtraHives //ExtraHives.IncidentWorker_Infestation
 					}
                     else
 					{
-						Log.Warning("ExtraHives.IncidentWorker_Infestation tried CanFireNowSub with HiveDefExtension but TryFindCell failed");
+						Log.Warning("ExtraHives.IncidentWorker_Infestation tried CanFireNowSub " + this.def.defName + " with HiveDefExtension but TryFindCell failed");
 					}
 				}
 			}
@@ -61,50 +67,11 @@ namespace ExtraHives //ExtraHives.IncidentWorker_Infestation
 
 		public override bool TryExecuteWorker(IncidentParms parms)
 		{
-			if (def.mechClusterBuilding == null)
+			if (def.mechClusterBuilding == null || this.GetFactionFromParms(parms) == null)
 			{
 				return false;
 			}
-			FactionDef factionDef;
-			if (def is HivelikeIncidentDef incidentDef)
-			{
-				factionDef = incidentDef.Faction;
-			}
-            else
-			{
-				if (!def.mechClusterBuilding.HasModExtension<HiveDefExtension>())
-				{
-					return false;
-				}
-				HiveDefExtension ext = def.mechClusterBuilding.GetModExtension<HiveDefExtension>();
-				factionDef = ext.Faction;
-			}
 			Map map = (Map)parms.target;
-			if (parms.faction==null)
-			{
-				try
-				{
-					IEnumerable<Faction> factions = Find.FactionManager.AllFactions.Where(x => x.def.defName.Contains(factionDef.defName));
-                    if (!factions.EnumerableNullOrEmpty())
-					{
-						parms.faction = factions.RandomElement();
-					}
-                    else
-                    {
-						parms.faction = FactionGenerator.NewGeneratedFaction(new FactionGeneratorParms(factionDef, default, factionDef.hidden));
-					}
-				//	Log.Message(parms.faction.def.defName);
-				}
-				catch (System.Exception)
-				{
-					Faction faction = Find.FactionManager.FirstFactionOfDef(factionDef);
-                    if (faction == null)
-                    {
-						faction = FactionGenerator.NewGeneratedFaction(new FactionGeneratorParms(factionDef, default, factionDef.hidden));
-                    }
-					parms.faction = faction;
-				}
-			}
 			CompProperties_SpawnerPawn spawnerPawn = def.mechClusterBuilding.GetCompProperties<CompProperties_SpawnerPawn>();
 			float points = spawnerPawn?.initialPawnsPoints ?? 250f;
 			int count = Mathf.Max(GenMath.RoundRandom(parms.points / points), 1);
@@ -113,6 +80,63 @@ namespace ExtraHives //ExtraHives.IncidentWorker_Infestation
 			SendStandardLetter(parms, t);
 			Find.TickManager.slower.SignalForceNormalSpeedShort();
 			return true;
+		}
+
+		public Faction GetFaction
+        {
+            get
+			{
+                if (Faction == null)
+				{
+					FactionDef factionDef = null;
+
+					if (def is HivelikeIncidentDef incidentDef)
+					{
+						factionDef = incidentDef.Faction;
+					}
+					else
+					{
+						if (!def.mechClusterBuilding.HasModExtension<HiveDefExtension>())
+						{
+							HiveDefExtension ext = def.mechClusterBuilding.GetModExtension<HiveDefExtension>();
+							factionDef = ext.Faction;
+						}
+					}
+					if (factionDef != null)
+					{
+						Faction = Find.FactionManager.FirstFactionOfDef(factionDef);
+						if (Faction == null)
+						{
+							Log.Warning("ExtraHives Infestation cant find a Faction of def: "+ factionDef.defName);
+                            if (factionDef.canMakeRandomly)
+							{
+								Log.Warning("Attempting to generate new Faction of def: " + factionDef.defName);
+								Faction = FactionGenerator.NewGeneratedFaction(new FactionGeneratorParms(factionDef, default, factionDef.hidden));
+                                if (Faction == null)
+								{
+									Log.Error("Failed to generate new Faction of def: " + factionDef.defName);
+								}
+							}
+						}
+					}
+				}
+				return Faction;
+            }
+        }
+		public Faction GetFactionFromParms(IncidentParms parms)
+		{
+			if (Faction == null)
+			{
+                if (parms.faction != null)
+                {
+					Faction = parms.faction;
+				}
+                else
+                {
+					parms.faction = this.GetFaction;
+				}
+			}
+			return Faction;
 		}
 	}
 
