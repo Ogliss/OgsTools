@@ -133,6 +133,13 @@ namespace CompTurret
 	// Token: 0x02000CD3 RID: 3283
 	public abstract class CompTurret : ThingComp, IAttackTargetSearcher, ITargetingSource
 	{
+		public bool HidePawnTooltips
+		{
+			get
+			{
+				return true;
+			}
+		}
 		public CompProperties_Turret Props => this.props as CompProperties_Turret;
 		public bool UseAmmo => Props.ammoDef != null;
 		public bool HasAmmo => (UseAmmo && RemainingCharges > 0) || !UseAmmo;
@@ -296,7 +303,6 @@ namespace CompTurret
 
 		public ITargetingSource DestinationSelector => null;
 
-        public bool HidePawnTooltips => throw new NotImplementedException();
 
         public override void CompTick()
 		{

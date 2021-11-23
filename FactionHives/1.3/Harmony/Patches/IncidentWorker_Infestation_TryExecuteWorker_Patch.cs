@@ -16,6 +16,7 @@ namespace ExtraHives.HarmonyInstance
     [HarmonyPatch(typeof(ExtraHives.IncidentWorker_Infestation), "TryExecuteWorker")]
     public static class IncidentWorker_Infestation_TryExecuteWorker_Patch
     {
+
         [HarmonyPrefix]
         public static void Prefix(ref IncidentParms parms)
         {

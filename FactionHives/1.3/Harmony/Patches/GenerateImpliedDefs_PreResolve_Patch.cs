@@ -12,14 +12,11 @@ using Verse;
 
 namespace ExtraHives.HarmonyInstance
 {
-	// Token: 0x02000019 RID: 25
 	[HarmonyPatch(typeof(DefGenerator), "GenerateImpliedDefs_PreResolve", null)]
 	public class GenerateImpliedDefs_PreResolve_Patch
 	{
-		// Token: 0x06000088 RID: 136 RVA: 0x00004224 File Offset: 0x00002424
 		public static void Postfix()
 		{
-		//	Log.Message("GenerateImpliedDefs_PreResolve");
 
 			PawnGroupKindDef pawnGroupKindDef = new PawnGroupKindDef();
 			pawnGroupKindDef.defName = "Hive_ExtraHives";

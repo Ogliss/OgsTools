@@ -17,7 +17,6 @@ namespace OgsCompOversizedWeapon
     [StaticConstructorOnStartup]
     public static class OversizedUtil
     {
-
         public static void Draw(Mesh mesh, Matrix4x4 matrix, Material mat, int layer, Thing eq, Pawn pawn, Vector3 position, Quaternion rotation)
         {
             if (matrix == default(Matrix4x4))
