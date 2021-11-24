@@ -10,17 +10,9 @@ using Verse;
 
 namespace OgsLasers
 {
-    [HarmonyPatch(typeof(TurretTop), "DrawTurret", new Type[] { }), StaticConstructorOnStartup]
+    [HarmonyPatch(typeof(TurretTop), "DrawTurret"), StaticConstructorOnStartup]
     class OL_TuretTop_DrawTurret_LaserTurret_Patch
     {
-        static FieldInfo parentTurretField;
-        static FieldInfo curRotationIntField;
-
-        static OL_TuretTop_DrawTurret_LaserTurret_Patch()
-        {
-            parentTurretField = typeof(TurretTop).GetField("parentTurret", BindingFlags.NonPublic | BindingFlags.Instance);
-            curRotationIntField = typeof(TurretTop).GetField("curRotationInt", BindingFlags.NonPublic | BindingFlags.Instance);
-        }
 
         static bool Prefix(TurretTop __instance, float ___curRotationInt, Building_Turret ___parentTurret)
         {
