@@ -48,12 +48,14 @@ namespace CompTurret
 		public override bool GroupsWith(Gizmo other)
 		{
 			return false;
+			/*
 			if (!base.GroupsWith(other))
 			{
 				return false;
 			}
 			Command_CompTurretReloadable command_Reloadable = other as Command_CompTurretReloadable;
 			return command_Reloadable != null && this.comp.parent.def == command_Reloadable.comp.parent.def;
+			*/
 		}
 
 		// Token: 0x04003007 RID: 12295

@@ -22,6 +22,7 @@ namespace CompTurret
 			}
 		}
 
+		private CompEquippable gunCompEq;
 		public CompEquippable GunCompEq
 		{
 			get
@@ -30,7 +31,30 @@ namespace CompTurret
 				{
 					this.MakeGun();
 				}
-				return this.gun.TryGetCompFast<CompEquippable>();
+				if (gunCompEq == null)
+				{
+					gunCompEq = this.gun.TryGetCompFast<CompEquippable>();
+
+				}
+				return gunCompEq;
+			}
+		}
+
+		private CompChangeableProjectile gunCompCP;
+		public CompChangeableProjectile GunCompCP
+		{
+			get
+			{
+				if (this.gun == null)
+				{
+					this.MakeGun();
+				}
+				if (gunCompCP == null)
+				{
+					gunCompCP = this.gun.TryGetCompFast<CompChangeableProjectile>();
+
+				}
+				return gunCompCP;
 			}
 		}
 
@@ -112,8 +136,7 @@ namespace CompTurret
 				{
 					return false;
 				}
-				CompChangeableProjectile compChangeableProjectile = this.gun.TryGetCompFast<CompChangeableProjectile>();
-				return compChangeableProjectile != null && compChangeableProjectile.Loaded;
+				return GunCompCP != null && GunCompCP.Loaded;
 			}
 		}
 
@@ -250,7 +273,6 @@ namespace CompTurret
 					this.ExtractShell();
 				}
 			}
-
 			if (this.forcedTarget.IsValid && !this.CanSetForcedTarget)
 			{
 				this.ResetForcedTarget();
@@ -329,60 +351,49 @@ namespace CompTurret
 
 		protected void TryStartShootSomething(bool canBeginBurstImmediately)
 		{
-			//	Log.Message("TryStartShootSomething");
 			if (this.progressBarEffecter != null)
 			{
 				this.progressBarEffecter.Cleanup();
 				this.progressBarEffecter = null;
 			}
-			//	Log.Message("TryStartShootSomething 0");
 			if (!Operator.Spawned || (this.holdFire && this.CanToggleHoldFire) || (this.AttackVerb.ProjectileFliesOverhead() && Operator.Map.roofGrid.Roofed(Operator.Position)) || !this.AttackVerb.Available())
 			{
 				this.ResetCurrentTarget();
 				return;
 			}
-			//	Log.Message("TryStartShootSomething 1");
 			bool isValid = this.currentTargetInt.IsValid;
 			if (this.forcedTarget.IsValid)
 			{
-				//	Log.Message("TryStartShootSomething 1 A");
 				this.currentTargetInt = this.forcedTarget;
 			}
 			else
 			{
-				//	Log.Message("TryStartShootSomething 1 B");
 				this.currentTargetInt = this.TryFindNewTarget();
 			}
-			//	Log.Message("TryStartShootSomething 2");
 			if (!isValid && this.currentTargetInt.IsValid)
 			{
 				SoundDefOf.TurretAcquireTarget.PlayOneShot(new TargetInfo(Operator.Position, Operator.Map, false));
 			}
-			//	Log.Message("TryStartShootSomething 3");
 			if (!this.currentTargetInt.IsValid)
 			{
 				this.ResetCurrentTarget();
 				return;
 			}
-			//	Log.Message("TryStartShootSomething 4");
 			if (this.Props.TurretDef.building.turretBurstWarmupTime > 0f)
 			{
 				this.burstWarmupTicksLeft = this.Props.TurretDef.building.turretBurstWarmupTime.SecondsToTicks();
 				return;
 			}
-			//	Log.Message("TryStartShootSomething 5");
 			if (canBeginBurstImmediately)
 			{
 				this.BeginBurst();
 				return;
 			}
-			//	Log.Message("TryStartShootSomething 6");
 			this.burstWarmupTicksLeft = 1;
 		}
 
 		protected LocalTargetInfo TryFindNewTarget()
 		{
-
 			IAttackTargetSearcher attackTargetSearcher = this.TargSearcher();
 			Faction faction = attackTargetSearcher.Thing?.Faction ?? this.parent.Faction;
 			float range = this.AttackVerb.verbProps.range;
@@ -394,9 +405,9 @@ namespace CompTurret
 				float num = this.AttackVerb.verbProps.EffectiveMinRange(x, Operator);
 				float num2 = (float)x.Position.DistanceToSquared(Operator.Position);
 				return num2 > num * num && num2 < range * range;
-			}).TryRandomElement(out Building t))
+			}).TryRandomElement(out Building tb))
 			{
-				return t;
+				return tb;
 			}
 			TargetScanFlags targetScanFlags = TargetScanFlags.NeedThreat | TargetScanFlags.NeedAutoTargetable;
 			if (!this.AttackVerb.ProjectileFliesOverhead())
@@ -413,14 +424,15 @@ namespace CompTurret
 				targetScanFlags |= TargetScanFlags.NeedNotUnderThickRoof;
 			}
 			Thing tgt = (Thing)BestShootTargetFromCurrentPosition(attackTargetSearcher, AttackVerb, targetScanFlags, new Predicate<Thing>(this.IsValidTarget), 0f, 9999f, Building != null);
-
-			if (tgt == null && OperatorPawn?.verbTracker.PrimaryVerb.CurrentTarget != null && OperatorPawn.verbTracker.PrimaryVerb.CurrentTarget.HasThing)
+			if (tgt == null && OperatorPawn?.verbTracker.PrimaryVerb.CurrentTarget != null && OperatorPawn.verbTracker.PrimaryVerb.CurrentTarget.HasThing && !OperatorPawn.InAggroMentalState && tgt?.Faction != OperatorPawn?.Faction)
 			{
-				tgt = OperatorPawn.verbTracker.PrimaryVerb.CurrentTarget.Thing;
-				//	Log.Message("TryFindNewTarget OperatorPawntgt found: " + (tgt != null));
+				Thing t = OperatorPawn.verbTracker.PrimaryVerb.CurrentTarget.Thing;
+                if (t != null && t.Faction != OperatorPawn.Faction)
+				{
+					tgt = t;
+				}
 			}
-
-			//	Log.Message("TryFindNewTarget tgt found: " + (tgt != null));
+		//	Log.Message("TryFindNewTarget tgt found: " + (tgt != null));
 			return tgt;
 		}
 		public static IAttackTarget BestShootTargetFromCurrentPosition(IAttackTargetSearcher searcher, Verb currentEffectiveVerb, TargetScanFlags flags, Predicate<Thing> validator = null, float minDistance = 0f, float maxDistance = 9999f, bool building = false)
@@ -428,7 +440,7 @@ namespace CompTurret
 			//	Log.Message("BestShootTargetFromCurrentPosition searcher: " + searcher + " Verb: " + currentEffectiveVerb + " flags: " + flags);
 			if (currentEffectiveVerb == null)
 			{
-				Log.Error("BestShootTargetFromCurrentPosition with " + searcher.ToStringSafe<IAttackTargetSearcher>() + " who has no attack verb.", false);
+				Log.Error("BestShootTargetFromCurrentPosition with " + searcher.ToStringSafe<IAttackTargetSearcher>() + " who has no attack verb.");
 				return null;
 			}
 			if (building)
@@ -573,7 +585,7 @@ namespace CompTurret
 
 
 		private Material linemat;
-		public Material LineMatRed
+		public Material LineMat
 		{
 			get
 			{
@@ -981,27 +993,30 @@ namespace CompTurret
 
 		public override IEnumerable<FloatMenuOption> CompFloatMenuOptions(Pawn selPawn)
 		{
-			string text4 = "Reload".Translate(this.parent.Named("GEAR"), this.AmmoDef.Named("AMMO")) + " (" + this.LabelRemaining + ")";
-			List<Thing> chosenAmmo;
-			if (!selPawn.CanReach(Operator, PathEndMode.ClosestTouch, Danger.Deadly, false, false, TraverseMode.ByPawn))
-			{
-				yield return new FloatMenuOption(text4 + ": " + "NoPath".Translate().CapitalizeFirst(), null, MenuOptionPriority.Default, null, null, 0f, null, null);
-			}
-			else if (!this.NeedsReload(true))
-			{
-				yield return (new FloatMenuOption(text4 + ": " + "ReloadFull".Translate(), null, MenuOptionPriority.Default, null, null, 0f, null, null));
-			}
-			else if ((chosenAmmo = CompTurretReloadableUtility.FindEnoughAmmo(selPawn, Operator.Position, this, true)) == null)
-			{
-				yield return (new FloatMenuOption(text4 + ": " + "ReloadNotEnough".Translate(), null, MenuOptionPriority.Default, null, null, 0f, null, null));
-			}
-			else
-			{
-				Action action4 = delegate ()
+            if (this.UseAmmo)
+            {
+				string text4 = "Reload".Translate(this.parent.Named("GEAR"), this.AmmoDef.Named("AMMO")) + " (" + this.LabelRemaining + ")";
+				List<Thing> chosenAmmo;
+				if (!selPawn.CanReach(Operator, PathEndMode.ClosestTouch, Danger.Deadly, false, false, TraverseMode.ByPawn))
 				{
-					selPawn.jobs.TryTakeOrderedJob(JobGiver_ReloadCompTurret.MakeReloadJob(this, chosenAmmo), JobTag.Misc);
-				};
-				yield return (FloatMenuUtility.DecoratePrioritizedTask(new FloatMenuOption(text4, action4, MenuOptionPriority.Default, null, null, 0f, null, null), selPawn, Operator, "ReservedBy"));
+					yield return new FloatMenuOption(text4 + ": " + "NoPath".Translate().CapitalizeFirst(), null, MenuOptionPriority.Default, null, null, 0f, null, null);
+				}
+				else if (!this.NeedsReload(true))
+				{
+					yield return (new FloatMenuOption(text4 + ": " + "ReloadFull".Translate(), null, MenuOptionPriority.Default, null, null, 0f, null, null));
+				}
+				else if ((chosenAmmo = CompTurretReloadableUtility.FindEnoughAmmo(selPawn, Operator.Position, this, true)) == null)
+				{
+					yield return (new FloatMenuOption(text4 + ": " + "ReloadNotEnough".Translate(), null, MenuOptionPriority.Default, null, null, 0f, null, null));
+				}
+				else
+				{
+					Action action4 = delegate ()
+					{
+						selPawn.jobs.TryTakeOrderedJob(JobGiver_ReloadCompTurret.MakeReloadJob(this, chosenAmmo), JobTag.Misc);
+					};
+					yield return (FloatMenuUtility.DecoratePrioritizedTask(new FloatMenuOption(text4, action4, MenuOptionPriority.Default, null, null, 0f, null, null), selPawn, Operator, "ReservedBy"));
+				}
 			}
 			foreach (var item in base.CompFloatMenuOptions(selPawn))
 			{

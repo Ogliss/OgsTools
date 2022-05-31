@@ -42,7 +42,7 @@ namespace HunterMarkingSystem
                         {
                             if (comp != null && comp.hasMat && !portrait)
                             {
-                                DrawMark(comp, pawn, __instance, rootLoc, angle, renderBody, bodyFacing, bodyFacing, bodyDrawType, portrait, headStump);
+                                DrawMark(comp, pawn, __instance, rootLoc, angle, renderBody, bodyFacing, bodyFacing, bodyDrawType, portrait, headStump, flags) ;
                             }
                         }
                     }
@@ -50,7 +50,7 @@ namespace HunterMarkingSystem
             }
         }
 
-        static void DrawMark(HediffComp_HunterMark comp, Pawn pawn, PawnRenderer __instance, Vector3 rootLoc, float angle, bool renderBody, Rot4 bodyFacing, Rot4 headFacing, RotDrawMode bodyDrawType, bool portrait, bool headStump)
+        static void DrawMark(HediffComp_HunterMark comp, Pawn pawn, PawnRenderer __instance, Vector3 rootLoc, float angle, bool renderBody, Rot4 bodyFacing, Rot4 headFacing, RotDrawMode bodyDrawType, bool portrait, bool headStump, PawnRenderFlags flags)
         {
             bool selected = Find.Selector.SelectedObjects.Contains(pawn) && Prefs.DevMode;
             Rot4 rot = bodyFacing;
@@ -108,7 +108,7 @@ namespace HunterMarkingSystem
                 //    GenDraw.DrawMeshNowOrLater(headFacing == Rot4.West ? MeshPool.plane10Flip : MeshPool.plane10, loc2, quaternion, mat, true);
                 Matrix4x4 matrix = default(Matrix4x4);
                 matrix.SetTRS(loc2, quaternion, s);
-                Graphics.DrawMesh((pawn.RaceProps.Humanlike ? headFacing : bodyFacing) == Rot4.West ? MeshPool.plane10Flip : MeshPool.plane10, matrix, mat, 0);
+                GenDraw.DrawMeshNowOrLater((pawn.RaceProps.Humanlike ? headFacing : bodyFacing) == Rot4.West ? MeshPool.plane10Flip : MeshPool.plane10, matrix, mat, flags.FlagSet(PawnRenderFlags.DrawNow));
             }
         }
 

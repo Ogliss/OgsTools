@@ -41,20 +41,26 @@ namespace AbilitesExtended
             set => TicksUntilCasting = value;
         } //Log.Message(value.ToString()); } }
 
-        public new void ExposeData()
+        public override void ExposeData()
         {
             Scribe_Defs.Look<AbilityDef>(ref this.def, "def");
-            Scribe_References.Look(ref this.sourceEquipment, "sourceEquipment");
             if (this.def == null)
             {
                 return;
             }
-            Ability ability = this;
-            VerbTracker tracker = (VerbTracker)AccessTools.Field(typeof(Ability), "verbTracker").GetValue(ability);
-            Scribe_Deep.Look<VerbTracker>(ref tracker, "verbTracker", new object[]
+            Scribe_Values.Look<int>(ref this.Id, "Id", -1, false);
+            if (Scribe.mode == LoadSaveMode.LoadingVars && this.Id == -1)
+            {
+                this.Id = Find.UniqueIDsManager.GetNextAbilityID();
+            }
+            Scribe_References.Look(ref this.sourceEquipment, "sourceEquipment");
+            Scribe_References.Look<Precept>(ref this.sourcePrecept, "sourcePrecept", false);
+            Scribe_Deep.Look<VerbTracker>(ref this.verbTracker, "verbTracker", new object[]
             {
                 this
             });
+            Scribe_Values.Look<int>(ref this.cooldownTicks, "cooldownTicks", 0, false);
+            Scribe_Values.Look<int>(ref this.cooldownTicksDuration, "cooldownTicksDuration", 0, false);
             if (Scribe.mode == LoadSaveMode.PostLoadInit)
             {
                 this.Initialize();
@@ -148,6 +154,11 @@ namespace AbilitesExtended
                         pawn.abilities.TryRemoveEquipmentAbility(AbilityDef, sourceEquipment);
                     }
                 }
+            }
+            else
+            {
+                Log.Warning($"{this} lost source equipment, removing ability");
+                pawn.abilities.TryRemoveEquipmentAbility(AbilityDef, sourceEquipment);
             }
             if (CooldownTicksLeft > -1 && !Find.TickManager.Paused)
             {

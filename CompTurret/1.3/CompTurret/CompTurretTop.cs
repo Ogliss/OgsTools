@@ -210,11 +210,13 @@ namespace CompTurret
 			Quaternion quart = (this.CurRotation + (float)CompTurretTop.ArtworkRotation).ToQuat();
 			matrix.SetTRS(DrawPos, quart, new Vector3(turretTopDrawSize, 1f, turretTopDrawSize));
 			Graphics.DrawMesh(MeshPool.plane10, matrix, this.parentTurret.Props.TurretDef.building.turretTopMat, 0);
-			if (this.parentTurret.TargetCurrentlyAimingAt != null && !this.parentTurret.Stunned && parentTurretGun !=null && parentTurretGun.HasAmmo)
+			if (this.parentTurret.TargetCurrentlyAimingAt != null && !this.parentTurret.Stunned && parentTurretGun !=null && (!parentTurretGun.UseAmmo || parentTurretGun.HasAmmo))
 			{
-                if (parentTurretGun.LineMatRed != null)
+				Log.Message("try draw targeting line");
+				if (parentTurretGun.LineMat != null)
 				{
-					GenDraw.DrawLineBetween(DrawPos, this.parentTurret.CurrentTarget.CenterVector3, parentTurretGun.LineMatRed);
+					Log.Message("draw targeting line");
+					GenDraw.DrawLineBetween(DrawPos, this.parentTurret.CurrentTarget.CenterVector3, parentTurretGun.LineMat);
 				}
 			}
 

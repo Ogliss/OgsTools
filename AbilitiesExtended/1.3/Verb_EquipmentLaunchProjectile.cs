@@ -139,7 +139,7 @@ namespace AbilitesExtended
             return true;
         }
         // Token: 0x06002196 RID: 8598 RVA: 0x000CBF53 File Offset: 0x000CA153
-        private void ThrowDebugText(string text)
+        public void ThrowDebugText(string text)
         {
             if (DebugViewSettings.drawShooting)
             {
@@ -148,7 +148,7 @@ namespace AbilitesExtended
         }
 
         // Token: 0x06002197 RID: 8599 RVA: 0x000CBF7D File Offset: 0x000CA17D
-        private void ThrowDebugText(string text, IntVec3 c)
+        public void ThrowDebugText(string text, IntVec3 c)
         {
             if (DebugViewSettings.drawShooting)
             {

@@ -57,7 +57,9 @@ namespace CompTurret
 		public override void MergeWith(Gizmo other)
 		{
 			return;
+			/*
 			base.MergeWith(other);
+			*/
 		}
 
 		// Token: 0x06005675 RID: 22133 RVA: 0x001CE734 File Offset: 0x001CC934

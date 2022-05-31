@@ -49,7 +49,7 @@ namespace CompTurret
 			Command_CompTurretVerbTarget command_VerbTarget = other as Command_CompTurretVerbTarget;
 			if (command_VerbTarget == null)
 			{
-				Log.ErrorOnce("Tried to merge Command_VerbTarget with unexpected type", 73406263, false);
+				Log.ErrorOnce("Tried to merge Command_VerbTarget with unexpected type", 73406263);
 				return;
 			}
 			if (this.groupedVerbs == null)

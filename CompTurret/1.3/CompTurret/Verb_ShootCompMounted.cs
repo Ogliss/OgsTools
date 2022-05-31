@@ -273,7 +273,7 @@ namespace CompTurret
 			//	Log.Messageage("TryStartCastOn ");
 			if (this.Caster == null)
 			{
-				Log.Error("Verb " + this.GetUniqueLoadID() + " needs Caster to work (possibly lost during saving/loading).", false);
+				Log.Error("Verb " + this.GetUniqueLoadID() + " needs Caster to work (possibly lost during saving/loading).");
 				return false;
 			}
 			if (this.state == VerbState.Bursting || !this.CanHitTarget(castTarg))
@@ -576,7 +576,7 @@ namespace CompTurret
 
 
 		// Token: 0x060022E3 RID: 8931 RVA: 0x000D4C5C File Offset: 0x000D2E5C
-		private bool CanHitFromCellIgnoringRange(IntVec3 sourceCell, LocalTargetInfo targ, out IntVec3 goodDest)
+		private new bool CanHitFromCellIgnoringRange(IntVec3 sourceCell, LocalTargetInfo targ, out IntVec3 goodDest)
 		{
 			if (targ.Thing != null)
 			{
@@ -605,7 +605,7 @@ namespace CompTurret
 		}
 
 		// Token: 0x060022E4 RID: 8932 RVA: 0x000D4D2C File Offset: 0x000D2F2C
-		private bool CanHitCellFromCellIgnoringRange(IntVec3 sourceSq, IntVec3 targetLoc, bool includeCorners = false)
+		private new bool CanHitCellFromCellIgnoringRange(IntVec3 sourceSq, IntVec3 targetLoc, bool includeCorners = false)
 		{
 			if (this.verbProps.mustCastOnOpenGround && (!targetLoc.Standable(this.Caster.Map) || this.Caster.Map.thingGrid.CellContains(targetLoc, ThingCategory.Pawn)))
 			{
@@ -628,7 +628,7 @@ namespace CompTurret
 			return true;
 		}
 
-		private void ThrowDebugText(string text)
+		private new void ThrowDebugText(string text)
 		{
 			if (DebugViewSettings.drawShooting)
 			{
@@ -636,7 +636,7 @@ namespace CompTurret
 			}
 		}
 
-		private void ThrowDebugText(string text, IntVec3 c)
+		private new void ThrowDebugText(string text, IntVec3 c)
 		{
 			if (DebugViewSettings.drawShooting)
 			{
@@ -644,13 +644,5 @@ namespace CompTurret
 			}
 		}
 
-		// Token: 0x04001569 RID: 5481
-		private Texture2D commandIconCached;
-
-		// Token: 0x0400156A RID: 5482
-		private static List<IntVec3> tempLeanShootSources = new List<IntVec3>();
-
-		// Token: 0x0400156B RID: 5483
-		private static List<IntVec3> tempDestList = new List<IntVec3>();
 	}
 }

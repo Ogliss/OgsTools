@@ -41,7 +41,6 @@ namespace AbilitesExtended
                 {
                     return null;
                 }
-             //   Log.Message(this.EquipmentCompSource.parent.LabelCap);
                 return equipmentAbility.sourceEquipment;
             }
         }

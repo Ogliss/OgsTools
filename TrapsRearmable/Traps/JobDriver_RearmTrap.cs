@@ -16,7 +16,7 @@ namespace TrapsRearmable
         }
 
         // Token: 0x06000002 RID: 2 RVA: 0x00002072 File Offset: 0x00000272
-        protected override IEnumerable<Toil> MakeNewToils()
+        public override IEnumerable<Toil> MakeNewToils()
         {
             ToilFailConditions.FailOnDespawnedOrNull<JobDriver_RearmTrap>(this, TargetIndex.A);
             ToilFailConditions.FailOnThingMissingDesignation<JobDriver_RearmTrap>(this, TargetIndex.A, TrapsDefOf.TR_RearmTrap);
