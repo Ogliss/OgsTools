@@ -11,7 +11,7 @@ using System.Reflection.Emit;
 namespace ExtraApparelLayers
 {
 
-    [HarmonyPatch(typeof(PawnRenderer), "DrawBodyApparel")]
+    [HarmonyPatch(typeof(PawnRenderer), "DrawBodyApparel"), HarmonyPriority(Priority.Last)]
     public static class PawnRenderer_DrawBodyApparel_EasyApparelLayers_Transpiler
     {
         public static int layerCount = DefDatabase<ApparelLayerDef>.AllDefs.Where(x => x.drawOrder < ApparelLayerDefOf.Shell.drawOrder).Count();
@@ -28,15 +28,16 @@ namespace ExtraApparelLayers
             for (int i = 0; i < instructionsList.Count; i++)
             {
                 CodeInstruction instruction = instructionsList[i];
-                // cut y space between layers
-                if (EasyApparelLayers_Main.settings.shellLastLayerPatch && !layerPatched && i > 1 && instruction.opcode == OpCodes.Bne_Un && instructionsList[i - 1].OperandIs(shell) && instructionsList[i - 2].OperandIs(lastLayer))
+                // Allow new Shell layers
+                if (!layerPatched && i > 1 && instruction.opcode == OpCodes.Bne_Un && instructionsList[i - 1].OperandIs(shell) && instructionsList[i - 2].OperandIs(lastLayer))
                 {
                     layerPatched = true;
-                    //    Log.Message("DrawBodyApparel LastLayer shell" + i + " opcode: " + instruction.opcode + " operand: " + instruction.operand);
-                    yield return new CodeInstruction(opcode: OpCodes.Call, operand: typeof(EasyApparelLayers_Main).GetMethod("LastLayerShellOrHigher"));
+                //    Log.Message("DrawBodyApparel LastLayer shell" + i + " opcode: " + instruction.opcode + " operand: " + instruction.operand);
+                    yield return new CodeInstruction(opcode: OpCodes.Call, operand: LayerReplacement);
                     instruction = new CodeInstruction(OpCodes.Brfalse, instruction.operand);
                 }
-                if (EasyApparelLayers_Main.settings.shellYSpacePatch && !overShellYPatched && i > 1 && i < instructionsList.Count - 2 && instructionsList[index: i].opcode == OpCodes.Stloc_S && ((LocalBuilder)instructionsList[index: i].operand).LocalIndex == 5)
+                // cut y space between layers
+                if (!overShellYPatched && i > 1 && i < instructionsList.Count - 2 && instructionsList[index: i].opcode == OpCodes.Stloc_S && ((LocalBuilder)instructionsList[index: i].operand).LocalIndex == 5)
                 {
                 //    Log.Message("DrawBodyApparel overShellYPatched " + i + " opcode: " + instruction.opcode + " operand: " + instruction.operand);
                     overShellYPatched = true;
@@ -59,6 +60,18 @@ namespace ExtraApparelLayers
             }
         }
 
+        static MethodInfo LayerReplacement = AccessTools.Method(typeof(PawnRenderer_DrawBodyApparel_EasyApparelLayers_Transpiler), nameof(LastLayer));
+        public static bool LastLayer(ApparelLayerDef LastLayer, ApparelLayerDef layer)
+        {
+            bool result = LastLayer == layer;
+            if (EasyApparelLayers_Main.settings.shellLastLayerPatch && layer == ApparelLayerDefOf.Shell)
+            {
+                result = ApparelLayerUtility.LastLayer(LastLayer, layer);
+            }
+        //    Log.Message($"DrawBodyApparel Checking {LastLayer} Vs {layer} = {result}");
+            return result;
+        }
+
         public static Vector3 OverShell(Vector3 original, ApparelGraphicRecord apparelGraphicRecord, List<ApparelGraphicRecord> list, Rot4 bodyFacing)
         {
             if (!EasyApparelLayers_Main.settings.shellYSpacePatch)
@@ -68,36 +81,12 @@ namespace ExtraApparelLayers
             float y = original.y;
             Vector3 root = original;
             Vector3 result = original;
-            List<ApparelGraphicRecord> shellList = list.FindAll(x => EasyApparelLayers_Main.LastLayerShellOrHigher(x.sourceApparel.def.apparel.LastLayer));
+            List<ApparelGraphicRecord> shellList = list.FindAll(x => ApparelLayerUtility.LastLayerShell(x.sourceApparel.def.apparel.LastLayer));
             int shellInd = shellList.IndexOf(apparelGraphicRecord);
             float yspace;
-            float b;
-            float h;
-            if (bodyFacing != Rot4.North)
-            {
-                result.y -= (PawnRenderer.YOffset_Shell / 2);// (0.02027027f - (0.02027027f / shellList.Count));
-                h = PawnRenderer.YOffset_Head;
-                b = PawnRenderer.YOffset_Shell;
-            }
-            else
-            {
-                result.y -= (PawnRenderer.YOffset_Head - PawnRenderer.YOffset_Shell) / 2;// - (0.023166021f / shellList.Count));
-                h = PawnRenderer.YOffset_Shell;
-                b = PawnRenderer.YOffset_Head;
-            }
-            yspace = (h - (b / 2)) / (shellList.Count + 1);
-            // 0.022166021f
-
-            //0.028957527f
-            /*
-            if (bodyFacing == Rot4.North)
-            {
-                yspace = -yspace;
-            }
-            float result = (b/2) / (list.Count + 1);
-            */
+            yspace = ApparelLayerUtility.shellYSpace / (shellList.Count);
             float increment =  yspace * shellInd;
-            result.y += yspace + increment;
+            result.y += increment;
         //    Log.Message($"DrawBodyApparel Shell apparelGraphic[{shellInd}]: {apparelGraphicRecord.sourceApparel.LabelShortCap}, root: {root}, original: {original}, Increment: {increment} yspace: {yspace} result: {result}");
             return result;
         }

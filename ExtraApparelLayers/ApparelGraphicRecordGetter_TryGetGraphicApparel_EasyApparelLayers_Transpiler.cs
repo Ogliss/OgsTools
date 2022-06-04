@@ -24,7 +24,7 @@ namespace ExtraApparelLayers
                 CodeInstruction instruction = instructionsList[i];
                 if (i > 1 && instruction.opcode == OpCodes.Beq_S && instructionsList[i-1].OperandIs(overhead) && instructionsList[i-2].OperandIs(LastLayer))
                 {
-                    yield return new CodeInstruction(opcode: OpCodes.Call, operand: typeof(EasyApparelLayers_Main).GetMethod("LastLayerOverheadOrHigher"));
+                    yield return new CodeInstruction(opcode: OpCodes.Call, operand: typeof(ApparelLayerUtility).GetMethod("LastLayer"));
                     instruction = new CodeInstruction(OpCodes.Brtrue, instruction.operand);
                 }
                 yield return instruction;

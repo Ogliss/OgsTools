@@ -36,6 +36,7 @@
   </PropertyGroup>
   <ItemGroup>
     <Compile Include="ApparelGraphicRecordGetter_TryGetGraphicApparel_EasyApparelLayers_Transpiler.cs" />
+    <Compile Include="ApparelLayerUtility.cs" />
     <Compile Include="PawnGraphicSet_MatsBodyBaseAt_EasyApparelLayers_Transpiler.cs" />
     <Compile Include="PawnRenderer_DrawHeadHair_EasyApparelLayers_Transpiler.cs" />
     <Compile Include="PawnRenderer_DrawPawnBody_EasyApparelLayers_Transpiler.cs" />

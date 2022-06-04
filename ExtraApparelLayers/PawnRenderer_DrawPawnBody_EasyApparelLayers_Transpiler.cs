@@ -9,7 +9,7 @@ using System.Reflection.Emit;
 
 namespace ExtraApparelLayers
 {
-    [HarmonyPatch(typeof(PawnRenderer), "DrawPawnBody")]
+    [HarmonyPatch(typeof(PawnRenderer), "DrawPawnBody"), HarmonyPriority(Priority.Last)]
     public static class PawnRenderer_DrawPawnBody_EasyApparelLayers_Transpiler
     {
         public static int layerCount = DefDatabase<ApparelLayerDef>.AllDefs.Where(x => x.drawOrder < ApparelLayerDefOf.Shell.drawOrder).Count();
@@ -26,10 +26,10 @@ namespace ExtraApparelLayers
             {
                 CodeInstruction instruction = instructionsList[i];
                 // cut y space between layers
-                if (EasyApparelLayers_Main.settings.bodyYSpacePatch && !underShellYPatched && instruction.opcode == OpCodes.Ldc_R4 && instruction.OperandIs((float)0.0028957527f))
+                if (!underShellYPatched && instruction.opcode == OpCodes.Ldc_R4 && instruction.OperandIs((float)0.0028957527f))
                 {
                     underShellYPatched = true;
-                    //    Log.Message("DrawPawnBody underShellYPatched " + i + " opcode: " + instruction.opcode + " operand: " + instruction.operand);
+                //    Log.Message("DrawPawnBody underShellYPatched " + i + " opcode: " + instruction.opcode + " operand: " + instruction.operand);
                     yield return instruction; // float original
                     yield return new CodeInstruction(opcode: OpCodes.Ldloc_S, 3); // List<Material> list
                     yield return new CodeInstruction(opcode: OpCodes.Ldarg, 1); // Vector3 rootLoc
@@ -46,6 +46,10 @@ namespace ExtraApparelLayers
 
         public static float UnderShell(float original, List<Material> list, Vector3 rootLoc, Rot4 facing)
         {
+            if (EasyApparelLayers_Main.settings.bodyYSpacePatch)
+            {
+                return original;
+            }
             // result = (9f / list.Count) / 980f;
             //    vector.y += 0.008687258f;
             float b;
@@ -60,8 +64,8 @@ namespace ExtraApparelLayers
                 h = 0.02027027f;
                 b = 0.023166021f;
             }
-            float result = (b/2) / (list.Count + 1);
-            Log.Message("DrawPawnBody UnderShell layerCount: " + list.Count + " Increment: " + result);
+            float result = original / (list.Count + 1);
+            Log.Message($"DrawPawnBody UnderShell layerCount: {list.Count}, Increment: {result}, OverShell: {result < PawnRenderer.YOffset_Shell}");
             return result;
         }
 

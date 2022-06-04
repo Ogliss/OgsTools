@@ -13,6 +13,8 @@ namespace ExtraApparelLayers
     [HarmonyPatch(typeof(PawnGraphicSet), "MatsBodyBaseAt"), HarmonyPriority(Priority.Last)]
     public static class PawnGraphicSet_MatsBodyBaseAt_EasyApparelLayers_Transpiler
     {
+        public static bool LastLayerShellOrHigherPatched = false;
+        public static bool LastLayerOverheadOrHigherPatched = false;
         static IEnumerable<CodeInstruction> Transpiler(IEnumerable<CodeInstruction> instructions)
         {
             MethodInfo LastLayer = AccessTools.Property(typeof(ApparelProperties), "LastLayer").GetGetMethod();
@@ -23,18 +25,38 @@ namespace ExtraApparelLayers
             for (int i = 0; i < instructionsList.Count; i++)
             {
                 CodeInstruction instruction = instructionsList[i];
-                if (i > 1 && instruction.opcode == OpCodes.Beq_S && instructionsList[i-1].OperandIs(shell) && instructionsList[i-2].OperandIs(LastLayer))
+                if (!LastLayerShellOrHigherPatched && i > 1 && instruction.opcode == OpCodes.Beq 
+                    && instructionsList[i-1].OperandIs(shell) && instructionsList[i-2].OperandIs(LastLayer))
                 {
-                    yield return new CodeInstruction(opcode: OpCodes.Call, operand: typeof(EasyApparelLayers_Main).GetMethod("LastLayerShellOrHigher"));
+                    LastLayerShellOrHigherPatched = true;
+                //    Log.Message($"MatsBodyBaseAt LastLayerShell patched");
+                    yield return new CodeInstruction(
+                        opcode: OpCodes.Call, 
+                        operand: LayerReplacement);
                     instruction = new CodeInstruction(OpCodes.Brtrue, instruction.operand);
                 }
-                if (i > 1 && instruction.opcode == OpCodes.Beq_S && instructionsList[i-1].OperandIs(overhead) && instructionsList[i-2].OperandIs(LastLayer))
+                if (!LastLayerOverheadOrHigherPatched && i > 1 && instruction.opcode == OpCodes.Beq_S 
+                    && instructionsList[i-1].OperandIs(overhead) && instructionsList[i-2].OperandIs(LastLayer))
                 {
-                    yield return new CodeInstruction(opcode: OpCodes.Call, operand: typeof(EasyApparelLayers_Main).GetMethod("LastLayerOverheadOrHigher"));
+                    LastLayerOverheadOrHigherPatched = true;
+                //    Log.Message($"MatsBodyBaseAt LastLayerOverhead patched");
+                    yield return new CodeInstruction(
+                        opcode: OpCodes.Call, 
+                        operand: LayerReplacement);
                     instruction = new CodeInstruction(OpCodes.Brtrue, instruction.operand);
                 }
                 yield return instruction;
             }
+        }
+
+        static MethodInfo LayerReplacement = AccessTools.Method(typeof(PawnGraphicSet_MatsBodyBaseAt_EasyApparelLayers_Transpiler), nameof(LastLayer));
+        public static bool LastLayer(ApparelLayerDef LastLayer, ApparelLayerDef layer)
+        {
+            if (EasyApparelLayers_Main.settings.overheadLastLayerPatch && layer == ApparelLayerDefOf.Overhead)
+            {
+                return ApparelLayerUtility.LastLayer(LastLayer, layer);
+            }
+            return LastLayer == layer;
         }
 
     }
