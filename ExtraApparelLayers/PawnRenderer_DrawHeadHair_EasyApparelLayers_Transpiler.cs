@@ -29,6 +29,7 @@ namespace ExtraApparelLayers
         [HarmonyTranspiler]
         static IEnumerable<CodeInstruction> Transpiler(IEnumerable<CodeInstruction> instructions)
         {
+        //    Log.Message("Troublesome Transpiler starts here");
             var instructionsList = new List<CodeInstruction>(instructions);
             int z = 0;
             for (int i = 0; i < instructionsList.Count; i++)
