@@ -68,17 +68,21 @@ namespace AbilitesExtended
                 if (adjustedMissRadius > 0.5f)
                 {
                     int maxCells = GenRadial.NumCellsInRadius(adjustedMissRadius);
+                    Rand.PushState();
                     int cellInd = Rand.Range(0, maxCells);
+                    Rand.PopState();
                     if (cellInd > 0)
                     {
                         IntVec3 dest = currentTarget.Cell + GenRadial.RadialPattern[cellInd];
                         ThrowDebugText("ToRadius");
                         ThrowDebugText("Rad\nDest", dest);
                         ProjectileHitFlags hitFlags3 = ProjectileHitFlags.NonTargetWorld;
+                        Rand.PushState();
                         if (Rand.Chance(0.5f))
                         {
                             hitFlags3 = ProjectileHitFlags.All;
                         }
+                        Rand.PopState();
                         if (!canHitNonTargetPawnsNow)
                         {
                             hitFlags3 &= ~ProjectileHitFlags.NonTargetPawns;
@@ -97,14 +101,19 @@ namespace AbilitesExtended
                 ThrowDebugText("ToWild" + (canHitNonTargetPawnsNow ? "\nchntp" : ""));
                 ThrowDebugText("Wild\nDest", line.Dest);
                 ProjectileHitFlags hitFlags2 = ProjectileHitFlags.NonTargetWorld;
+                Rand.PushState();
                 if (Rand.Chance(0.5f) && canHitNonTargetPawnsNow)
                 {
                     hitFlags2 |= ProjectileHitFlags.NonTargetPawns;
                 }
+                Rand.PopState();
                 proj.Launch(attackOwner, shotOrigin, line.Dest, currentTarget, hitFlags2, preventFriendlyFire, attackWeapon, hitCoverDef);
                 return true;
             }
-            if (currentTarget.Thing != null && currentTarget.Thing.def.category == ThingCategory.Pawn && !Rand.Chance(hitReport.PassCoverChance))
+            Rand.PushState();
+            bool hit = !Rand.Chance(hitReport.PassCoverChance);
+            Rand.PopState();
+            if (currentTarget.Thing != null && currentTarget.Thing.def.category == ThingCategory.Pawn && hit)
             {
                 ThrowDebugText("ToCover" + (canHitNonTargetPawnsNow ? "\nchntp" : ""));
                 ThrowDebugText("Cover\nDest", hitCover.Position);

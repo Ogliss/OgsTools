@@ -10,7 +10,10 @@ namespace Recruiters
 	{
 		public override IEnumerable<Thing> GenerateThings(int forTile, Faction faction = null)
 		{
-			if (this.respectPopulationIntent && Rand.Value > StorytellerUtilityPopulation.PopulationIntent)
+			Rand.PushState();
+			bool pop = Rand.Value > StorytellerUtilityPopulation.PopulationIntent;
+			Rand.PopState();
+			if (this.respectPopulationIntent && pop)
 			{
 				yield break;
 			}

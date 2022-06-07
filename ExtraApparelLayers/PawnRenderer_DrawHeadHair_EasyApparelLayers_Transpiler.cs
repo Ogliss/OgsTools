@@ -17,6 +17,8 @@ namespace ExtraApparelLayers
         static FieldInfo bodyFacingField = AccessTools.TypeByName("PawnRenderer").GetNestedTypes(BindingFlags.NonPublic | BindingFlags.Instance).First(x => x.GetFields().Any(y => y.Name.Contains("bodyFacing"))).GetField("bodyFacing");
         static MethodInfo lastLayer = AccessTools.Property(typeof(ApparelProperties), "LastLayer").GetGetMethod();
         static FieldInfo overhead = AccessTools.Field(typeof(ApparelLayerDefOf), "Overhead");
+        static FieldInfo graphics = AccessTools.Field(typeof(PawnRenderer), "graphics");
+        static FieldInfo apparelGraphics = AccessTools.Field(typeof(PawnGraphicSet), "apparelGraphics");
         static MethodInfo overOverhead = AccessTools.Method(typeof(PawnRenderer_DrawHeadHair_EasyApparelLayers_Transpiler), nameof(OverOverhead));
         static MethodInfo incOverhead = AccessTools.Method(typeof(PawnRenderer_DrawHeadHair_EasyApparelLayers_Transpiler), nameof(IncOverhead));
 
@@ -95,8 +97,9 @@ namespace ExtraApparelLayers
                 if (!overOverheadPatched && instruction.opcode == OpCodes.Ldfld && instruction.OperandIs(rootLocField))
                 {
                     overOverheadPatched = true;
-                //      Log.Message("overOverheadYPatched " + i + " opcode: " + instruction.opcode + " operand: " + instruction.operand);
+                    //      Log.Message("overOverheadYPatched " + i + " opcode: " + instruction.opcode + " operand: " + instruction.operand);
                     yield return instruction; // Vector3 loc2
+                    yield return new CodeInstruction(OpCodes.Ldarg_0); // PawnRenderer
                     yield return new CodeInstruction(OpCodes.Ldarg_1); // ApparelGraphicRecord
 
                     instruction = new CodeInstruction(opcode: OpCodes.Call, operand: overOverhead);
@@ -106,8 +109,9 @@ namespace ExtraApparelLayers
                 {
                     ldcr4Patched++;
                     overInFrontOfFacePatched = true;
-                //        Log.Message("overInFrontOfFacePatched " + i + " opcode: " + instruction.opcode + " operand: " + instruction.operand);
+                    //        Log.Message("overInFrontOfFacePatched " + i + " opcode: " + instruction.opcode + " operand: " + instruction.operand);
                     yield return instruction; // Vector3 loc2
+                    yield return new CodeInstruction(OpCodes.Ldarg_0); // PawnRenderer
                     yield return new CodeInstruction(OpCodes.Ldarg_1); // ApparelGraphicRecord
                     instruction = new CodeInstruction(opcode: OpCodes.Call, operand: incOverhead);
                 }
@@ -126,14 +130,14 @@ namespace ExtraApparelLayers
             
         }
 
-        public static Vector3 OverOverhead(Vector3 original, ApparelGraphicRecord apparelGraphicRecord)
+        public static Vector3 OverOverhead(Vector3 original, PawnRenderer instance, ApparelGraphicRecord apparelGraphicRecord)
         {
             Vector3 result = original;
             if (!EasyApparelLayers_Main.settings.overheadYSpacePatch)
             {
                 return result;
             }
-            List<ApparelGraphicRecord> List = records.FindAll(x => ApparelLayerUtility.LastLayerOverhead(x.sourceApparel.def.apparel.LastLayer));
+            List<ApparelGraphicRecord> List = instance.graphics.apparelGraphics.FindAll(x => ApparelLayerUtility.LastLayerOverhead(x.sourceApparel.def.apparel.LastLayer));
             int shellInd = List.IndexOf(apparelGraphicRecord);
             float yspace = ApparelLayerUtility.headgearYSpace / List.Count;
             float increment = yspace * shellInd;
@@ -141,14 +145,14 @@ namespace ExtraApparelLayers
             // Log.Message("Overhead apparelGraphic " + shellInd + ": " + apparelGraphicRecord.sourceApparel.LabelShortCap + " original: " + original + " Increment: " + increment + " yspace: " + yspace + " result: " + result);
             return result;
         }
-        public static float IncOverhead(float original, ApparelGraphicRecord apparelGraphicRecord)
+        public static float IncOverhead(float original, PawnRenderer instance, ApparelGraphicRecord apparelGraphicRecord)
         {
             float result = original;
             if (!EasyApparelLayers_Main.settings.overheadInFrontOfFaceYSpacePatch)
             {
                 return result;
             }
-            List<ApparelGraphicRecord> shellList = records.FindAll(x => ApparelLayerUtility.LastLayerOverhead(x.sourceApparel.def.apparel.LastLayer));
+            List<ApparelGraphicRecord> shellList = instance.graphics.apparelGraphics.FindAll(x => ApparelLayerUtility.LastLayerOverhead(x.sourceApparel.def.apparel.LastLayer));
             int shellInd = shellList.IndexOf(apparelGraphicRecord);
             float yspace = ApparelLayerUtility.headgearYSpace / (shellList.Count + 1);
             float increment = yspace * shellInd;

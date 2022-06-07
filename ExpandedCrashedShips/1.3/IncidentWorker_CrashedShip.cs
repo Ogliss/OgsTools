@@ -19,7 +19,9 @@ namespace CrashedShipsExtension
             {
                 return 1;
             }
+            Rand.PushState();
             int r = Math.Max(1, Rand.RangeInclusive(1, (int)(props.defaultPoints * parms.points)));
+            Rand.PopState();
             return r;
         }
 
