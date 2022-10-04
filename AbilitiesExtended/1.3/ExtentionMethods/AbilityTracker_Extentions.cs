@@ -82,7 +82,7 @@ namespace AbilitesExtended
 
         public static void TryGainEquipmentAbility(this Pawn_AbilityTracker tracker, AbilityDef abilityDef, ThingWithComps thing)
 		{
-            if (abilityDef is EquipmentAbilityDef def && (!def.requirePsyker || isPsyker(tracker.pawn)))
+            if (abilityDef is EquipmentAbilityDef def && (!def.requirePsyker || isPsyker(tracker.pawn)) && (!def.requireCapableOfViolence || !tracker.pawn.WorkTagIsDisabled(WorkTags.Violent)))
             {
                 EquipmentAbility ab = tracker.abilities.FirstOrFallback(x => x.def == def && x is EquipmentAbility y && y.sourceEquipment == thing) as EquipmentAbility;
                 if (ab == null)

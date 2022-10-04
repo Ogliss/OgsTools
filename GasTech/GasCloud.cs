@@ -345,7 +345,7 @@ namespace GasTech
 
 		private bool TileIsGasTraversible(IntVec3 pos, Map map, GasCloud sourceCloud)
 		{
-			if (!pos.InBounds(map) || !map.pathGrid.WalkableFast(pos)) return false;
+			if (!pos.InBounds(map) || !map.pathFinder.pathGrid.WalkableFast(pos)) return false;
 			var thingList = map.thingGrid.ThingsListAtFast(pos);
 			for (var i = 0; i < thingList.Count; i++)
 			{

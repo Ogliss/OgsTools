@@ -10,7 +10,6 @@ using HarmonyLib;
 using Verse.Sound;
 using System.Reflection.Emit;
 using UnityEngine;
-using OgsCompOversizedWeapon;
 
 namespace ProjectileImpactFX.HarmonyInstance
 {

@@ -91,14 +91,14 @@ namespace Dropships
                         this.Transporter
                     };
                 }
-                foreach (Pawn thing in TransporterUtility.AllSendablePawns(this.cachedTransporterList, this.parent.Map))
+                foreach (Pawn thing in TransporterUtility.AllSendablePawns(this.cachedTransporterList, this.parent.Map, false))
                 {
                     if (!this.IsRequired(thing))
                     {
                         return false;
                     }
                 }
-                foreach (Thing thing2 in TransporterUtility.AllSendableItems(this.cachedTransporterList, this.parent.Map))
+                foreach (Thing thing2 in TransporterUtility.AllSendableItems(this.cachedTransporterList, this.parent.Map, false))
                 {
                     if (!this.IsRequired(thing2))
                     {
@@ -234,7 +234,7 @@ namespace Dropships
 
         public override IEnumerable<FloatMenuOption> CompFloatMenuOptions(Pawn selPawn)
         {
-            if (!selPawn.CanReach(this.parent, PathEndMode.Touch, Danger.Deadly, false, TraverseMode.ByPawn))
+            if (!selPawn.CanReach(this.parent, PathEndMode.Touch, Danger.Deadly, false, false, TraverseMode.ByPawn))
             {
                 yield break;
             }
@@ -1254,9 +1254,9 @@ namespace Dropships
                     this.Transporter.leftToLoad.Clear();
                 }
                 CompDropship.tmpAllSendablePawns.Clear();
-                CompDropship.tmpAllSendablePawns.AddRange(TransporterUtility.AllSendablePawns(this.TransportersInGroup, this.parent.Map));
+                CompDropship.tmpAllSendablePawns.AddRange(TransporterUtility.AllSendablePawns(this.TransportersInGroup, this.parent.Map, false));
                 CompDropship.tmpAllSendableItems.Clear();
-                CompDropship.tmpAllSendableItems.AddRange(TransporterUtility.AllSendableItems(this.TransportersInGroup, this.parent.Map));
+                CompDropship.tmpAllSendableItems.AddRange(TransporterUtility.AllSendableItems(this.TransportersInGroup, this.parent.Map, false));
                 CompDropship.tmpAllSendableItems.AddRange(TransporterUtility.ThingsBeingHauledTo(this.TransportersInGroup, this.parent.Map));
                 CompDropship.tmpRequiredPawnsPossibleToSend.Clear();
                 for (int l = 0; l < CompDropship.tmpRequiredPawns.Count; l++)

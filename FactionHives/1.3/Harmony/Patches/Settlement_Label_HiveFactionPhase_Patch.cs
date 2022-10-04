@@ -20,7 +20,7 @@ namespace ExtraHives.HarmonyInstance
         [HarmonyPostfix]
         public static void Postfix(Settlement __instance, ref string __result)
         {
-            if (__instance.Faction.def.HasModExtension<HiveFactionExtension>())
+            if (__instance?.Faction != null && __instance.Faction.def.HasModExtension<HiveFactionExtension>())
             {
                 HiveFactionExtension ext = __instance.Faction.def.GetModExtension<HiveFactionExtension>();
                 if (ext.HasStages && ext.showStageInName)

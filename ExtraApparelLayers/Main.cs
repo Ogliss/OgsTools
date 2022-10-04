@@ -18,7 +18,7 @@ namespace ExtraApparelLayers
         public EasyApparelLayers_Main(ModContentPack content) : base(content)
         {
             settings = GetSettings<EasyApparelLayers_Settings>();
-
+        //    Harmony.DEBUG = true;
             harmony.PatchAll(Assembly.GetExecutingAssembly());
             harmony.Patch(AccessTools.GetDeclaredMethods(typeof(PawnRenderer)).First((MethodInfo mi) => mi.HasAttribute<CompilerGeneratedAttribute>() && mi.Name.Contains("DrawHeadHair") && mi.Name.Contains("DrawApparel")), null, null, new HarmonyMethod(typeof(PawnRenderer_DrawHeadHair_EasyApparelLayers_Transpiler), "CompilerGenereatedTranspiler", null), null);
  

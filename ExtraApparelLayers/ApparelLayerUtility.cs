@@ -52,7 +52,7 @@ namespace ExtraApparelLayers
         public static List<ApparelGraphicRecord> apparelGraphicRecordsOrdered(List<ApparelGraphicRecord> list)
         {
         //    Log.Message($"returning {list.Count} appareal, in draw order of last layer");
-            return list.OrderBy(x => x.sourceApparel.def.apparel.LastLayer.drawOrder).ToList();
+            return list.OrderBy(x => x.sourceApparel.def.apparel.layers.Last().drawOrder).ToList();
         }
 
 

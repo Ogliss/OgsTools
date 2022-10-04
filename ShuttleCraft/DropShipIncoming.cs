@@ -8,7 +8,7 @@ namespace Dropships
 	[StaticConstructorOnStartup]
 	public class DropShipIncoming : DropPodIncoming, IActiveDropPod, IThingHolder
 	{
-		protected override void SpawnThings()
+		public override void SpawnThings()
 		{
 			/*
 			if (this.Contents.spawnWipeMode == null)
@@ -24,13 +24,13 @@ namespace Dropships
 		}
 
 		// Token: 0x06007932 RID: 31026 RVA: 0x00239D78 File Offset: 0x00237F78
-		protected override void Impact()
+		public override void Impact()
 		{
 			for (int i = 0; i < 6; i++)
 			{
-				MoteMaker.ThrowDustPuff(base.Position.ToVector3Shifted() + Gen.RandomHorizontalVector(1f), base.Map, 1.2f);
+				FleckMaker.ThrowDustPuff(base.Position.ToVector3Shifted() + Gen.RandomHorizontalVector(1f), base.Map, 1.2f);
 			}
-			MoteMaker.ThrowLightningGlow(base.Position.ToVector3Shifted(), base.Map, 2f);
+			FleckMaker.ThrowLightningGlow(base.Position.ToVector3Shifted(), base.Map, 2f);
 			GenClamor.DoClamor(this, 15f, ClamorDefOf.Impact);
 			base.Impact();
 		}

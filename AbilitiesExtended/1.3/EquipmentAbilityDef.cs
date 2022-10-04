@@ -9,6 +9,7 @@ namespace AbilitesExtended
     {
         public float cooldown = -1;
         public bool requirePsyker = false;
+        public bool requireCapableOfViolence = false;
         public virtual string GetDescription()
         {
             var result = "";

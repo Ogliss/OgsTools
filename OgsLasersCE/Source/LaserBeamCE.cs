@@ -67,7 +67,7 @@ namespace OgsLasers
             }
         }
         //    public new ThingDef equipmentDef => base.equipmentDef
-        protected override void Impact(Thing hitThing)
+        public override void Impact(Thing hitThing)
         {
             bool shielded = hitThing.IsShielded() && def.IsWeakToShields;
 

@@ -62,7 +62,7 @@ namespace WeaponizedNanites
 						if (!pawn.RaceProps.Animal)
 						{
 							this.doDamage(pawn);
-							MoteMaker.ThrowDustPuff(pawn.Position, base.Map, 0.2f);
+							FleckMaker.ThrowDustPuff(pawn.Position, base.Map, 0.2f);
 						}
 					}
 				}
@@ -89,7 +89,7 @@ namespace WeaponizedNanites
 			List<Apparel> wornApparel = p.apparel.WornApparel;
 			int num = Mathf.RoundToInt((float)this.AcidDamage * Rand.Range(0.5f, 1.25f));
 			DamageInfo dinfo = default(DamageInfo);
-			MoteMaker.ThrowDustPuff(p.Position, base.Map, 0.2f);
+			FleckMaker.ThrowDustPuff(p.Position, base.Map, 0.2f);
 			foreach (BodyPartRecord bodyPartRecord in p.health.hediffSet.GetNotMissingParts(BodyPartHeight.Undefined, BodyPartDepth.Undefined, null, null))
 			{
 				if (p.health.hediffSet.PartOrAnyAncestorHasDirectlyAddedParts(bodyPartRecord))

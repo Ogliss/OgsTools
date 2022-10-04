@@ -9,7 +9,7 @@ using Verse.AI.Group;
 
 namespace Dropships
 {
-    public class DropShipLeaving : DropPodLeaving, IActiveDropPod, IThingHolder
+    public class DropShipLeaving : FlyShipLeaving, IActiveDropPod, IThingHolder
     {
         // Token: 0x170005F0 RID: 1520
         // Token: 0x0600271D RID: 10013 RVA: 0x00129CD4 File Offset: 0x001280D4
@@ -23,7 +23,7 @@ namespace Dropships
         }
 
         // Token: 0x0600271E RID: 10014 RVA: 0x00129D34 File Offset: 0x00128134
-        protected override void LeaveMap()
+        public override void LeaveMap()
         {
             if (this.groupID < 0 && this.destinationTile < 0)
             {
@@ -37,13 +37,13 @@ namespace Dropships
             }
             if (this.groupID < 0)
             {
-                Log.Error("Drop pod left the map, but its group ID is " + this.groupID, false);
+                Log.Error("Drop pod left the map, but its group ID is " + this.groupID);
                 this.Destroy(DestroyMode.Vanish);
                 return;
             }
             if (this.destinationTile < 0)
             {
-                Log.Error("Drop pod left the map, but its destination tile is " + this.destinationTile, false);
+                Log.Error("Drop pod left the map, but its destination tile is " + this.destinationTile);
                 this.Destroy(DestroyMode.Vanish);
                 return;
             }
@@ -72,11 +72,5 @@ namespace Dropships
                 }
             }
         }
-
-        // Token: 0x04001627 RID: 5671
-        private bool alreadyLeft;
-
-        // Token: 0x04001628 RID: 5672
-        private static List<Thing> tmpActiveDropPods = new List<Thing>();
     }
 }

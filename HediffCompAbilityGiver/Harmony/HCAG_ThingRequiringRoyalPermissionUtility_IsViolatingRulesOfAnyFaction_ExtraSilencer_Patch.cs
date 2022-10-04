@@ -40,7 +40,7 @@ namespace HediffCompAbilityGiver
                 bool silenced = pawn.health.hediffSet.hediffs.Any(x => x.def.HasModExtension<PsySilencerExt>());
                 if (silenced)
                 {
-                    __result = __instance.LabelCap + ((__instance.level > 0) ? ("\n" + "Level".Translate() + " " + __instance.level) : "") + "\n\n" + __instance.description + "\n\n" + __instance.StatSummary.ToLineList(null, false);
+                    __result = __instance.LabelCap + ((__instance.level > 0) ? ("\n" + "Level".Translate() + " " + __instance.level) : "") + "\n\n" + __instance.description + "\n\n" + __instance.StatSummary().ToLineList(null, false);
                 }
             }
         }

@@ -21,7 +21,7 @@ namespace ExtraApparelLayers
             {
                 return;
             }
-            __instance.apparelGraphics.OrderBy(x => x.sourceApparel.def.apparel.LastLayer.drawOrder);
+            __instance.apparelGraphics = ApparelLayerUtility.apparelGraphicRecordsOrdered(__instance.apparelGraphics);
         }
     }
 

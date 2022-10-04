@@ -151,7 +151,7 @@ namespace AbilitesExtended
                 {
                     if (apparel.Wearer != pawn)
                     {
-                        pawn.abilities.TryRemoveEquipmentAbility(AbilityDef, sourceEquipment);
+                        pawn.abilities?.TryRemoveEquipmentAbility(AbilityDef, sourceEquipment);
                     }
                 }
             }

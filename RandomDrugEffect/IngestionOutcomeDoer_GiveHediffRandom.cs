@@ -9,7 +9,7 @@ namespace RandomDrugEffect.IngestionOutcomeDoer_GiveHediffRandom
 	public class IngestionOutcomeDoer_GiveHediffRandom : IngestionOutcomeDoer
 	{
 		// Token: 0x06003563 RID: 13667 RVA: 0x00123774 File Offset: 0x00121974
-		protected override void DoIngestionOutcomeSpecial(Pawn pawn, Thing ingested)
+		public override void DoIngestionOutcomeSpecial(Pawn pawn, Thing ingested)
 		{
 			this.hediffDef = this.hediffDefs.RandomElement();
 			Hediff hediff = HediffMaker.MakeHediff(this.hediffDef, pawn, null);
