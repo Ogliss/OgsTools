@@ -1,0 +1,81 @@
+﻿using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Text;
+using RimWorld;
+using Verse;
+using Verse.AI;
+using Verse.AI.Group;
+using HarmonyLib;
+using Verse.Sound;
+using UnityEngine;
+using System.Reflection;
+using AdvancedGraphics;
+
+namespace AdvancedGraphics.HarmonyInstance
+{
+    [HarmonyPatch(typeof(Verb), "get_UIIcon")]
+    public static class Verb_get_UIIcon_ColouredWeapons_Patch
+    {
+        public static void Prefix(ref Verb __instance, ref Texture2D ___commandIconCached, ref Texture2D __result)
+        {
+        //    Log.Message("UIIcon_ColouredWeapons Start");
+            if (__instance.EquipmentSource != null)
+            {
+            //    Log.Message("UIIcon_ColouredWeapons equipmentSource");
+                Graphic_SingleQuality quality = __instance?.EquipmentSource?.Graphic as Graphic_SingleQuality;
+
+            //    Log.Message("UIIcon_ColouredWeapons Grahpic cast");
+                //    Graphic_SingleQuality quality = R.ExtractInnerGraphicFor(__instance) as Graphic_SingleQuality;
+                if (quality != null)
+                {
+                //    Log.Message("UIIcon_ColouredWeapons quality");
+                    if (___commandIconCached == null)
+                    {
+                        string path = quality.QualityGraphicFor(__instance.EquipmentSource).path + "_Icon";
+                    //    Log.Message("checking " + path);
+                        Texture2D tex = ContentFinder<Texture2D>.Get(path, false);
+                        if (tex != null)
+                        {
+                        //    Log.Message("Found " + path);
+                            __instance.verbProps.commandIcon = path;
+                            ___commandIconCached = tex;
+                        }
+                    }
+                }
+                else
+                {
+
+                //    Log.Message("UIIcon_ColouredWeapons not quality");
+                    Graphic_SingleRandomized randomized = __instance.EquipmentSource.Graphic as Graphic_SingleRandomized;
+
+                //    Log.Message("UIIcon_ColouredWeapons Graphic cast 2");
+                    //    Graphic_SingleRandomized randomized = R.ExtractInnerGraphicFor(__instance) as Graphic_SingleRandomized;
+                    if (randomized != null)
+                    {
+                    //    Log.Message("UIIcon_ColouredWeapons randomized");
+                        __result = randomized.RandomGraphicFor(__instance.EquipmentSource).MatSingle.mainTexture as Texture2D;
+                    }
+                    else
+                    {
+                    //    Log.Message("UIIcon_ColouredWeapons not randomized");
+                        Graphic_AdvancedSingle advancedSingle = __instance.EquipmentSource.Graphic as Graphic_AdvancedSingle;
+                    //    Log.Message("UIIcon_ColouredWeapons Graphic Cast 3");
+                        if (advancedSingle != null)
+                        {
+                        //    Log.Message("UIIcon_ColouredWeapons advancedSingle");
+                            CompAdvancedGraphic advancedWeaponGraphic = __instance.EquipmentSource.TryGetComp<CompAdvancedGraphic>();
+                            if (advancedWeaponGraphic != null)
+                            {
+                                __result = __instance.EquipmentSource.Graphic.MatSingleFor(__instance.EquipmentSource).mainTexture as Texture2D;
+                                // __result.IconDrawColor = ownerThing.Graphic.MatSingleFor(ownerThing).mainTexture as Texture2D;
+                            }
+                        }
+                    }
+                }
+            //    Log.Message("UIIcon_ColouredWeapons End Result: " + __result?.name);
+            }
+
+        }
+    }
+}

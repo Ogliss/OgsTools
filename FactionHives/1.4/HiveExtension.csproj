@@ -1,0 +1,159 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup>
+    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
+    <ProjectGuid>{FC10BCFE-3722-4A62-A9FE-FC56AA3C5162}</ProjectGuid>
+    <OutputType>Library</OutputType>
+    <AppDesignerFolder>Properties</AppDesignerFolder>
+    <RootNamespace>ExtraHives</RootNamespace>
+    <AssemblyName>ExtraHives</AssemblyName>
+    <TargetFramework>net472</TargetFramework>
+    <FileAlignment>512</FileAlignment>
+    <EnableDefaultCompileItems>false</EnableDefaultCompileItems>
+    <AppendTargetFrameworkToOutputPath>false</AppendTargetFrameworkToOutputPath>
+    <AppendRuntimeIdentifierToOutputPath>false</AppendRuntimeIdentifierToOutputPath>
+    <LangVersion>8.0</LangVersion>
+    <Deterministic>true</Deterministic>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
+    <DebugSymbols>true</DebugSymbols>
+    <DebugType>full</DebugType>
+    <Optimize>false</Optimize>
+    <OutputPath>bin\Debug\</OutputPath>
+    <DefineConstants>DEBUG;TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+    <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
+    <DebugType>pdbonly</DebugType>
+    <Optimize>true</Optimize>
+    <OutputPath>bin\Debug\</OutputPath>
+    <DefineConstants>TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+    <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <Compile Include="DebugActions\DebugActionsMisc.cs" />
+    <Compile Include="Defs\HivelikeIncidentDef.cs" />
+    <Compile Include="ExtentsionMethods\FactionExtensions.cs" />
+    <Compile Include="ExtentsionMethods\Extensions.cs" />
+    <Compile Include="RulesGrammar\Rule_Current_World.cs" />
+    <Compile Include="RulesGrammar\Rule_Ordinal_Number.cs" />
+    <None Include="Harmony\Patches\PawnGroupMakerUtility_ChoosePawnGenOptionsByPoints_NoPawnPointCurve_Patch.cs.bak" />
+    <Compile Include="Harmony\Patches\GetOrGenerateMapUtility_GetOrGenerateMap_BETA_Patch.cs" />
+    <Compile Include="Harmony\Patches\PawnGroupMakerUtility_MaxPawnCost_Patch.cs" />
+    <Compile Include="Harmony\Patches\Settlement_Label_HiveFactionPhase_Patch.cs" />
+    <Compile Include="Harmony\Patches\Def_get_LabelCap_Patch.cs" />
+    <Compile Include="Harmony\Patches\Faction_get_Name_Patch.cs" />
+    <Compile Include="WorldComps\HiveBaseComp.cs" />
+    <Compile Include="Harmony\Patches\PawnGroupMakerUtility_TryGetRandomPawnGroupMaker_Patch.cs" />
+    <Compile Include="Harmony\Patches\IncidentWorker_Infestation_TryExecuteWorker_Patch.cs" />
+    <Compile Include="Harmony\Patches\IncidentWorker_RaidEnemy_TryExecuteWorker_Patch.cs" />
+    <Compile Include="Harmony\Patches\SymbolResolver_Hivebase_Resolve_HiveStage_Patch.cs" />
+    <Compile Include="Harmony\Patches\SymbolResolver_PawnHiveGroup_Resolve_HiveStage_Patch.cs" />
+    <Compile Include="WorldComps\HiveFactionEvolutionTracker.cs" />
+    <Compile Include="LordJobs\LordJob_DefendHiveBase.cs" />
+    <Compile Include="Comps\CompSpawnerOnDamaged.cs" />
+    <Compile Include="SymbolResolvers\SymbolResolver_SingleHivePawn.cs" />
+    <Compile Include="SymbolResolvers\SymbolResolver_HiveInternals.cs" />
+    <Compile Include="SymbolResolvers\SymbolResolver_ClearChamber.cs" />
+    <Compile Include="SymbolResolvers\SymbolResolver_HiveBaseMoundMaker.cs" />
+    <Compile Include="SymbolResolvers\SymbolResolver_Hivebase.cs" />
+    <Compile Include="SymbolResolvers\SymbolResolver_OutdoorLightingHivebase.cs" />
+    <Compile Include="SymbolResolvers\SymbolResolver_PawnHiveGroup.cs" />
+    <Compile Include="SymbolResolvers\SymbolResolver_RandomCorpse.cs" />
+    <Compile Include="SymbolResolvers\SymbolResolver_RandomDamage.cs" />
+    <Compile Include="SymbolResolvers\SymbolResolver_RandomHives.cs" />
+    <Compile Include="Harmony\Patches\GenStep_Settlement_ScatterAt_ExtraHives_Patch.cs" />
+    <Compile Include="DefExtensions\HiveFactionExtension.cs" />
+    <Compile Include="IncidentWorkers\IncidentWorker_InfestedMeteoriteImpact.cs" />
+    <Compile Include="Harmony\MainHarmonyInstance.cs" />
+    <Compile Include="Harmony\Patches\GenerateImpliedDefs_PreResolve_Patch.cs" />
+    <Compile Include="DefOf\ThingDefOf.cs" />
+    <Compile Include="DefOf\PawnGroupKindDefOf.cs" />
+    <Compile Include="PawnsArrivalModeWorkers\PawnsArrivalModeWorker_CenterTunnel.cs" />
+    <Compile Include="DefOf\PawnsArrivalModeDefOf.cs" />
+    <Compile Include="Utilities\PawnsArrivalModeWorkerUtility.cs" />
+    <Compile Include="Utilities\TunnelsArrivalActionUtility.cs" />
+    <Compile Include="PawnsArrivalModeWorkers\PawnsArrivalModeWorker_EdgeTunnelGroups.cs" />
+    <Compile Include="PawnsArrivalModeWorkers\PawnsArrivalModeWorker_EdgeTunnel.cs" />
+    <Compile Include="PawnsArrivalModeWorkers\PawnsArrivalModeWorker_RandomTunnel.cs" />
+    <Compile Include="Things\TunnelRaidSpawner.cs" />
+    <Compile Include="Utilities\TunnelRaidUtility.cs" />
+    <Compile Include="Utilities\ExtraInfestationIncidentUtility.cs" />
+    <Compile Include="IncidentWorkers\IncidentWorker_GrowZoneInfestation.cs" />
+    <Compile Include="DefExtensions\InfestationExtension.cs" />
+    <Compile Include="Utilities\ExtendedSpawnedPawnParams.cs" />
+    <Compile Include="IncidentWorkers\IncidentWorker_DeepDrillInfestation.cs" />
+    <Compile Include="PlaceWorkers\PlaceWorker_ShowHiveRadius.cs" />
+    <Compile Include="Main.cs" />
+    <Compile Include="IncidentWorkers\IncidentWorker_Infestation.cs" />
+    <Compile Include="Utilities\InfestationUtility.cs" />
+    <Compile Include="Utilities\InfestationCellFinder.cs" />
+    <Compile Include="DefExtensions\TunnelExtension.cs" />
+    <Compile Include="DefExtensions\HiveDefExtension.cs" />
+    <Compile Include="Things\TunnelHiveSpawner.cs" />
+    <Compile Include="Comps\CompSpawnerPawn.cs" />
+    <Compile Include="Comps\CompSpawnerHives.cs" />
+    <Compile Include="LordJobs\LordJob_DefendAndExpandHive.cs" />
+    <Compile Include="LordToils\LordToil_DefendHiveAggressively.cs" />
+    <Compile Include="LordToils\LordToil_AssaultColony.cs" />
+    <Compile Include="LordToils\LordToil_DefendAndExpandHive.cs" />
+    <Compile Include="LordToils\LordToil_HiveRelated.cs" />
+    <Compile Include="LordToils\LordToil_HiveRelatedData.cs" />
+    <Compile Include="Things\Hive.cs" />
+    <Compile Include="Utilities\ExtraHiveUtility.cs" />
+  </ItemGroup>
+  <ItemGroup>
+    <Reference Include="CrashedShipsExtension">
+      <HintPath>..\..\ExpandedCrashedShips\1.3\bin\Debug\CrashedShipsExtension.dll</HintPath>
+    </Reference>
+    <Reference Include="System.Runtime.InteropServices.RuntimeInformation" />
+  </ItemGroup>
+  <ItemGroup>
+    <PackageReference Include="Krafs.Rimworld.Ref" Version="1.4.3529" GeneratePathProperty="true" />
+    <PackageReference Include="Lib.Harmony">
+      <Version>2.2.2</Version>
+    </PackageReference>
+    <PackageReference Include="TaskPubliciser">
+      <Version>1.0.3</Version>
+      <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+      <PrivateAssets>all</PrivateAssets>
+    </PackageReference>
+  </ItemGroup>
+  <ItemGroup>
+    <Folder Include="Properties\" />
+  </ItemGroup>
+  <Target Name="MyCode" BeforeTargets="UpdateReferences">
+    <PropertyGroup>
+      <AssemblyCSharp>$(PkgKrafs_Rimworld_Ref)\ref\net472\Assembly-CSharp.dll</AssemblyCSharp>
+      <PubliciseOutputPath>$(PkgKrafs_Rimworld_Ref)\ref\net472\</PubliciseOutputPath>
+      <AssemblyCSharp_Publicised>$(PubliciseOutputPath)Assembly-CSharp_publicised.dll</AssemblyCSharp_Publicised>
+    </PropertyGroup>
+    <Publicise TargetAssemblyPath="$(AssemblyCSharp)" OutputPath="$(PkgKrafs_Rimworld_Ref)\ref\net472\" Condition="Exists('$(AssemblyCSharp)')" />
+    <ItemGroup>
+      <Reference Include="$(AssemblyCSharp_Publicised)">
+        <SpecificVersion>false</SpecificVersion>
+        <HintPath>$(AssemblyCSharp_Publicised)</HintPath>
+        <Implicit>true</Implicit>
+        <Private>false</Private>
+      </Reference>
+    </ItemGroup>
+  </Target>
+  <Target Name="UpdateReferences" AfterTargets="ResolveLockFileReferences">
+    <ItemGroup>
+      <Reference Remove="$(PkgKrafs_Rimworld_Ref)\ref\net472\Assembly-CSharp.dll" />
+    </ItemGroup>
+  </Target>
+  <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
+       Other similar extension points exist, see Microsoft.Common.targets.
+  <Target Name="BeforeBuild">
+  </Target>
+  <Target Name="AfterBuild">
+  </Target>
+  -->
+</Project>

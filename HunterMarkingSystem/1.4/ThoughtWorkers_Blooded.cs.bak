@@ -1,0 +1,291 @@
+﻿using HunterMarkingSystem.ExtensionMethods;
+using RimWorld;
+using System.Collections.Generic;
+using System.Linq;
+using Verse;
+using static HunterMarkingSystem.HMSUtility;
+
+namespace HunterMarkingSystem
+{
+    // Token: 0x02000207 RID: 519
+    public class ThoughtWorker_Marked : ThoughtWorker
+    {
+        int stageIndex;
+        // Token: 0x06000A02 RID: 2562 RVA: 0x0004F2B0 File Offset: 0x0004D6B0
+        protected override ThoughtState CurrentSocialStateInternal(Pawn p, Pawn other)
+        {
+            Comp_Markable pMarkable = p.TryGetComp<Comp_Markable>();
+            Comp_Markable otherMarkable = other.TryGetComp<Comp_Markable>();
+            if (pMarkable == null)
+            {
+            //    Log.Message(string.Format("{0} {1} Vs {2} pmarkable is null", this, p.LabelShortCap, other.LabelShortCap));
+                return false;
+            }
+            if (!pMarkable.MarkerRace)
+            {
+            //    Log.Message(string.Format("{0} {1} Vs {2}, {1} is not a MarkerRace", this, p.LabelShortCap, other.LabelShortCap));
+                return false;
+            }
+            HediffDef Unbloodeddef = pMarkable.Props.Unblooded ?? DefDatabase<HediffDef>.AllDefs.First(x => x.defName.Contains("Hediff_Unblooded") && x.HasComp(typeof(HediffComp_HunterMark)));
+            HediffDef Unmarkeddef = pMarkable.Props.Unmarked ?? DefDatabase<HediffDef>.AllDefs.First(x => x.defName.Contains("Hediff_BloodedUM"));
+            HediffDef Markeddef = pMarkable.Props.MarkedBase ?? DefDatabase<HediffDef>.AllDefs.First(x => x.defName.Contains("Hediff_BloodedM"));
+            HediffDef othermarked = otherMarkable.Props.MarkedBase ?? DefDatabase<HediffDef>.AllDefs.First(x => x.defName.Contains("Hediff_BloodedM"));
+            if (!p.RaceProps.Humanlike)
+            {
+            //    Log.Message(string.Format("{0} {1} Vs {2}, {1} is not a Humanlike", this, p.LabelShortCap, other.LabelShortCap));
+                return false;
+            }
+            if (!other.RaceProps.Humanlike)
+            {
+            //    Log.Message(string.Format("{0} {1} Vs {2}, {2} is not a Humanlike", this, p.LabelShortCap, other.LabelShortCap));
+                return false;
+            }
+            /*
+            if (!RelationsUtility.PawnsKnowEachOther(p, other))
+            {
+                return ThoughtState.Inactive;
+            }
+            */
+
+            bool Pblooded = p.Markable().BloodStatus>(BloodStatusMode.None);
+            if (Pblooded)
+            {
+                switch (other.Markable().BloodStatus)
+                {
+                    case BloodStatusMode.Unblooded:
+                        stageIndex = 0;
+                        break;
+                    case BloodStatusMode.Unmarked:
+                        stageIndex = 1;
+                        break;
+                    case BloodStatusMode.Marked:
+                        stageIndex = 2;
+                        break;
+                    default:
+                    //    Log.Message(string.Format("{0} {1} Vs {2}, Bad BloodStatusMode ActiveAtStage {3}", this, p.LabelShortCap, other.LabelShortCap, stageIndex));
+                        return false;
+                }
+                if (p.Markable().BloodStatus == BloodStatusMode.Marked)
+                {
+                //    Log.Message(string.Format("{0} {1} Vs {2}, is ActiveAtStage {3}", this, p.LabelShortCap, other.LabelShortCap, stageIndex));
+                    return ThoughtState.ActiveAtStage(stageIndex);
+                }
+                else
+                {
+                //    Log.Message(string.Format("{0} {1} Vs {2}, {1} is not Marked", this, p.LabelShortCap, other.LabelShortCap));
+                }
+            }
+            else
+            {
+            //    Log.Message(string.Format("{0} {1} Vs {2}, {1} is not Blooded", this, p.LabelShortCap, other.LabelShortCap));
+            }
+            return false;
+        }
+    }
+
+    // Token: 0x02000207 RID: 519
+    public class ThoughtWorker_Unmarked : ThoughtWorker
+    {
+        HediffDef unblooded = HMSDefOf.HMS_Hediff_Unblooded;
+        HediffDef unmarked = HMSDefOf.HMS_Hediff_BloodedUM;
+        HediffDef marked = HMSDefOf.HMS_Hediff_BloodedM;
+        HediffDef othermarked = HMSDefOf.HMS_Hediff_BloodedM;
+        Hediff otherMarked;
+        int stageIndex;
+        // Token: 0x06000A02 RID: 2562 RVA: 0x0004F2B0 File Offset: 0x0004D6B0
+        protected override ThoughtState CurrentSocialStateInternal(Pawn p, Pawn other)
+        {
+            bool selected = false;
+            if (p.Map != null)
+            {
+                selected = Find.Selector.SelectedObjects.Contains(p);
+            }
+            if (!p.health.hediffSet.HasHediff(unmarked))
+            {
+                return false;
+            }
+#if DEBUG
+            if (Prefs.DevMode)
+            {
+                if (selected) Log.Message(string.Format("{0} ThoughtWorker_Unmarked vs {1}", p.Label, other.Label));
+            }
+#endif
+            if (!p.RaceProps.Humanlike)
+            {
+                return false;
+            }
+            if (!other.RaceProps.Humanlike)
+            {
+                return false;
+            }
+            if (p.def.defName != "AvP_Alien_Yautja")
+            {
+                return false;
+            }
+            /*
+            if (other.kindDef.race != YautjaDefOf.AvP_Alien_Yautja)
+            {
+                return false;
+            }
+            */
+            /*
+            if (!RelationsUtility.PawnsKnowEachOther(p, other))
+            {
+                return ThoughtState.Inactive;
+            }
+            */
+            if (other.health.hediffSet.HasHediff(unblooded))
+            {
+                stageIndex = 0;
+#if DEBUG
+                if (Prefs.DevMode)
+                {
+                    if (selected) Log.Message(string.Format("{0} CurrentStateInternal stageIndex:{4} {1} {2}: {3}", this.GetType(), other.Label, other.health.hediffSet.GetFirstHediffOfDef(unblooded).Label, other.health.hediffSet.HasHediff(unblooded), stageIndex));
+                }
+#endif
+            }
+            else if (other.health.hediffSet.HasHediff(unmarked))
+            {
+                stageIndex = 1;
+#if DEBUG
+                if (Prefs.DevMode)
+                {
+                    if (selected) Log.Message(string.Format("{0} CurrentStateInternal stageIndex:{4} {1} {2}: {3}", this.GetType(), other.Label, other.health.hediffSet.GetFirstHediffOfDef(othermarked).Label, other.health.hediffSet.HasHediff(othermarked), stageIndex));
+                }
+#endif
+            }
+            else
+                foreach (var hd in other.health.hediffSet.hediffs)
+                {
+                    if (hd.def.defName.Contains("AvP_Hediff_BloodedM"))
+                    {
+                        otherMarked = hd;
+                        othermarked = hd.def;
+                        stageIndex = 2;
+
+#if DEBUG
+                        if (Prefs.DevMode)
+                        {
+                            if (selected) Log.Message(string.Format("{0} CurrentSocialStateInternal {1} {2}: {3}", this.GetType(), other.Label, otherMarked.Label, other.health.hediffSet.HasHediff(othermarked)));
+                        }
+#endif
+                        break;
+                    }
+                }
+            if (p.health.hediffSet.HasHediff(unmarked))
+            {
+#if DEBUG
+                if (Prefs.DevMode)
+                {
+                    if (selected) Log.Message(string.Format("{0} CurrentSocialStateInternal {1} {2}: {3}", this.GetType(), p.Label, unblooded.label, p.health.hediffSet.HasHediff(unblooded)));
+                }
+#endif
+                return ThoughtState.ActiveAtStage(stageIndex);
+            }
+            return false;
+        }
+    }
+
+    // Token: 0x02000207 RID: 519
+    public class ThoughtWorker_Unblooded : ThoughtWorker
+    {
+        HediffDef unblooded = HMSDefOf.HMS_Hediff_Unblooded;
+        HediffDef unmarked = HMSDefOf.HMS_Hediff_BloodedUM;
+        HediffDef marked = HMSDefOf.HMS_Hediff_BloodedM;
+        HediffDef othermarked = HMSDefOf.HMS_Hediff_BloodedM;
+        Hediff otherMarked;
+        int stageIndex;
+        // Token: 0x06000A02 RID: 2562 RVA: 0x0004F2B0 File Offset: 0x0004D6B0
+        protected override ThoughtState CurrentSocialStateInternal(Pawn p, Pawn other)
+        {
+            bool selected = false;
+            if (p.Map != null)
+            {
+                selected = Find.Selector.SelectedObjects.Contains(p);
+            }
+            if (!p.health.hediffSet.HasHediff(unblooded))
+            {
+                return false;
+            }
+#if DEBUG
+            if (Prefs.DevMode)
+            {
+                if (selected) Log.Message(string.Format("{0} ThoughtWorker_Unblooded vs {1}", p.Label, other.Label));
+            }
+#endif
+            if (!p.RaceProps.Humanlike)
+            {
+                return false;
+            }
+            if (!other.RaceProps.Humanlike)
+            {
+                return false;
+            }
+            if (p.def.defName != "AvP_Alien_Yautja")
+            {
+                return false;
+            }
+            /*
+            if (other.kindDef.race != YautjaDefOf.AvP_Alien_Yautja)
+            {
+                return false;
+            }
+            */
+            /*
+            if (!RelationsUtility.PawnsKnowEachOther(p, other))
+            {
+                return ThoughtState.Inactive;
+            }
+            */
+            if (other.health.hediffSet.HasHediff(unblooded))
+            {
+                stageIndex = 0;
+#if DEBUG
+                if (Prefs.DevMode)
+                {
+                    if (selected) Log.Message(string.Format("{0} CurrentStateInternal stageIndex:{4} {1} {2}: {3}", this.GetType(), other.Label, other.health.hediffSet.GetFirstHediffOfDef(unblooded).Label, other.health.hediffSet.HasHediff(unblooded), stageIndex));
+                }
+#endif
+            }
+            else if (other.health.hediffSet.HasHediff(unmarked))
+            {
+                stageIndex = 1;
+#if DEBUG
+                if (Prefs.DevMode)
+                {
+                    if (selected) Log.Message(string.Format("{0} CurrentStateInternal stageIndex:{4} {1} {2}: {3}", this.GetType(), other.Label, other.health.hediffSet.GetFirstHediffOfDef(unblooded).Label, other.health.hediffSet.HasHediff(othermarked), stageIndex));
+                }
+#endif
+            }
+            else
+                foreach (var hd in other.health.hediffSet.hediffs)
+                {
+                    if (hd.def.defName.Contains("AvP_Hediff_BloodedM"))
+                    {
+                        List<Thought> list = new List<Thought>();
+                        otherMarked = hd;
+                        othermarked = hd.def;
+                        stageIndex = 2;
+#if DEBUG
+                        if (Prefs.DevMode)
+                        {
+                            if (selected) Log.Message(string.Format("{0} CurrentSocialStateInternal {1} {2}: {3}", this.GetType(), other.Label, otherMarked.Label, other.health.hediffSet.HasHediff(othermarked)));
+                        }
+#endif
+                        break;
+                    }
+                }
+                if (p.health.hediffSet.HasHediff(unblooded))
+                {
+#if DEBUG
+                    if (Prefs.DevMode)
+                {
+                    if (selected) Log.Message(string.Format("{0} CurrentSocialStateInternal {1} {2}: {3}", this.GetType(), p.Label, unmarked.label, p.health.hediffSet.HasHediff(marked)));
+                }
+#endif
+                    return ThoughtState.ActiveAtStage(stageIndex);
+                }
+            return false;
+        }
+    }
+}
