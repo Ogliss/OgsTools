@@ -8,7 +8,7 @@
     <AppDesignerFolder>Properties</AppDesignerFolder>
     <RootNamespace>AdvancedGraphics</RootNamespace>
     <AssemblyName>AdvancedGraphics</AssemblyName>
-    <TargetFramework>net472</TargetFramework>
+    <TargetFramework>net48</TargetFramework>
     <FileAlignment>512</FileAlignment>
     <EnableDefaultCompileItems>false</EnableDefaultCompileItems>
     <TargetFrameworkProfile />
@@ -44,10 +44,16 @@
     <Folder Include="Properties\" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="AlienRaceUtility.cs" />
+    <Compile Include="FastGetCompsExtensions.cs" />
     <Compile Include="Graphic_SingleRotating.cs" />
     <Compile Include="Graphic_SingleRandomized.cs" />
     <Compile Include="Graphic_SingleQuality.cs" />
     <Compile Include="Harmony\Patches\AG_Thing_get_DefaultGraphic_CompAdvancedGraphic_Patch.cs" />
+    <Compile Include="GraphicData_Equippable.cs" />
+    <Compile Include="Harmony\Patches\PawnRenderer_DrawEquipmentAiming_Vanilla_Transpiler.cs" />
+    <Compile Include="Harmony\Patches\PawnRenderer_DrawEquipment_Vanilla_Transpiler.cs" />
+    <Compile Include="OversizedUtil.cs" />
     <None Include="Harmony\Patches\Verb_get_UIIcon_ColouredWeapons_Patch.cs.bak" />
     <Compile Include="Harmony\Main.cs" />
     <Compile Include="Harmony\Patches\VerbTracker_CreateVerbTargetCommand_CompAdvancedGraphic_Patch.cs" />
@@ -63,6 +69,16 @@
       <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
       <PrivateAssets>all</PrivateAssets>
     </PackageReference>
+    <PackageReference Include="UnlimitedHugs.Rimworld.HugsLib" Version="10.0.1" />
+  </ItemGroup>
+  <ItemGroup>
+    <Reference Include="AlienRace">
+      <HintPath>..\..\..\..\..\..\workshop\content\294100\839005762\1.4\Assemblies\AlienRace.dll</HintPath>
+    </Reference>
+    <Reference Include="DualWield">
+      <HintPath>..\..\..\DualWield\1.4\Assemblies\DualWield.dll</HintPath>
+      <Private>False</Private>
+    </Reference>
   </ItemGroup>
   <Target Name="MyCode" BeforeTargets="UpdateReferences">
     <PropertyGroup>

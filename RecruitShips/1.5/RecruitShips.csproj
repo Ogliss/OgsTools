@@ -1,0 +1,97 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup>
+    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
+    <ProjectGuid>{73FB35FC-7C81-4BEC-8EE0-E3DFCF826003}</ProjectGuid>
+    <OutputType>Library</OutputType>
+    <AppDesignerFolder>Properties</AppDesignerFolder>
+    <RootNamespace>RecruitShips</RootNamespace>
+    <AssemblyName>RecruitShips</AssemblyName>
+    <TargetFrameworkVersion>v4.7.2</TargetFrameworkVersion>
+    <TargetFramework>net472</TargetFramework>
+    <FileAlignment>512</FileAlignment>
+    <EnableDefaultCompileItems>false</EnableDefaultCompileItems>
+    <AppendTargetFrameworkToOutputPath>false</AppendTargetFrameworkToOutputPath>
+    <AppendRuntimeIdentifierToOutputPath>false</AppendRuntimeIdentifierToOutputPath>
+    <Deterministic>true</Deterministic>
+    <LangVersion>8.0</LangVersion>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
+    <DebugSymbols>true</DebugSymbols>
+    <DebugType>full</DebugType>
+    <Optimize>false</Optimize>
+    <OutputPath>bin\Debug\</OutputPath>
+    <DefineConstants>DEBUG;TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
+    <DebugType>pdbonly</DebugType>
+    <Optimize>true</Optimize>
+    <OutputPath>bin\Debug\</OutputPath>
+    <DefineConstants>TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+    <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
+  </PropertyGroup>
+  <ItemGroup>
+    <Compile Include="StockGenerator_BuyWeapon.cs" />
+    <Compile Include="StockGenerator_BuyArmor.cs" />
+    <Compile Include="Harmony\Recruiter_Caravan_GiveSoldThingToPlayer_Patch.cs" />
+    <Compile Include="Harmony\Recruiter_Pawn_GiveSoldThingToPlayer_Patch.cs" />
+    <Compile Include="Harmony\Recruiter_TradeShip_GiveSoldThingToPlayer_Patch.cs" />
+    <Compile Include="Harmony\Patches.cs" />
+    <Compile Include="IncidentWorker_OrbitalMercenaryArrival.cs" />
+    <Compile Include="StockGenerator_Mercs.cs" />
+    <Compile Include="StockGenerator_Recruits.cs" />
+    <Compile Include="IncidentWorker_OrbitalRecruiterArrival.cs" />
+  </ItemGroup>
+  <ItemGroup>
+    <PackageReference Include="Krafs.Rimworld.Ref" Version="1.5.4063" GeneratePathProperty="true" />
+    <PackageReference Include="Lib.Harmony">
+      <Version>2.3.3</Version>
+    </PackageReference>
+    <PackageReference Include="TaskPubliciser">
+      <Version>1.0.3</Version>
+      <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+      <PrivateAssets>all</PrivateAssets>
+    </PackageReference>
+    <PackageReference Include="UnlimitedHugs.Rimworld.HugsLib">
+      <Version>11.0.3</Version>
+      <ExcludeAssets>runtime</ExcludeAssets>
+      <IncludeAssets>compile; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+    </PackageReference>
+  </ItemGroup>
+  <ItemGroup>
+    <Folder Include="Properties\" />
+  </ItemGroup>
+  <Target Name="MyCode" BeforeTargets="UpdateReferences">
+    <PropertyGroup>
+      <AssemblyCSharp>$(PkgKrafs_Rimworld_Ref)\ref\net472\Assembly-CSharp.dll</AssemblyCSharp>
+      <PubliciseOutputPath>$(PkgKrafs_Rimworld_Ref)\ref\net472\</PubliciseOutputPath>
+      <AssemblyCSharp_Publicised>$(PubliciseOutputPath)Assembly-CSharp_publicised.dll</AssemblyCSharp_Publicised>
+    </PropertyGroup>
+    <Publicise TargetAssemblyPath="$(AssemblyCSharp)" OutputPath="$(PubliciseOutputPath)" Condition="Exists('$(AssemblyCSharp)')" />
+    <ItemGroup>
+      <Reference Include="$(AssemblyCSharp_Publicised)">
+        <SpecificVersion>false</SpecificVersion>
+        <HintPath>$(AssemblyCSharp_Publicised)</HintPath>
+        <Implicit>true</Implicit>
+        <Private>false</Private>
+      </Reference>
+    </ItemGroup>
+  </Target>
+  <Target Name="UpdateReferences" AfterTargets="ResolveLockFileReferences">
+    <ItemGroup>
+      <Reference Remove="$(PkgKrafs_Rimworld_Ref)\ref\net472\Assembly-CSharp.dll" />
+    </ItemGroup>
+  </Target>
+  <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
+       Other similar extension points exist, see Microsoft.Common.targets.
+  <Target Name="BeforeBuild">
+  </Target>
+  <Target Name="AfterBuild">
+  </Target>
+  -->
+</Project>

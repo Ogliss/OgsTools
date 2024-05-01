@@ -4,7 +4,7 @@
   <PropertyGroup>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
-    <ProjectGuid>{2AC73323-B4F2-4592-B3EA-53AC4F8D73A7}</ProjectGuid>
+    <ProjectGuid>{DC8C5972-826E-4F29-9D45-D224F67236B1}</ProjectGuid>
     <OutputType>Library</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
     <RootNamespace>CompToggleFireMode</RootNamespace>
@@ -44,7 +44,7 @@
   <ItemGroup />
   <ItemGroup>
     <PackageReference Include="Krafs.Rimworld.Ref">
-      <Version>1.4.3529</Version>
+      <Version>1.4.3563</Version>
     </PackageReference>
     <PackageReference Include="Lib.Harmony">
       <Version>2.2.2</Version>

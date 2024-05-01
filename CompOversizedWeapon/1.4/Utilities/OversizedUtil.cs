@@ -9,7 +9,9 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using UnityEngine;
+using UnityEngine.UIElements;
 using Verse;
+using static HarmonyLib.Code;
 
 namespace OgsCompOversizedWeapon
 {
@@ -17,13 +19,9 @@ namespace OgsCompOversizedWeapon
     [StaticConstructorOnStartup]
     public static class OversizedUtil
     {
-        public static void Draw(Mesh mesh, Matrix4x4 matrix, Material mat, int layer, Thing eq, Pawn pawn, Vector3 position, Quaternion rotation)
+        public static void Draw(Mesh mesh, Matrix4x4 matrix, Material mat, int layer)
         {
-            if (matrix == default(Matrix4x4))
-            {
-                Graphics.DrawMesh(mesh, position, rotation, mat, layer);
-            }
-            else Graphics.DrawMesh(mesh, matrix, mat, layer);
+             Graphics.DrawMesh(mesh, matrix, mat, layer);
         }
 
 		public static float meleeXOffset = 0.4f;
@@ -35,7 +33,129 @@ namespace OgsCompOversizedWeapon
 		public static float rangedAngle = 135f;
 		public static bool rangedMirrored = true;
 
-		public static void SetAnglesAndOffsets(Thing eq, ThingWithComps offHandEquip, float aimAngle, Thing thing, ref Vector3 offsetMainHand, ref Vector3 offsetOffHand, ref float mainHandAngle, ref float offHandAngle, bool mainHandAiming, bool offHandAiming)
+		public static void SetAnglesAndOffsets(Thing eq, Thing thing, ref Vector3 offsetMainHand, ref Vector3 offsetOffHand, ref float mainHandAngle, ref float offHandAngle, bool mainHandAiming, bool offHandAiming)
+		{
+			GraphicData_Equippable equippable = eq.def.graphicData as GraphicData_Equippable;
+			Pawn pawn = thing as Pawn;
+
+			bool Melee = pawn != null;
+			if (Melee)
+			{
+				Melee = IsMeleeWeapon(pawn.equipment.Primary);
+			}
+
+			bool Dual = false;
+			if (equippable != null)
+			{
+				Dual = equippable.isDualWeapon;
+			}
+			float num = meleeMirrored ? (360f - meleeAngle) : meleeAngle;
+			float num2 = rangedMirrored ? (360f - rangedAngle) : rangedAngle;
+			Vector3 offset1 = equippable.OffsetPosFor(thing.Rotation);
+			Vector3 offset2 = equippable.OffsetPosFor(thing.Rotation, true);
+			if (thing.Rotation == Rot4.East)
+			{
+				offsetMainHand.z += offset1.z;
+				offsetMainHand.x += offset1.x;
+				offsetOffHand.y = -1f;
+				offsetOffHand.z = 0.1f;
+				offsetOffHand.z += offset2.z;
+				offsetOffHand.x += offset2.x;
+				if (equippable != null)
+				{
+					mainHandAngle += equippable.OffsetAngleFor(thing.Rotation);
+				}
+				offHandAngle = mainHandAngle;
+			}
+			else
+			{
+				if (thing.Rotation == Rot4.West)
+				{
+					if (Dual) offsetMainHand.y = -1f;
+					offsetMainHand.z += offset1.z;
+					offsetMainHand.x += offset1.x;
+					offsetOffHand.z = -0.1f;
+					offsetOffHand.z += offset2.z;
+					offsetOffHand.x += offset2.x;
+					if (equippable != null)
+					{
+						mainHandAngle += equippable.OffsetAngleFor(thing.Rotation);
+					}
+					offHandAngle = mainHandAngle;
+				}
+				else
+				{
+					if (thing.Rotation == Rot4.North)
+					{
+						if (!mainHandAiming)
+						{
+							offsetMainHand.x = offset1.x + (Dual ? (Melee ? meleeXOffset : rangedXOffset) : 0);
+							offsetOffHand.x = -offset2.x + (Melee ? -meleeXOffset : -rangedXOffset);
+							offsetMainHand.z = offset1.z + (Dual ? (Melee ? meleeZOffset : rangedZOffset) : 0);
+							offsetOffHand.z = offset2.z + (Melee ? meleeZOffset : rangedZOffset);
+							if (equippable != null)
+							{
+								offHandAngle = equippable.OffsetAngleFor(thing.Rotation) + (Melee ? meleeAngle : rangedAngle);
+								mainHandAngle = -equippable.OffsetAngleFor(thing.Rotation) + (Melee ? num : num2);
+							}
+						}
+						else
+						{
+							offsetOffHand.x = -0.1f;
+						}
+					}
+					else
+					{
+						if (!mainHandAiming)
+						{
+							offsetMainHand.y = 1f;
+							offsetMainHand.x = -offset1.x + (Dual ? (Melee ? -meleeXOffset : -rangedXOffset) : 0);
+							offsetOffHand.x = offset2.x + (Melee ? meleeXOffset : rangedXOffset);
+							offsetMainHand.z = offset1.z + (Dual ? (Melee ? meleeZOffset : rangedZOffset) : 0);
+							offsetOffHand.z = offset2.z + (Melee ? meleeZOffset : rangedZOffset);
+							if (equippable != null)
+							{
+								offHandAngle = -equippable.OffsetAngleFor(thing.Rotation) + (Melee ? num : num2);
+								mainHandAngle = equippable.OffsetAngleFor(thing.Rotation) + (Melee ? meleeAngle : rangedAngle);
+							}
+						}
+						else
+						{
+							offsetOffHand.y = 1f;
+							offHandAngle = (!Melee ? num : num2);
+							offsetOffHand.x = 0.1f;
+						}
+					}
+				}
+			}
+			if (!thing.Rotation.IsHorizontal)
+			{
+				if (equippable != null)
+				{
+
+					/*
+
+					offHandAngle += (float)((pawn.Rotation == Rot4.North) ? record.extraRotation : (-(float)record.extraRotation));
+					mainHandAngle += (float)((pawn.Rotation == Rot4.North) ? (-(float)compOversized.extraRotation) : compOversized.extraRotation);
+					*/
+				}
+			}
+        }
+        public static Vector3 AdjustRenderOffsetFromDir(Rot4 curDir, GraphicData_Equippable Props, bool Offhand = false)
+        {
+
+            Vector3 curOffset = Vector3.zero;
+
+            if (Props != null)
+            {
+				curOffset = Props.OffsetPosFor(curDir, Offhand);
+            }
+
+            return curOffset;
+        }
+
+
+        public static void SetAnglesAndOffsets(Thing eq, float aimAngle, Thing thing, ref Vector3 offsetMainHand, ref Vector3 offsetOffHand, ref float mainHandAngle, ref float offHandAngle, bool mainHandAiming, bool offHandAiming)
 		{
 			CompOversizedWeapon compOversized = eq.TryGetCompFast<CompOversizedWeapon>();
 
@@ -56,7 +176,7 @@ namespace OgsCompOversizedWeapon
 			}
 			float num = meleeMirrored ? (360f - meleeAngle) : meleeAngle;
 			float num2 = rangedMirrored ? (360f - rangedAngle) : rangedAngle;
-			Vector3 offset = AdjustRenderOffsetFromDir(thing.Rotation, compOversized, offHandAiming);
+			Vector3 offset = AdjustRenderOffsetFromDir(thing.Rotation, PropsOversized, offHandAiming);
 			if (thing.Rotation == Rot4.East)
 			{
 				offsetMainHand.z += offset.z;
@@ -197,26 +317,25 @@ namespace OgsCompOversizedWeapon
 			return result;
 		}
 
-		public static Vector3 AdjustRenderOffsetFromDir(Rot4 curDir, CompOversizedWeapon compOversizedWeapon, bool Offhand = false)
+		public static Vector3 AdjustRenderOffsetFromDir(Rot4 curDir, CompProperties_OversizedWeapon Props, bool Offhand = false)
 		{
 
 			Vector3 curOffset = Vector3.zero;
 
-			if (compOversizedWeapon.Props != null)
+			if (Props != null)
 			{
-
-				curOffset = Offhand ? -compOversizedWeapon.Props.southOffset : compOversizedWeapon.Props.southOffset;
+				curOffset = Offhand ? -Props.southOffset : Props.southOffset;
 				if (curDir == Rot4.North)
 				{
-					curOffset = Offhand ? -compOversizedWeapon.Props.northOffset : compOversizedWeapon.Props.northOffset;
+					curOffset = Offhand ? -Props.northOffset : Props.northOffset;
 				}
 				else if (curDir == Rot4.East)
 				{
-					curOffset = Offhand ? -compOversizedWeapon.Props.eastOffset : compOversizedWeapon.Props.eastOffset;
+					curOffset = Offhand ? -Props.eastOffset : Props.eastOffset;
 				}
 				else if (curDir == Rot4.West)
 				{
-					curOffset = Offhand ? -compOversizedWeapon.Props.westOffset : compOversizedWeapon.Props.westOffset;
+					curOffset = Offhand ? -Props.westOffset : Props.westOffset;
 				}
 			}
 

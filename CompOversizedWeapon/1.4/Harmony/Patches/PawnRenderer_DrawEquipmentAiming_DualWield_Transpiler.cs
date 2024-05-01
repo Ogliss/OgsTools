@@ -24,7 +24,7 @@ namespace OgsCompOversizedWeapon
             for (int i = 0; i < list.Count; i++)
             {
                 CodeInstruction instruction = list[i];
-                if (instruction.OperandIs(AccessTools.Method(type: typeof(Graphics), name: nameof(Graphics.DrawMesh), parameters: new[] { typeof(Mesh), typeof(Vector3), typeof(Quaternion), typeof(Material), typeof(Int32) })))
+                if (instruction.OperandIs(AccessTools.Method(type: typeof(Graphics), name: nameof(Graphics.DrawMesh), parameters: new[] { typeof(Mesh), typeof(Matrix4x4), typeof(Material), typeof(Int32) })))
                 {
                     yield return new CodeInstruction(OpCodes.Ldarg_0);
                     yield return new CodeInstruction(OpCodes.Ldarg_2);
@@ -35,7 +35,7 @@ namespace OgsCompOversizedWeapon
             }
         }
 
-        private static void DrawMeshModified(Mesh mesh, Vector3 position, Quaternion rotation, Material mat, int layer, Thing eq, float aimAngle)
+        private static void DrawMeshModified(Mesh mesh, Matrix4x4 matrix, Material material, int layer, Thing eq, float aimAngle)
         {
             CompOversizedWeapon compOversized = eq.TryGetCompFast<CompOversizedWeapon>();
             CompEquippable equippable = eq.TryGetCompFast<CompEquippable>();
@@ -43,7 +43,7 @@ namespace OgsCompOversizedWeapon
             if (pawn == null) return;
             if (compOversized == null || (compOversized != null && compOversized.CompDeflectorIsAnimatingNow) || pawn == null || eq == null)
             {
-                OversizedUtil.Draw(mesh, default(Matrix4x4), mat, layer, eq, pawn, position, rotation);
+            //    OversizedUtil.Draw(mesh, matrix, material, layer, eq, pawn);
                 return;
             }
             Vector3 s;
@@ -65,9 +65,7 @@ namespace OgsCompOversizedWeapon
                 Vector2 v = pawn.ageTracker.CurKindLifeStage.bodyGraphicData.drawSize;
                 s = new Vector3(eq.def.graphicData.drawSize.x + v.x / 10, 1f, eq.def.graphicData.drawSize.y + v.y / 10);
             }
-            Matrix4x4 matrix = default(Matrix4x4);
-            matrix.SetTRS(position, rotation, s);
-            OversizedUtil.Draw(mesh, matrix, mat, 0, eq, pawn, position, rotation);
+            OversizedUtil.Draw(mesh, matrix, material, 0);
         }
 
     }
@@ -143,7 +141,7 @@ namespace OgsCompOversizedWeapon
             if (pawn == null) return;
             if (compOversized == null || (compOversized != null && compOversized.CompDeflectorIsAnimatingNow) || pawn == null || eq == null)
             {
-                OversizedUtil.Draw(mesh, default(Matrix4x4), mat, layer, eq, pawn, position, rotation);
+            //    OversizedUtil.Draw(mesh, default(Matrix4x4), mat, layer, eq, pawn, position, rotation);
                 return;
             }
             Vector3 s;
@@ -167,7 +165,7 @@ namespace OgsCompOversizedWeapon
             }
             Matrix4x4 matrix = default(Matrix4x4);
             matrix.SetTRS(position, rotation, s);
-            OversizedUtil.Draw(mesh, matrix, mat, layer, eq, pawn, position, rotation);
+        //    OversizedUtil.Draw(mesh, matrix, mat, layer, eq, pawn, position, rotation);
         }
 
     }

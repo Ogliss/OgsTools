@@ -49,7 +49,7 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Metamorphasis", "Metamorpha
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CompSpawnerFueled", "CompSpawnerFueled\1.4\CompSpawnerFueled.csproj", "{C680A155-5F16-42EA-A583-0C7DB95327D6}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "StartingColonistTitleLetter", "StartingColonistTitleLetter\StartingColonistTitleLetter.csproj", "{EE47C152-9B68-45D1-BB62-A9478A1BCAA0}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "StartingColonistTitleLetter", "StartingColonistTitleLetter\1.4\StartingColonistTitleLetter.csproj", "{EE47C152-9B68-45D1-BB62-A9478A1BCAA0}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CloakingDevice", "CloakingDevice\1.4\CloakingDevice.csproj", "{BE714342-1653-4494-9A1E-C641E76CE20C}"
 EndProject
@@ -89,7 +89,7 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "CompToggleDef", "CompToggle
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "PawnShields", "PawnShields\1.4\PawnShields.csproj", "{9A3BF1D4-6693-481F-BBF1-3D66AFD8BE6C}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Dropships", "ShuttleCraft\Dropships.csproj", "{D6147650-BE90-41E7-8893-4E1F7D07187B}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Dropships", "ShuttleCraft\1.4\Dropships.csproj", "{D6147650-BE90-41E7-8893-4E1F7D07187B}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

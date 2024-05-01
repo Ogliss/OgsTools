@@ -49,14 +49,14 @@ namespace AdvancedGraphics
 			if (flag)
 			{
 				list = (from x in ContentFinder<Texture2D>.GetAllInFolder(path)
-										where (Regex.Match(x.name, @"^[^0-9]*").Success || x.name.Contains(name)) && !x.name.EndsWith(MaskSuffix) && !x.name.EndsWith(GlowSuffix) && !x.name.EndsWith(GlowMaskSuffix) && !x.name.Contains(NSuffix) && !x.name.Contains(SSuffix) && !x.name.Contains(ESuffix) && !x.name.Contains(WSuffix)
+										where (Regex.Match(x.name, @"^[^0-9]*").Success || x.name.StartsWith(name)) && !x.name.EndsWith(IconwSuffix) && !x.name.EndsWith(MaskSuffix) && !x.name.EndsWith(GlowSuffix) && !x.name.EndsWith(GlowMaskSuffix) && !x.name.Contains(NSuffix) && !x.name.Contains(SSuffix) && !x.name.Contains(ESuffix) && !x.name.Contains(WSuffix)
 										orderby x.name
 										select x).ToList<Texture2D>();
 			}
             else
 			{
 				list = (from x in ContentFinder<Texture2D>.GetAllInFolder(req.path)
-						where (Regex.Match(x.name, @"^[^0-9]*").Success || x.name.Contains(name)) && !x.name.EndsWith(MaskSuffix) && !x.name.EndsWith(GlowSuffix) && !x.name.EndsWith(GlowMaskSuffix) && !x.name.Contains(NSuffix) && !x.name.Contains(SSuffix) && !x.name.Contains(ESuffix) && !x.name.Contains(WSuffix)
+						where (Regex.Match(x.name, @"^[^0-9]*").Success || x.name.StartsWith(name)) && !x.name.EndsWith(IconwSuffix)  && !x.name.EndsWith(MaskSuffix) && !x.name.EndsWith(GlowSuffix) && !x.name.EndsWith(GlowMaskSuffix) && !x.name.Contains(NSuffix) && !x.name.Contains(SSuffix) && !x.name.Contains(ESuffix) && !x.name.Contains(WSuffix)
 						orderby x.name
 						select x).ToList<Texture2D>();
 			}
@@ -84,7 +84,7 @@ namespace AdvancedGraphics
 
 		public override Graphic GetColoredVersion(Shader newShader, Color newColor, Color newColorTwo)
 		{
-			return GraphicDatabase.Get<Graphic_Single>(this.path, newShader, this.drawSize, newColor, newColorTwo, this.data);
+			return GraphicDatabase.Get<Graphic_Single>(this.subGraphics[0].path, newShader, this.drawSize, newColor, newColorTwo, this.data);
 		}
 
 		public override Material MatSingle
@@ -166,6 +166,7 @@ namespace AdvancedGraphics
 			}
 		}
 		//	public static readonly string MaskSuffix = "_m";
+		public static readonly string IconwSuffix = "_Icon";
 		public static readonly string GlowSuffix = "_Glow";
 		public static readonly string GlowMaskSuffix = "_Glow_m";
 		public static readonly string NSuffix = "_north";

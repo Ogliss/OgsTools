@@ -13,19 +13,20 @@ namespace HunterMarkingSystem
     {
         public override void DoEffect(Pawn user)
         {
+            if (Prefs.DevMode) Log.Message($"Try to mark pawn: {user}");
             //    base.DoEffect(user);
             if (user.Markable(out Comp_Markable Markable))
             {
                 BodyPartRecord part = Markable.partRecord;
                 if (user.Marked(out Hediff marked, out Hediff blooded))
                 {
-                //    Log.Message(string.Format("Removing hediff {0}", marked));
+                    if (Prefs.DevMode) Log.Message($"Removing marked hediff {marked}");
                     user.health.RemoveHediff(marked);
                 }
                 if (blooded!=null)
                 {
                     user.health.RemoveHediff(blooded);
-                //    Log.Message(string.Format("Removing hediff {0}", marked));
+                    if (Prefs.DevMode) Log.Message($"Removing blooded hediff {blooded}");
                 }
                 corpse = (Corpse)this.parent;
                 marked = HediffMaker.MakeHediff(Markable.markDataKillNew.MarkDef, user, part);// user.health.hediffSet.GetFirstHediffOfDef(markedDef);
@@ -63,12 +64,12 @@ namespace HunterMarkingSystem
                         }
                     }
                 }
-                if (user.story.adulthood.identifier == null || user.story.adulthood.identifier.Contains("Yautja_YoungBlood"))
+                if (user.story.adulthood.defName == null || user.story.adulthood.defName.Contains("Yautja_YoungBlood"))
                 {
                     if (marked.def == HMSDefOf.HMS_Hediff_BloodedMXenomorph)
                     {
-                        AlienRace.BackstoryDef backstoryDef = DefDatabase<AlienRace.BackstoryDef>.AllDefs.First(x=> x.defName.Contains("Yautja_Blooded"));
-                        user.story.adulthood = backstoryDef.backstory;
+                        AlienRace.AlienBackstoryDef backstoryDef = DefDatabase<AlienRace.AlienBackstoryDef>.AllDefs.First(x=> x.defName.Contains("Yautja_Blooded"));
+                        user.story.adulthood = backstoryDef;
                     }
                 }
                 Markable.markDataKill = Markable.markDataKillNew;
@@ -83,11 +84,13 @@ namespace HunterMarkingSystem
                     markable.Mark = null;
                 }
             }
+            else
+                    if (Prefs.DevMode) Log.Message($"Tried to mark non-Markable pawn: {user}");
         }
 
         BodyPartRecord partRecord;
         public Corpse corpse;
-        public override bool CanBeUsedBy(Pawn p, out string failReason)
+        public override AcceptanceReport CanBeUsedBy(Pawn p)
         {
             if (p.Markable(out Comp_Markable _Markable))
             {
@@ -95,23 +98,20 @@ namespace HunterMarkingSystem
                 Hediff hediff = null;
                 if (p.Marked(out hediff))
                 {
-
+                     
                 }
                 if (hediff == null)
                 {
-                    failReason = "Doesnt need marking";
                     return false;
                 }
                 ThingDef def = _Markable.markDataKillNew.raceDef;
                 if (def == null)
                 {
-                    failReason = "def pawn missing";
                     return false;
                 }
                 Corpse Corpse = _Markable.Markcorpse;
                 if (Corpse == null)
                 {
-                    failReason = "_Markable.Markcorpse is NULL";
                     return false;
                 }
                 if (this.parent is Corpse corpse)
@@ -123,18 +123,15 @@ namespace HunterMarkingSystem
                     */
                     if (corpse.InnerPawn.kindDef.race == def || corpse == Corpse)
                     {
-                        failReason = null;
                         return true;
                     }
                     else
                     {
-                        failReason = "Wrong race";
                         return false;
                     }
                 }
                 else
                 {
-                    failReason = "not a corpse";
                     return false;
                 }
                 /*
@@ -147,7 +144,6 @@ namespace HunterMarkingSystem
             }
             else
             {
-                failReason = "Unmarkable pawn";
                 return false;
             }
         }

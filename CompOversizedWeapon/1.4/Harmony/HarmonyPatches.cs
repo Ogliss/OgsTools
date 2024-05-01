@@ -20,6 +20,7 @@ namespace OgsCompOversizedWeapon
             enabled_YayosCombat = ModsConfig.ActiveModsInLoadOrder.Any((ModMetaData m) => m.PackageIdPlayerFacing == "com.yayo.combat3");
 
             var harmony = new Harmony("rimworld.Ogliss.comps.oversized");
+            Harmony.DEBUG = true;
             harmony.PatchAll(Assembly.GetExecutingAssembly());
             if (enabled_rooloDualWield)
             {
@@ -99,10 +100,27 @@ namespace OgsCompOversizedWeapon
                     }
                 }
             }
+            /*
             harmony.Patch(AccessTools.Method(typeof(Thing), "get_DefaultGraphic"), null,
                 new HarmonyMethod(typeof(HarmonyPatches_OversizedWeapon), nameof(get_DefaultGraphic_PostFix)));
+            */
+            harmony.Patch(AccessTools.Method(typeof(Graphic), "MatSingleFor"), null,
+                new HarmonyMethod(typeof(HarmonyPatches_OversizedWeapon), nameof(MatSingleFor_PostFix)));
         }
        
+        public static void MatSingleFor_PostFix(Thing thing, ref Material __result)
+        {
+            if (thing.ParentHolder is Pawn_EquipmentTracker) return;
+            if (!(thing is ThingWithComps withComps)) return;
+            if (thing.def.graphicData is GraphicData_Equippable equippable)
+            {
+                if (equippable.groundGraphic != null)
+                {
+                    __result = equippable.groundGraphic.GraphicColoredFor(thing).MatSingle;
+                }
+            }
+        }
+
         public static void get_DefaultGraphic_PostFix(Thing __instance, Graphic ___graphicInt, ref Graphic __result)
         {
             if (___graphicInt == null) return;

@@ -117,8 +117,7 @@ namespace HunterMarkingSystem
         {
             if (pawn != null)
             {
-                pawn.drawer.renderer.graphics.ResolveApparelGraphics();
-                pawn.drawer.renderer.graphics.SetAllGraphicsDirty();
+                pawn.drawer.renderer.renderTree.SetDirty();
                 PortraitsCache.SetDirty(pawn);
                 PortraitsCache.Clear();
                 PortraitsCache.PortraitsCacheUpdate();

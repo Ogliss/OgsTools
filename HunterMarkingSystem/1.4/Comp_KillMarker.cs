@@ -40,10 +40,10 @@ namespace HunterMarkingSystem
             //    Log.Message(string.Format("MarkerRace: {0}, Inducted: {1}", markable.MarkerRace, markable.Inducted));
                 yield break;
             }
-            if (!this.CanBeUsedBy(myPawn, out string failReason))
+            if (!this.CanBeUsedBy(myPawn))
             {
             //    yield break;
-                yield return new FloatMenuOption(this.FloatMenuOptionLabel + ((failReason == null) ? string.Empty : (" (" + failReason + ")")), null, MenuOptionPriority.Default, null, null, 0f, null, null);
+                yield return new FloatMenuOption(this.FloatMenuOptionLabel, null, MenuOptionPriority.Default, null, null, 0f, null, null);
             }
             else if (!myPawn.CanReach(this.parent, PathEndMode.Touch, Danger.Deadly, false, false, TraverseMode.ByPawn))
             {
@@ -78,17 +78,16 @@ namespace HunterMarkingSystem
             yield break;
         }
 
-        private new bool CanBeUsedBy(Pawn p, out string failReason)
+        private new bool CanBeUsedBy(Pawn p)
         {
             List<ThingComp> allComps = this.parent.AllComps;
             for (int i = 0; i < allComps.Count; i++)
             {
-                if (allComps[i] is CompUseEffect compUseEffect && !compUseEffect.CanBeUsedBy(p, out failReason))
+                if (allComps[i] is CompUseEffect compUseEffect && !compUseEffect.CanBeUsedBy(p))
                 {
                     return false;
                 }
             }
-            failReason = null;
             return true;
         }
 

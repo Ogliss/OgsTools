@@ -13,7 +13,7 @@ using System.Reflection;
 
 namespace AbilitesExtended.HarmonyInstance
 {
-    
+    /*
     [HarmonyPatch(typeof(ThingDefGenerator_Neurotrainer), "ImpliedThingDefs")]
     public static class AE_ThingDefGenerator_Neurotrainer_ImpliedThingDefs_Filter_Patch
     {
@@ -34,6 +34,6 @@ namespace AbilitesExtended.HarmonyInstance
             yield break;
         }
     }
-
+    */
 
 }

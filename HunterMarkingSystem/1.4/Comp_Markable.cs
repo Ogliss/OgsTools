@@ -269,27 +269,6 @@ namespace HunterMarkingSystem
             user.jobs.TryTakeOrderedJob(job, JobTag.Misc);
         }
 
-        public override void PostIngested(Pawn ingester)
-        {
-            base.PostIngested(ingester);
-        }
-
-        public override void PostPreApplyDamage(DamageInfo dinfo, out bool absorbed)
-        {
-            base.PostPreApplyDamage(dinfo, out absorbed);
-
-        }
-
-        public override void Notify_SignalReceived(Signal signal)
-        {
-            base.Notify_SignalReceived(signal);
-        }
-
-        public override void PostPostApplyDamage(DamageInfo dinfo, float totalDamageDealt)
-        {
-            base.PostPostApplyDamage(dinfo, totalDamageDealt);
-        }
-
 
     }
 

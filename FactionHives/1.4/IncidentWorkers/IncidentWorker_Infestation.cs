@@ -13,16 +13,16 @@ namespace ExtraHives
 		private Faction Faction = null; 
 		public override bool CanFireNowSub(IncidentParms parms)
 		{
-			Faction = null;
+		//	Faction = null;
 			Map map = (Map)parms.target;
 			if (def.mechClusterBuilding == null)
 			{
-			//	Log.Warning($"ExtraHives Infestation tried CanFireNowSub {this.def.defName} with no mechClusterBuilding");
+				Log.Warning($"ExtraHives Infestation tried CanFireNowSub {this.def.defName} with no mechClusterBuilding");
 				return false;
 			}
-			if (this.GetFactionFromParms(parms) == null)
+			if (Faction == null && this.GetFactionFromParms(parms) == null)
 			{
-			//	Log.Warning($"ExtraHives Infestation tried GetFactionFromParms {this.def.defName} but found not matching faction");
+				Log.Warning($"ExtraHives Infestation tried GetFactionFromParms {this.def.defName} but found not matching faction");
 				return false;
 			}
 			InfestationCellFinder.InfestationParms infestationParms;
@@ -37,21 +37,23 @@ namespace ExtraHives
 			{
 				if (!def.mechClusterBuilding.HasModExtension<HiveDefExtension>())
 				{
-				//	Log.Warning($"ExtraHives.IncidentWorker_Infestation tried CanFireNowSub {this.def.defName} with a mechClusterBuilding with no HiveDefExtension");
+					Log.Warning($"ExtraHives.IncidentWorker_Infestation tried CanFireNowSub {this.def.defName} with a mechClusterBuilding with no HiveDefExtension");
 					return false;
 				}
 				HiveDefExtension HiveExt = def.mechClusterBuilding.GetModExtension<HiveDefExtension>();
 				factionDef = HiveExt.Faction;
 				infestationParms = new InfestationCellFinder.InfestationParms(HiveExt);
 			}
-			Faction faction = Find.FactionManager.FirstFactionOfDef(factionDef);
-
-			if (faction != null && /*base.CanFireNowSub(parms) && */HiveUtility.TotalSpawnedHivesCount(map, def.mechClusterBuilding) < 30)
+			if (factionDef == null) return false;
+            if (factionDef.earliestRaidDays > GenDate.DaysPassedSinceSettle) return false;
+            Faction faction = Find.FactionManager.FirstFactionOfDef(factionDef);
+			if (faction == null) return false;
+            if (HiveUtility.TotalSpawnedHivesCount(map, def.mechClusterBuilding) < 30)
 			{
 
 				if (InfestationCellFinder.TryFindCell(out cell, map, infestationParms))
 				{
-					return true;
+					return base.CanFireNowSub(parms);
 				}
 				else
 				{
@@ -63,7 +65,7 @@ namespace ExtraHives
 
 		public override bool TryExecuteWorker(IncidentParms parms)
 		{
-			if (def.mechClusterBuilding == null || this.GetFactionFromParms(parms) == null)
+			if (def.mechClusterBuilding == null && this.GetFactionFromParms(parms, false) == null)
 			{
 				return false;
 			}
@@ -73,7 +75,7 @@ namespace ExtraHives
 			int count = Mathf.Max(GenMath.RoundRandom(parms.points / points), 1);
             if (Prefs.DevMode)
             {
-				Log.Message("ExtraHives trying "+this.def.LabelCap+" with "+ parms.points+" Points");
+				Log.Message($"ExtraHives trying {this.def.LabelCap} with {parms.points} Points");
             }
 
 			Thing t = InfestationUtility.SpawnTunnels(def.mechClusterBuilding, count, map, true, true, faction: parms.faction);
@@ -129,28 +131,35 @@ namespace ExtraHives
 						}
 					}
 				}
+				else
+				{
+					if (Prefs.DevMode)
+                    {
+                       	Log.Warning($"ExtraHives Infestation IncidentDef: {this.def.defName} using cached faction");
+                    }
+                }
 				return Faction;
             }
         }
-		public Faction GetFactionFromParms(IncidentParms parms)
+		public Faction GetFactionFromParms(IncidentParms parms, bool CanFireNow = true)
 		{
 			if (Faction == null)
 			{
                 if (parms.faction != null)
 				{
-					Log.Warning($"{this.def.LabelCap} using {parms.faction.Name}");
 					Faction = parms.faction;
-				}
+                    if (Prefs.DevMode) Log.Warning($"{this.def.LabelCap} using parms.faction {parms.faction.Name} CanFireNow: {CanFireNow}");
+                }
                 else
 				{
-					Log.Warning($"{this.def.LabelCap} using {this.GetFaction}");
 					parms.faction = this.GetFaction;
 					Faction = parms.faction;
-				}
+                    if (Prefs.DevMode) Log.Warning($"{this.def.LabelCap} using this.GetFaction {this.GetFaction} CanFireNow: {CanFireNow}");
+                }
 			}
             if (Faction == null)
             {
-			//	Log.Warning($"{this.def.LabelCap} Failed to find viable faction");
+				Log.Warning($"{this.def.LabelCap} Failed to find viable faction");
             }
 			return Faction;
 		}

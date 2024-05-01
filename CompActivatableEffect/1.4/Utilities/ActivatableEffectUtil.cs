@@ -15,34 +15,24 @@ namespace OgsCompActivatableEffect
     [StaticConstructorOnStartup]
     public static class ActivatableEffectUtil
     {
-        public static void DrawMeshModified(Mesh mesh, Vector3 position, Quaternion rotation, Material mat, int layer, Thing eq)
+        public static void DrawMeshModified(Mesh mesh, Matrix4x4 matrix, Material material, int layer, Thing eq)
         {
             CompEquippable equippable = eq.TryGetComp<CompEquippable>();
             Pawn pawn = equippable.PrimaryVerb.CasterPawn;
-            Draw(mesh, default(Matrix4x4), mat, layer, eq, pawn, position, rotation);
-            return;
+            DrawMeshExtra(mesh, matrix, material, layer, eq, pawn);
         }
 
-        public static void Draw(Mesh mesh, Matrix4x4 matrix, Material mat, int layer, Thing eq, Pawn pawn, Vector3 position, Quaternion rotation)
-        {
-            if (matrix == default(Matrix4x4))
-            {
-                Graphics.DrawMesh(mesh, position, rotation, mat, layer);
-            }
-            else Graphics.DrawMesh(mesh, matrix, mat, layer);
-            ActivatableEffectUtil.DrawMeshExtra(mesh, matrix, mat, layer, eq, pawn, position, rotation);
-        }
-
-        public static void DrawMeshExtra(Mesh mesh, Matrix4x4 matrix, Material mat, int layer, Thing eq, Pawn pawn, Vector3 position, Quaternion rotation)
+        public static void DrawMeshExtra(Mesh mesh, Matrix4x4 matrix, Material mat, int layer, Thing eq, Pawn pawn)
         {
             //    Log.Message("DrawMeshModified");
             ThingWithComps thingWithComps = eq as ThingWithComps;
             //    CompEquippable equippable = eq.TryGetComp<CompEquippable>();
-            var compOversized = thingWithComps.def.comps.FirstOrDefault(x => x.compClass.Name.Contains("CompOversizedWeapon"));
+        //    var compOversized = thingWithComps.def.comps.FirstOrDefault(x => x.compClass.Name.Contains("CompOversizedWeapon"));
             var compActivatableEffect = thingWithComps?.GetComp<CompActivatableEffect>();
             if (compActivatableEffect?.Graphic == null) return;
             if (!compActivatableEffect.IsActiveNow) return;
             var matSingle = compActivatableEffect.Graphic.MatSingle;
+            /*
             Vector3 s = new Vector3(eq.def.graphicData.drawSize.x, 1f, eq.def.graphicData.drawSize.y);
             if (compOversized != null)
             {
@@ -68,6 +58,7 @@ namespace OgsCompActivatableEffect
             Vector3 vector3 = position;
             vector3.y -= 0.0005f;
             matrix.SetTRS(vector3, rotation, s);
+            */
             Graphics.DrawMesh(mesh, matrix, matSingle, 0);
         }
 

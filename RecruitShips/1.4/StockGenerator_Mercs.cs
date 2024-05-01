@@ -41,9 +41,7 @@ namespace Recruiters
 				{
 					yield break;
 				}
-				PawnGenerationRequest request = PawnGenerationRequest.MakeDefault();
-				request.KindDef = ((this.slaveKindDef != null) ? this.slaveKindDef : PawnKindDefOf.Slave);
-				request.Faction = faction2;
+				PawnGenerationRequest request = new PawnGenerationRequest((this.slaveKindDef != null) ? this.slaveKindDef : PawnKindDefOf.Slave, faction2, PawnGenerationContext.NonPlayer);
 				request.Tile = forTile;
 				request.ForceAddFreeWarmLayerIfNeeded = !this.trader.orbital;
 				request.RedressValidator = ((Pawn x) => x.royalty == null || !x.royalty.AllTitlesForReading.Any<RoyalTitle>());

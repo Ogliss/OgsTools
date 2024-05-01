@@ -12,6 +12,7 @@ namespace AdvancedGraphics.HarmonyInstance
     [StaticConstructorOnStartup]
     class Main
     {
+        public static bool enabled_AlienRaces = ModsConfig.ActiveModsInLoadOrder.Any((ModMetaData m) => m.PackageIdPlayerFacing == "erdelf.HumanoidAlienRaces");
         static Main()
         {
             var harmony = new Harmony("com.ogliss.rimworld.mod.AdvancedGraphics");

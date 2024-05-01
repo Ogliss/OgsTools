@@ -1,4 +1,5 @@
 ﻿using HarmonyLib;
+using MonoMod.Utils;
 using RimWorld;
 using System;
 using System.Collections.Generic;
@@ -20,17 +21,25 @@ namespace ExtraApparelLayers
             settings = GetSettings<EasyApparelLayers_Settings>();
         //    Harmony.DEBUG = true;
             harmony.PatchAll(Assembly.GetExecutingAssembly());
-            foreach (var item in typeof(PawnRenderer).GetNestedTypes())
+            /*
+            foreach (var item in AccessTools.GetMethodNames(typeof(PawnRenderer)))
             {
-                Log.Message(item.Name);
+               Log.Message(item);
             }
-        //    MethodInfo method = AccessTools.TypeByName("RimWorld.PawnRenderer").GetMethod("DrawHeadHair").;
+            */
+        //    MethodInfo method = AccessTools.TypeByName("RimWorld.PawnRenderer").GetMethod("DrawHeadHair", BindingFlags.Instance|BindingFlags.NonPublic).GetDeclaredMember();
+            harmony.Patch(DrawHeadHairApparel, null, null, new HarmonyMethod(typeof(PawnRenderer_DrawHeadHair_EasyApparelLayers_Transpiler), "CompilerGenereatedTranspiler", null), null);
+
+            /*
+            MethodInfo methodAccessTools.GetDeclaredMethods(typeof(PawnRenderer)).First((MethodInfo mi) => 
             harmony.Patch(AccessTools.GetDeclaredMethods(typeof(PawnRenderer)).First((MethodInfo mi) => 
-           /* mi.HasAttribute<CompilerGeneratedAttribute>() && */
-            mi.Name.Contains("DrawHeadHair") && 
+            mi.HasAttribute<CompilerGeneratedAttribute>() && 
+            mi.Name.Contains("DrawHeadHair") &&
             mi.Name.Contains("DrawApparel")), null, null, new HarmonyMethod(typeof(PawnRenderer_DrawHeadHair_EasyApparelLayers_Transpiler), "CompilerGenereatedTranspiler", null), null);
- 
+            */
+
         }
+        public static MethodInfo DrawHeadHairApparel = null;
 
         #region overrides
         public override string SettingsCategory() => "EEAP.Title".Translate();

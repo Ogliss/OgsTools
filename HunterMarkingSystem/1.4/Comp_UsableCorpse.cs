@@ -55,9 +55,9 @@ namespace HunterMarkingSystem
         // Token: 0x06002A4A RID: 10826 RVA: 0x00138F4C File Offset: 0x0013734C
         public override IEnumerable<FloatMenuOption> CompFloatMenuOptions(Pawn myPawn)
         {
-            if (!this.CanBeUsedBy(myPawn, out string failReason))
+            if (!this.CanBeUsedBy(myPawn))
             {
-                yield return new FloatMenuOption(this.FloatMenuOptionLabel + ((failReason == null) ? string.Empty : (" (" + failReason + ")")), null, MenuOptionPriority.Default, null, null, 0f, null, null);
+                yield return new FloatMenuOption(this.FloatMenuOptionLabel, null, MenuOptionPriority.Default, null, null, 0f, null, null);
             }
             else if (!myPawn.CanReach(this.parent, PathEndMode.Touch, Danger.Deadly, false, false, TraverseMode.ByPawn))
             {
@@ -93,17 +93,16 @@ namespace HunterMarkingSystem
         }
 
         // Token: 0x06002A4D RID: 10829 RVA: 0x00139094 File Offset: 0x00137494
-        public bool CanBeUsedBy(Pawn p, out string failReason)
+        public bool CanBeUsedBy(Pawn p)
         {
             List<ThingComp> allComps = this.parent.AllComps;
             for (int i = 0; i < allComps.Count; i++)
             {
-                if (allComps[i] is CompUseEffect compUseEffect && !compUseEffect.CanBeUsedBy(p, out failReason))
+                if (allComps[i] is CompUseEffect compUseEffect && !compUseEffect.CanBeUsedBy(p))
                 {
                     return false;
                 }
             }
-            failReason = null;
             return true;
         }
 
@@ -114,7 +113,7 @@ namespace HunterMarkingSystem
             {
                 return;
             }
-            if (!this.CanBeUsedBy(user, out string text))
+            if (!this.CanBeUsedBy(user))
             {
                 return;
             }
@@ -125,9 +124,8 @@ namespace HunterMarkingSystem
         // Token: 0x06002A4C RID: 10828 RVA: 0x00138FDC File Offset: 0x001373DC
         public void UsedBy(Pawn p)
         {
-            if (!this.CanBeUsedBy(p, out string text))
+            if (!this.CanBeUsedBy(p))
             {
-            //    Log.Message(text);
                 return;
             }
             foreach (CompUseEffect compUseEffect in from x in this.parent.GetComps<CompUseEffect>()
@@ -138,9 +136,10 @@ namespace HunterMarkingSystem
                 {
                     compUseEffect.DoEffect(p);
                 }
-                catch
+                catch (Exception e)
                 {
-                    //    Log.Error("Error in CompUseEffect: " + arg, false);
+                    if (Prefs.DevMode) Log.Error("Error in CompUseEffect: " + e);
+                    throw;
                 }
             }
         }

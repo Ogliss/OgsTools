@@ -9,12 +9,13 @@
     <RootNamespace>HunterMarkingSystem</RootNamespace>
     <AssemblyName>HunterMarkingSystem</AssemblyName>
     <TargetFrameworkVersion>v4.7.2</TargetFrameworkVersion>
-    <TargetFramework>net472</TargetFramework>
+    <TargetFramework>net48</TargetFramework>
     <FileAlignment>512</FileAlignment>
     <EnableDefaultCompileItems>false</EnableDefaultCompileItems>
     <AppendTargetFrameworkToOutputPath>false</AppendTargetFrameworkToOutputPath>
     <AppendRuntimeIdentifierToOutputPath>false</AppendRuntimeIdentifierToOutputPath>
     <TargetFrameworkProfile />
+    <AllowUnsafeBlocks>True</AllowUnsafeBlocks>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
     <DebugSymbols>true</DebugSymbols>
@@ -25,6 +26,7 @@
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
     <Prefer32Bit>false</Prefer32Bit>
+    <Deterministic>False</Deterministic>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
     <DebugType>pdbonly</DebugType>
@@ -35,6 +37,7 @@
     <WarningLevel>4</WarningLevel>
     <Prefer32Bit>false</Prefer32Bit>
     <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
+    <Deterministic>False</Deterministic>
   </PropertyGroup>
   <ItemGroup>
     <Compile Include="Alert_PawnCanMark.cs" />
@@ -72,15 +75,9 @@
     <Compile Include="HMSDefOf.cs" />
   </ItemGroup>
   <ItemGroup>
-    <Reference Include="AlienRace">
-      <HintPath>..\..\..\..\..\Program Files (x86)\Steam\steamapps\workshop\content\294100\839005762\1.4\Assemblies\AlienRace.dll</HintPath>
-      <Private>False</Private>
-    </Reference>
-  </ItemGroup>
-  <ItemGroup>
-    <PackageReference Include="Krafs.Rimworld.Ref" Version="1.4.3525" GeneratePathProperty="true" />
+    <PackageReference Include="Krafs.Rimworld.Ref" Version="1.5.4066" GeneratePathProperty="true" />
     <PackageReference Include="Lib.Harmony">
-      <Version>2.2.2</Version>
+      <Version>2.3.3</Version>
     </PackageReference>
     <PackageReference Include="TaskPubliciser">
       <Version>1.0.3</Version>
@@ -88,13 +85,19 @@
       <PrivateAssets>all</PrivateAssets>
     </PackageReference>
     <PackageReference Include="UnlimitedHugs.Rimworld.HugsLib">
-      <Version>9.0.1</Version>
+      <Version>11.0.3</Version>
       <ExcludeAssets>runtime</ExcludeAssets>
       <IncludeAssets>compile; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
     </PackageReference>
   </ItemGroup>
   <ItemGroup>
     <Folder Include="Properties\" />
+  </ItemGroup>
+  <ItemGroup>
+    <Reference Include="AlienRace">
+      <HintPath>..\..\..\..\..\..\workshop\content\294100\839005762\1.4\Assemblies\AlienRace.dll</HintPath>
+      <Private>False</Private>
+    </Reference>
   </ItemGroup>
   <Target Name="MyCode" BeforeTargets="UpdateReferences">
     <PropertyGroup>

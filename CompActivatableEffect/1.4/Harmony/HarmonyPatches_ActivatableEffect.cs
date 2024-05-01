@@ -23,10 +23,9 @@ namespace OgsCompActivatableEffect
 
 
             var harmony = new Harmony("rimworld.Ogliss.comps.activator");
-            
             harmony.Patch(typeof(Pawn).GetMethod("GetGizmos"), null,
                 new HarmonyMethod(typeof(HarmonyPatches_ActivatableEffect).GetMethod("GetGizmosPrefix")));
-
+/*
             MethodInfo target = AccessTools.Method(GenTypes.GetTypeInAnyAssembly("OgsCompOversizedWeapon.OversizedUtil", "OgsCompOversizedWeapon"), "Draw", null, null);
             if (target == null)
             {
@@ -37,6 +36,7 @@ namespace OgsCompActivatableEffect
             {
                 Log.Warning("Patch is null ActivatableEffectUtil.DrawMeshExtra");
             }
+
             if (target != null && patch != null)
             {
                 if (harmony.Patch(target, null, new HarmonyMethod(patch)) == null)
@@ -49,6 +49,7 @@ namespace OgsCompActivatableEffect
                 }
             }
             else
+            */
             {
                 MethodInfo target2 = AccessTools.Method(GenTypes.GetTypeInAnyAssembly("DualWield.Harmony.PawnRenderer_DrawEquipmentAiming", "DualWield.Harmony"), "DrawEquipmentAimingOverride", null, null);
                 if (target2 == null && enabled_rooloDualWield)
@@ -67,28 +68,25 @@ namespace OgsCompActivatableEffect
                         Log.Warning("OgsCompOversizedWeapon: DualWield Patch Failed to apply");
                     }
                 }
-                else
+            }
+            MethodInfo target3 = AccessTools.Method(typeof(PawnRenderer), "DrawEquipmentAiming", null, null);
+            if (target3 == null)
+            {
+                Log.Warning("Target: PawnRenderer.DrawEquipmentAiming Not found");
+            }
+            MethodInfo patch3 = typeof(PawnRenderer_DrawEquipmentAiming_Vanilla_Transpiler).GetMethod("Transpiler");
+            if (patch3 == null)
+            {
+                Log.Warning("Patch is null Harmony_PawnRenderer_DrawEquipmentAiming_Transpiler.Transpiler");
+            }
+            if (target3 != null && patch3 != null)
+            {
+                if (harmony.Patch(target3, null, null, new HarmonyMethod(patch3,-1, null, new string[] { "rimworld.Ogliss.comps.oversized" })) == null)
                 {
-                    MethodInfo target3 = AccessTools.Method(typeof(PawnRenderer), "DrawEquipmentAiming", null, null);
-                    if (target3 == null)
-                    {
-                        Log.Warning("Target: PawnRenderer.DrawEquipmentAiming Not found");
-                    }
-                    MethodInfo patch3 = typeof(PawnRenderer_DrawEquipmentAiming_Vanilla_Transpiler).GetMethod("Transpiler");
-                    if (patch3 == null)
-                    {
-                        Log.Warning("Patch is null Harmony_PawnRenderer_DrawEquipmentAiming_Transpiler.Transpiler");
-                    }
-                    if (target3 != null && patch3 != null)
-                    {
-                        if (harmony.Patch(target3, null, new HarmonyMethod(patch3)) == null)
-                        {
-                            Log.Warning("OgsCompActivatableEffect: Patch Failed to apply");
-                        }
-                    }
+                    Log.Warning("OgsCompActivatableEffect: Patch Failed to apply");
                 }
             }
-            harmony.Patch(typeof(Verb).GetMethod("TryStartCastOn", new Type[] { typeof(LocalTargetInfo), typeof(LocalTargetInfo), typeof(bool), typeof(bool), typeof(bool), typeof(bool) }),
+                harmony.Patch(typeof(Verb).GetMethod("TryStartCastOn", new Type[] { typeof(LocalTargetInfo), typeof(LocalTargetInfo), typeof(bool), typeof(bool), typeof(bool), typeof(bool) }),
                 new HarmonyMethod(typeof(HarmonyPatches_ActivatableEffect), nameof(TryStartCastOnPrefix)), null);
             harmony.Patch(typeof(Pawn).GetMethod("ExitMap"),
                 new HarmonyMethod(typeof(HarmonyPatches_ActivatableEffect).GetMethod("ExitMap_PreFix")), null);

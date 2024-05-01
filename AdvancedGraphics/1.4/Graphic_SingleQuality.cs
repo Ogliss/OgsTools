@@ -46,7 +46,6 @@ namespace AdvancedGraphics
 				}
 			}
 			this.matNormal = MaterialPool.MatFrom(req2);
-			if (true)
 			{
 				MaterialRequest req3 = default(MaterialRequest);
 				string qPath = this.path + "_" + "Awful";
@@ -71,7 +70,6 @@ namespace AdvancedGraphics
 					this.matAwful = MaterialPool.MatFrom(req3);
 				}
 			}
-			if (true)
 			{
 				MaterialRequest req3 = default(MaterialRequest);
 				string qPath = this.path + "_" + "Poor";
@@ -96,7 +94,6 @@ namespace AdvancedGraphics
 					this.matPoor = MaterialPool.MatFrom(req3);
 				}
 			}
-			if (true)
 			{
 				MaterialRequest req3 = default(MaterialRequest);
 				string qPath = this.path + "_" + "Good";
@@ -121,7 +118,6 @@ namespace AdvancedGraphics
 					this.matGood = MaterialPool.MatFrom(req3);
 				}
 			}
-			if (true)
 			{
 				MaterialRequest req3 = default(MaterialRequest);
 				string qPath = this.path + "_" + "Excellent";
@@ -146,7 +142,6 @@ namespace AdvancedGraphics
 					this.mat = MaterialPool.MatFrom(req3);
 				}
 			}
-			if (true)
 			{
 				MaterialRequest req3 = default(MaterialRequest);
 				string qPath = this.path + "_" + "Masterwork";
@@ -171,7 +166,6 @@ namespace AdvancedGraphics
 					this.matMasterwork = MaterialPool.MatFrom(req3);
 				}
 			}
-			if (true)
 			{
 				MaterialRequest req3 = default(MaterialRequest);
 				string qPath = this.path + "_" + "Legendary";

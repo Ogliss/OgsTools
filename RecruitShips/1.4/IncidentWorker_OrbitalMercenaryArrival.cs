@@ -6,16 +6,13 @@ using Verse;
 
 namespace Recruiters
 {
-	// Token: 0x020009EA RID: 2538
 	public class IncidentWorker_OrbitalMercenaryArrival : IncidentWorker
 	{
-		// Token: 0x06003C5D RID: 15453 RVA: 0x0013ED05 File Offset: 0x0013CF05
 		public override bool CanFireNowSub(IncidentParms parms)
 		{
 			return base.CanFireNowSub(parms) && ((Map)parms.target).passingShipManager.passingShips.Count < 5;
 		}
 
-		// Token: 0x06003C5E RID: 15454 RVA: 0x0013ED34 File Offset: 0x0013CF34
 		public override bool TryExecuteWorker(IncidentParms parms)
 		{
 			Map map = (Map)parms.target;
@@ -42,14 +39,18 @@ namespace Recruiters
 			throw new InvalidOperationException();
 		}
 
-		// Token: 0x06003C5F RID: 15455 RVA: 0x0013EE94 File Offset: 0x0013D094
 		private Faction GetFaction(TraderKindDef trader)
-		{
-			if (trader.faction == null)
-			{
-				return null;
-			}
-			Faction result;
+        {
+            Faction result;
+            if (trader.faction == null)
+            {
+                if ((from f in Find.FactionManager.AllFactions
+                      where !f.HostileTo(Find.FactionManager.OfPlayer)
+                      select f).TryRandomElement(out result))
+                {
+                    return result;
+                }
+            }
 			if (!(from f in Find.FactionManager.AllFactions
 				  where f.def == trader.faction
 				  select f).TryRandomElement(out result))
@@ -59,7 +60,6 @@ namespace Recruiters
 			return result;
 		}
 
-		// Token: 0x06003C60 RID: 15456 RVA: 0x0013EEE4 File Offset: 0x0013D0E4
 		private bool CanSpawn(Map map, TraderKindDef trader)
 		{
 			if (!trader.orbital)
@@ -88,7 +88,6 @@ namespace Recruiters
 			return false;
 		}
 
-		// Token: 0x04002382 RID: 9090
 		private const int MaxShips = 5;
 	}
 }

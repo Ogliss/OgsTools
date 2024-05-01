@@ -59,6 +59,13 @@ namespace ExtraHives
 
 		public Lord Lord => cachedlord ??= FindLordToJoin(this.parent, this.Props.lordJob, this.Props.shouldJoinParentLord, null);
 
+		public virtual float MaxSpawnedPoints
+		{
+			get
+			{
+				return this.Props.maxSpawnedPawnsPoints;
+            }
+		}
 		public float SpawnedPawnsPoints
 		{
 			get
@@ -213,7 +220,7 @@ namespace ExtraHives
 			return lord;
 		}
 
-		public void SpawnInitialPawns()
+		public virtual void SpawnInitialPawns()
 		{
 			string s = $"{this.parent.LabelCap}({this.parent.Position.x},{this.parent.Position.z}) SpawnInitialPawns\n    initialPawnsCount: {this.Props.initialPawnsCount}";
 
@@ -247,7 +254,7 @@ namespace ExtraHives
 			this.CalculateNextPawnSpawnTick();
 		}
 
-		public void SpawnPawnsUntilPoints(float points, bool spawningInital = false, bool spawningWave = false, int extraPoints = 0)
+        public virtual void SpawnPawnsUntilPoints(float points, bool spawningInital = false, bool spawningWave = false, int extraPoints = 0)
 		{
 			int num = 0;
 			int wavePoints = 0;
@@ -372,11 +379,11 @@ namespace ExtraHives
 						 select x;
 			}
 			else
-			if (this.Props.maxSpawnedPawnsPoints > -1f)
+			if (MaxSpawnedPoints > -1f)
 			{
 				source = from x in source
-						 where curPoints + x.kind.combatPower <= this.Props.maxSpawnedPawnsPoints
-						 select x;
+						 where curPoints + x.kind.combatPower <= MaxSpawnedPoints
+                         select x;
 			}
 			PawnGenOption result;
 			if (source.TryRandomElementByWeight( x=> x.selectionWeight ,out result))
@@ -430,10 +437,10 @@ namespace ExtraHives
 				if (this.Active && Find.TickManager.TicksGame >= this.nextPawnSpawnTick)
 				{
 					Pawn pawn;
-					if ((this.Props.maxSpawnedPawnsPoints < 0f || this.SpawnedPawnsPoints < this.Props.maxSpawnedPawnsPoints) && this.TrySpawnPawn(out pawn) && pawn.caller != null)
+					if ((MaxSpawnedPoints < 0f || this.SpawnedPawnsPoints < MaxSpawnedPoints) && this.TrySpawnPawn(out pawn))
 					{
 						Log.Message("PawnSpawner CompTick Spawned "+pawn.NameShortColored);
-						pawn.caller.DoCall();
+						if (pawn.caller != null) pawn.caller.DoCall();
 					}
 					this.CalculateNextPawnSpawnTick();
 				}

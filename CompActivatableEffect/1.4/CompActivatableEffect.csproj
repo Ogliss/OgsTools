@@ -45,7 +45,7 @@
     <None Remove="xml\**" />
   </ItemGroup>
   <ItemGroup>
-    <PackageReference Include="Krafs.Rimworld.Ref" Version="1.4.3529" GeneratePathProperty="true" />
+    <PackageReference Include="Krafs.Rimworld.Ref" Version="1.4.3563" GeneratePathProperty="true" />
     <PackageReference Include="Lib.Harmony">
       <Version>2.2.2</Version>
     </PackageReference>

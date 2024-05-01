@@ -42,7 +42,7 @@ namespace OgsCompOversizedWeapon
             if (pawn == null) return;
             if (compOversized == null || (compOversized != null && compOversized.CompDeflectorIsAnimatingNow) || pawn == null || eq == null)
             {
-                OversizedUtil.Draw(mesh, default(Matrix4x4), mat, layer, eq, pawn, position, rotation);
+                OversizedUtil.Draw(mesh, default(Matrix4x4), mat, layer);
                 return;
             }
             Vector3 s;
@@ -66,7 +66,7 @@ namespace OgsCompOversizedWeapon
             }
             Matrix4x4 matrix = default(Matrix4x4);
             matrix.SetTRS(position, rotation, s);
-            OversizedUtil.Draw(mesh, matrix, mat, layer, eq, pawn, position, rotation);
+            OversizedUtil.Draw(mesh, matrix, mat, layer);
         }
     }
 }

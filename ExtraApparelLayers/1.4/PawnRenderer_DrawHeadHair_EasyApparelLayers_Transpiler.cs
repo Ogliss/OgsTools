@@ -37,7 +37,12 @@ namespace ExtraApparelLayers
             for (int i = 0; i < instructionsList.Count; i++)
             {
                 CodeInstruction instruction = instructionsList[i];
-                if (instruction.operand != null && instruction.operand.ToString().Contains("g__DrawApparel")) Log.Message($"{instruction.opcode}.{instruction.operand} ({instruction.GetType()}) @ {i}");
+                if (EasyApparelLayers_Main.DrawHeadHairApparel == null && instruction.operand != null && instruction.operand.ToString().Contains("g__DrawApparel"))
+                {
+                //    Log.Message($"FOUND g__DrawApparel {instruction.opcode}.{instruction.operand} ({instruction.GetType()}) @ {i}");
+                    EasyApparelLayers_Main.DrawHeadHairApparel = (MethodInfo)instruction.operand;
+                }
+                    
                 if (instruction.opcode == OpCodes.Stloc_1 && !orderedList)
                 {
                 //    Log.Message($"DrawHeadHair List<ApparelGraphicRecord> Reorder Patch");
@@ -46,7 +51,7 @@ namespace ExtraApparelLayers
 
                 }
                 // Allow new Overhead layers
-                if ((!firstLayerPatched || !secondLayerPatched) && i > 1 && instructionsList[i - 2].OperandIs(lastLayer) && instructionsList[i - 1].OperandIs(overhead))
+                if (/*(!firstLayerPatched || !secondLayerPatched) &&*/ i > 1 && instructionsList[i - 2].OperandIs(lastLayer) && instructionsList[i - 1].OperandIs(overhead))
                 {
                     if (firstLayerPatched)
                     {
@@ -98,7 +103,7 @@ namespace ExtraApparelLayers
                 if (!overOverheadPatched && instruction.opcode == OpCodes.Ldfld && instruction.OperandIs(rootLocField))
                 {
                     overOverheadPatched = true;
-                    //      Log.Message("overOverheadYPatched " + i + " opcode: " + instruction.opcode + " operand: " + instruction.operand);
+                 //   Log.Message("CompilerGenereatedTranspiler overOverheadYPatched " + i + " opcode: " + instruction.opcode + " operand: " + instruction.operand);
                     yield return instruction; // Vector3 loc2
                     yield return new CodeInstruction(OpCodes.Ldarg_0); // PawnRenderer
                     yield return new CodeInstruction(OpCodes.Ldarg_1); // ApparelGraphicRecord
@@ -110,7 +115,7 @@ namespace ExtraApparelLayers
                 {
                     ldcr4Patched++;
                     overInFrontOfFacePatched = true;
-                    //        Log.Message("overInFrontOfFacePatched " + i + " opcode: " + instruction.opcode + " operand: " + instruction.operand);
+                //    Log.Message("CompilerGenereatedTranspiler overInFrontOfFacePatched " + i + " opcode: " + instruction.opcode + " operand: " + instruction.operand);
                     yield return instruction; // Vector3 loc2
                     yield return new CodeInstruction(OpCodes.Ldarg_0); // PawnRenderer
                     yield return new CodeInstruction(OpCodes.Ldarg_1); // ApparelGraphicRecord
@@ -138,12 +143,17 @@ namespace ExtraApparelLayers
             {
                 return result;
             }
-            List<ApparelGraphicRecord> List = instance.graphics.apparelGraphics.FindAll(x => ApparelLayerUtility.LastLayerOverhead(x.sourceApparel.def.apparel.LastLayer));
-            int shellInd = List.IndexOf(apparelGraphicRecord);
-            float yspace = ApparelLayerUtility.headgearYSpace / List.Count;
-            float increment = yspace * shellInd;
-            result.y += increment;
-            // Log.Message("Overhead apparelGraphic " + shellInd + ": " + apparelGraphicRecord.sourceApparel.LabelShortCap + " original: " + original + " Increment: " + increment + " yspace: " + yspace + " result: " + result);
+            List<ApparelGraphicRecord> List = new List<ApparelGraphicRecord>();
+            if (!instance.graphics.apparelGraphics.NullOrEmpty())
+            {
+                List = instance.graphics.apparelGraphics.FindAll(x => ApparelLayerUtility.LastLayerOverhead(x.sourceApparel.def.apparel.LastLayer));
+                int shellInd = List.IndexOf(apparelGraphicRecord);
+                float yspace = ApparelLayerUtility.headgearYSpace / List.Count;
+                float increment = yspace * shellInd;
+                result.y += increment;
+                // Log.Message("Overhead apparelGraphic " + shellInd + ": " + apparelGraphicRecord.sourceApparel.LabelShortCap + " original: " + original + " Increment: " + increment + " yspace: " + yspace + " result: " + result);
+
+            }
             return result;
         }
         public static float IncOverhead(float original, PawnRenderer instance, ApparelGraphicRecord apparelGraphicRecord)
@@ -153,11 +163,14 @@ namespace ExtraApparelLayers
             {
                 return result;
             }
-            List<ApparelGraphicRecord> shellList = instance.graphics.apparelGraphics.FindAll(x => ApparelLayerUtility.LastLayerOverhead(x.sourceApparel.def.apparel.LastLayer));
-            int shellInd = shellList.IndexOf(apparelGraphicRecord);
-            float yspace = ApparelLayerUtility.headgearYSpace / (shellList.Count + 1);
-            float increment = yspace * shellInd;
-            result += increment;
+            if (!instance.graphics.apparelGraphics.NullOrEmpty())
+            {
+                List<ApparelGraphicRecord> shellList = instance.graphics.apparelGraphics.FindAll(x => ApparelLayerUtility.LastLayerOverhead(x.sourceApparel.def.apparel.LastLayer));
+                int shellInd = shellList.IndexOf(apparelGraphicRecord);
+                float yspace = ApparelLayerUtility.headgearYSpace / (shellList.Count + 1);
+                float increment = yspace * shellInd;
+                result += increment;
+            }
         //        Log.Message("IncOverhead apparelGraphic " + shellInd + ": " + apparelGraphicRecord.sourceApparel.LabelShortCap + " original: " + original  +  " Increment: " + increment + " yspace: " + yspace + " result: " + result);
             return result;
         }
