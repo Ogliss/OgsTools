@@ -55,12 +55,12 @@
     <Compile Include="LaserBeamDef.cs" />
     <Compile Include="LaserGun.cs" />
     <Compile Include="Harmony\Patches\OL_TuretTop_DrawTurret_LaserTurret_Patch.cs" />
-    <Compile Include="Harmony\Patches\OL_PawnRenderer_Draw_WquipmentAiming_GunDrawing_Patch.cs" />
+    <Compile Include="Harmony\Patches\OL_PawnRenderUtility_DrawEquipmentAiming_GunDrawing_Patch.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>
     <PackageReference Include="Krafs.Rimworld.Ref">
-      <Version>1.5.4081-beta</Version>
+      <Version>1.5.4082-beta</Version>
     </PackageReference>
     <PackageReference Include="Lib.Harmony">
       <Version>2.3.3</Version>
