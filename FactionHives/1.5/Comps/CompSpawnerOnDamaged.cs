@@ -194,6 +194,7 @@ namespace ExtraHives
         public float pointsLeft;
         private Lord lord;
         public static readonly string MemoDamaged = "ShipPartDamaged";
+    //    public static readonly string MemoDamaged = "HiveDamaged";
         private List<Faction> allFactions = new List<Faction>();
         public List<PawnGenOption> spawnablePawnKinds = new List<PawnGenOption>();
     }

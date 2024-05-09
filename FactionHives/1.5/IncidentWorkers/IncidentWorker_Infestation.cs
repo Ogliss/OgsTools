@@ -57,7 +57,7 @@ namespace ExtraHives
 				}
 				else
 				{
-				//	Log.Warning($"ExtraHives.IncidentWorker_Infestation tried CanFireNowSub {this.def.defName} with HivelikeIncidentDef but TryFindCell failed");
+					Log.Warning($"ExtraHives.IncidentWorker_Infestation tried CanFireNowSub {this.def.defName} with HivelikeIncidentDef but TryFindCell failed");
 				}
 			}
 			return false;
@@ -66,8 +66,14 @@ namespace ExtraHives
 		public override bool TryExecuteWorker(IncidentParms parms)
 		{
 			if (def.mechClusterBuilding == null && this.GetFactionFromParms(parms, false) == null)
-			{
-				return false;
+            {
+                Log.Warning($"ExtraHives Infestation tried CanFireNowSub {this.def.defName} with no mechClusterBuilding");
+                return false;
+			}
+			if (this.GetFactionFromParms(parms, false) == null)
+            {
+                Log.Warning($"ExtraHives TryExecuteWorker Infestation tried GetFactionFromParms {this.def.defName} but found not matching faction");
+                return false;
 			}
 			Map map = (Map)parms.target;
 			CompProperties_SpawnerPawn spawnerPawn = def.mechClusterBuilding.GetCompProperties<CompProperties_SpawnerPawn>();
@@ -75,7 +81,7 @@ namespace ExtraHives
 			int count = Mathf.Max(GenMath.RoundRandom(parms.points / points), 1);
             if (Prefs.DevMode)
             {
-				Log.Message($"ExtraHives trying {this.def.LabelCap} with {parms.points} Points");
+				Log.Message($"ExtraHives TryExecuteWorker trying {this.def.LabelCap} with {parms.points} Points");
             }
 
 			Thing t = InfestationUtility.SpawnTunnels(def.mechClusterBuilding, count, map, true, true, faction: parms.faction);
@@ -115,10 +121,11 @@ namespace ExtraHives
 					if (factionDef != null)
 					{
 						Faction = Find.FactionManager.FirstFactionOfDef(factionDef);
+						/*
 						if (Faction == null)
 						{
-						//	Log.Warning($"ExtraHives Infestation cant find a Faction of def: {this.def.defName} {factionDef.defName}");
-                            if (factionDef.canMakeRandomly)
+							//	Log.Warning($"ExtraHives Infestation cant find a Faction of def: {this.def.defName} {factionDef.defName}");
+							if (factionDef.canMakeRandomly)
 							{
 							//	Log.Warning($"Attempting to generate new Faction of def: {this.def.defName} {factionDef.defName}");
 								Faction = FactionGenerator.NewGeneratedFaction(new FactionGeneratorParms(factionDef, default, factionDef.hidden));
@@ -129,6 +136,7 @@ namespace ExtraHives
 								}
 							}
 						}
+						*/
 					}
 				}
 				else

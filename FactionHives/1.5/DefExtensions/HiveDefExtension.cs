@@ -7,6 +7,7 @@ namespace ExtraHives
 	{
 		public FactionDef Faction;
 		public ThingDef TunnelDef;
+		public ThoughtDef defeatedThought = null;
 
 		public bool mustBeNearColony = true;
 		public float maxColonyDistance = 30f;

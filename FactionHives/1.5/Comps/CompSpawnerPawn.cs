@@ -63,24 +63,32 @@ namespace ExtraHives
 		{
 			get
 			{
-				return this.Props.maxSpawnedPawnsPoints;
+				return this.Props.maxSpawnedPawnsPoints + this.maxSpawnedPointsOverride;
             }
 		}
-		public float SpawnedPawnsPoints
-		{
-			get
-			{
-				this.FilterOutUnspawnedPawns();
-				float num = 0f;
-				for (int i = 0; i < this.spawnedPawns.Count; i++)
-				{
-					num += this.spawnedPawns[i].kindDef.combatPower;
-				}
-				return num;
-			}
-		}
+		public float maxSpawnedPointsOverride = 0f;
+        public float SpawnedPawnsPoints
+        {
+            get
+            {
+                this.FilterOutUnspawnedPawns();
+                float num = 0f;
+                for (int i = 0; i < this.spawnedPawns.Count; i++)
+                {
+                    num += this.spawnedPawns[i].kindDef.combatPower;
+                }
+                return num;
+            }
+        }
+        public float PointsForSpawning
+        {
+            get
+            {
+                return MaxSpawnedPoints - SpawnedPawnsPoints;
+            }
+        }
 
-		public int SpawnedPawnsCount
+        public int SpawnedPawnsCount
 		{
 			get
 			{
@@ -382,7 +390,7 @@ namespace ExtraHives
 			if (MaxSpawnedPoints > -1f)
 			{
 				source = from x in source
-						 where curPoints + x.kind.combatPower <= MaxSpawnedPoints
+						 where x.kind.combatPower <= PointsForSpawning
                          select x;
 			}
 			PawnGenOption result;
@@ -402,7 +410,10 @@ namespace ExtraHives
 				//	this.SpawnInitialPawns();
 			}
 		}
-
+		public override void PostPostApplyDamage(DamageInfo dinfo, float totalDamageDealt)
+		{
+			base.PostPostApplyDamage(dinfo, totalDamageDealt);
+		}
 		public override void PostPostMake()
 		{
 			base.PostPostMake();
@@ -437,7 +448,7 @@ namespace ExtraHives
 				if (this.Active && Find.TickManager.TicksGame >= this.nextPawnSpawnTick)
 				{
 					Pawn pawn;
-					if ((MaxSpawnedPoints < 0f || this.SpawnedPawnsPoints < MaxSpawnedPoints) && this.TrySpawnPawn(out pawn))
+					if ((PointsForSpawning < 0) && this.TrySpawnPawn(out pawn))
 					{
 						Log.Message("PawnSpawner CompTick Spawned "+pawn.NameShortColored);
 						if (pawn.caller != null) pawn.caller.DoCall();
@@ -485,7 +496,7 @@ namespace ExtraHives
 			{
 				yield return new Command_Action
 				{
-					defaultLabel = "DEBUG: Spawn pawn",
+					defaultLabel = "DEBUG: Spawn random pawn",
 					icon = TexCommand.ReleaseAnimals,
 					action = delegate ()
 					{
@@ -493,6 +504,19 @@ namespace ExtraHives
 						this.TrySpawnPawn(out pawn);
 					}
 				};
+				foreach (var item in spawnablePawnKinds)
+                {
+                    yield return new Command_Action
+                    {
+                        defaultLabel = "DEBUG: Spawn " + item.kind.label,
+                        icon = TexCommand.ReleaseAnimals,
+                        action = delegate ()
+                        {
+                            Pawn pawn;
+                            this.TrySpawnPawn(out pawn, item.kind);
+                        }
+                    };
+                }
                 if (this.spawnedPawns.Any(x=> x.def.race.EatsFood))
                 {
 					yield return new Command_Action
